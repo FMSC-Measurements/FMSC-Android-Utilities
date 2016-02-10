@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="spreadsheetStyle">
+        <item name="cellColor">@android:color/white</item>
+        <item name="cellBorderColor">@color/grey_500</item>
+        <item name="columnHeaderColor">@color/grey_200</item>
+        <item name="rowHeaderColor">@color/grey_200</item>
+    </style>
+
+    <style name="tableCell">
+        <item name="cellColor">@android:color/white</item>
+    </style>
+</resources>
+

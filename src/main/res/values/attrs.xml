@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="NumberPickerPreference">
+        <attr name="valueInSummary" format="boolean"/>
+        <attr name="minimumValue" format="integer"/>
+        <attr name="maximumValue" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="MultiStateTouchCheckBox">
+        <attr name="checkedColor" format="color"/>
+        <attr name="checkMarkColor" format="color"/>
+        <attr name="uncheckedColor" format="color"/>
+        <attr name="partialCheckedColor" format="color"/>
+        <attr name="multiState" format="boolean"/>
+        <attr name="duration" format="integer"/>
+        <attr name="onClick" format="string"/>
+        <attr name="onCheckStateChange" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="FlipCheckBoxEx">
+        <!-- Whether or not this component is checked by default (default: false) -->
+        <attr name="checked" format="boolean" />
+        <!-- Whether or not checked status changes should be animated (default: true) -->
+        <attr name="showAnimations" format="boolean" />
+        <!-- Animation to apply when checked state goes from "not checked" to "checked" -->
+        <attr name="inAnimation" format="reference" />
+        <!-- Animation to apply when checked state goes from "checked" to "not checked" -->
+        <attr name="outAnimation" format="reference" />
+        <!-- Set the flip animation duration (default: 150ms) -->
+        <attr name="flipAnimationDuration" format="integer" />
+        <!-- Front view layout resource (for checked state -> false) -->
+        <attr name="frontLayout" format="reference" />
+        <!-- Rear view color resource (for checked state -> true) -->
+        <attr name="rearColor" format="reference" />
+        <!-- Rear accept image resource -->
+        <attr name="rearAcceptImage" format="reference" />
+        <!-- Whether or not to show the "accept" image (default: true) -->
+        <attr name="showAcceptImage" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="RecyclerViewPager">
+        <attr name="triggerOffset" format="float" />
+        <attr name="flingFactor" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="FABProgressCircleEx">
+        <attr name="arcColor"
+            format="color"/>
+        <attr name="arcWidth"
+            format="dimension"/>
+        <attr name="finalIcon"
+            format="reference"/>
+        <attr name="circleSize"
+            format="enum">
+            <enum name="normal"
+                value="1"/>
+            <enum name="mini"
+                value="2"/>
+        </attr>
+        <attr name="roundedStroke"
+            format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="LinearLayoutEx">
+        <attr name="maxWidth" format="dimension"/>
+        <attr name="maxHeight" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="SpreadsheetViewOld">
+        <attr name="cellColor" format="color"/>
+        <attr name="cellBorderColor" format="color"/>
+        <attr name="columnHeaderColor" format="color"/>
+        <attr name="rowHeaderColor" format="color"/>
+    </declare-styleable>
+
+</resources>

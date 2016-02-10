@@ -1,0 +1,72 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--Sync-->
+    <com.usda.fmsc.android.widget.SyncedScrollView
+        android:id="@+id/ssSsvIDs"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingTop="20dp"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:background="@color/grey_200"
+        android:elevation="5dp">
+
+        <TableLayout
+            android:id="@+id/ssTableIDs"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+        </TableLayout>
+    </com.usda.fmsc.android.widget.SyncedScrollView>
+
+    <HorizontalScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/ssSsvIDs"
+        android:layout_toEndOf="@+id/ssSsvIDs"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:overScrollMode="never">
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:minWidth="25dp">
+
+            <TableLayout
+                android:id="@+id/ssTableColumnNames"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:background="@color/grey_200"
+                android:elevation="5dp">
+            </TableLayout>
+
+
+            <!--Sync-->
+            <com.usda.fmsc.android.widget.SyncedScrollView
+                android:id="@+id/ssSsvContent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_below="@+id/ssTableColumnNames"
+                android:layout_alignParentBottom="true"
+                android:overScrollMode="never"
+                android:elevation="2dp">
+
+                <TableLayout
+                    android:id="@+id/ssTableContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </TableLayout>
+
+            </com.usda.fmsc.android.widget.SyncedScrollView>
+        </RelativeLayout>
+    </HorizontalScrollView>
+</RelativeLayout>

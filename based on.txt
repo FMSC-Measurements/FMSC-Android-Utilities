@@ -1,0 +1,4 @@
+FABProgressCircleEx 	based on FABProgressCircle by Jorge Castillo Pérez
+MultiStateTouchCheckBox	based on AnimateCheckBox by Hanks
+FlipCheckBoxEx 			based on FlipCheckBox by Francisco Manuel Lopez Jurado
+SpreadsheetView 		base on TableFixHeaders by Brais Gabín (InQBarna)
