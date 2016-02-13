@@ -22,6 +22,8 @@
     <color name="textDarkDisabled">#60000000</color>
     <color name="textDarkDivider">#1f000000</color>
 
+    <color name="background_dim_overlay">#44000000</color>
+	
     <color name="textLight">#FFFFFF</color>
     <color name="textLightContent">#b3ffffff</color>
     <color name="textLightDisabled">#4dffffff</color>

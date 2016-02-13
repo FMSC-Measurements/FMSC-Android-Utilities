@@ -28,8 +28,8 @@ public class LinearLayoutEx extends LinearLayout {
         super(context, attrs, defStyleAttr);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LinearLayoutEx);
-        maxWidth = a.getDimensionPixelSize(R.styleable.LinearLayoutEx_maxWidth, 0);
-        maxHeight = a.getDimensionPixelSize(R.styleable.LinearLayoutEx_maxHeight, 0);
+        maxWidth = a.getDimensionPixelSize(R.styleable.LinearLayoutEx_layoutMaxWidth, 0);
+        maxHeight = a.getDimensionPixelSize(R.styleable.LinearLayoutEx_layoutMaxHeight, 0);
         a.recycle();
     }
 

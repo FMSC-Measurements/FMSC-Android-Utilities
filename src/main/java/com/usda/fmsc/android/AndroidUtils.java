@@ -10,13 +10,17 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -27,13 +31,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Adapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class AndroidUtils {
     public static class App {
@@ -521,37 +528,6 @@ public class AndroidUtils {
             }
         }
 
-
-        /*
-        public static void applyShadows(ViewGroup layout) {
-            if (Build.VERSION.SDK_INT  < Build.VERSION_CODES.LOLLIPOP) {
-                View view;
-
-                if (layout.getChildCount() > 0) {
-                    for (int i = 0; i < layout.getChildCount(); i++) {
-                        view = layout.getChildAt(i);
-
-                        if (view instanceof ViewGroup) {
-                            applyShadows((ViewGroup)view);
-                        } else {
-                            applyShadow(view);
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void applyShadows(View view) {
-            if (Build.VERSION.SDK_INT  < Build.VERSION_CODES.LOLLIPOP) {
-                if (view instanceof ViewGroup) {
-                    applyShadows((ViewGroup)view);
-                } else {
-                    applyShadow(view);
-                }
-            }
-        }
-        */
-
         public static void applyShadow(View view, int elevation) {
             if (Build.VERSION.SDK_INT  < Build.VERSION_CODES.LOLLIPOP && elevation > 0) {
                 Context context = view.getContext();
@@ -573,6 +549,39 @@ public class AndroidUtils {
 
                 int index = parent.indexOfChild(view);
                 parent.addView(shadow, index + 1);
+            }
+        }
+
+        public static void setNumberPickerColor(NumberPicker picker, int colorId) {
+            int color = getColor(picker.getContext(), colorId);
+
+            Field[] pickerFields = NumberPicker.class.getDeclaredFields();
+            for (Field pf : pickerFields) {
+                if (pf.getName().equals("mSelectionDivider")) {
+                    pf.setAccessible(true);
+                    try {
+                        ColorDrawable colorDrawable = new ColorDrawable(color);
+                        pf.set(picker, colorDrawable);
+                    } catch (Exception e) {
+                    }
+                    break;
+                }
+            }
+        }
+
+
+    }
+
+    public static class Interal {
+
+        public static void registerOnActivityDestroyListener(Object obj, PreferenceManager preferenceManager) {
+            try {
+                Method method = preferenceManager.getClass().getDeclaredMethod(
+                        "registerOnActivityDestroyListener",
+                        PreferenceManager.OnActivityDestroyListener.class);
+                method.setAccessible(true);
+                method.invoke(preferenceManager, obj);
+            } catch (Exception e) {
             }
         }
     }

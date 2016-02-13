@@ -7,12 +7,11 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialog;
 import android.util.AttributeSet;
 
-import java.lang.reflect.Method;
+import com.usda.fmsc.android.AndroidUtils;
 
 public class ListCompatPreference extends ListPreference {
     protected AppCompatDialog mDialog;
@@ -60,16 +59,7 @@ public class ListCompatPreference extends ListPreference {
                 .setPositiveButton(getPositiveButtonText(), this)
                 .setSingleChoiceItems(getEntries(), selected, this);
 
-        PreferenceManager pm = getPreferenceManager();
-        try {
-            Method method = pm.getClass().getDeclaredMethod(
-                    "registerOnActivityDestroyListener",
-                    PreferenceManager.OnActivityDestroyListener.class);
-            method.setAccessible(true);
-            method.invoke(pm, this);
-        } catch (Exception e) {
-            // ignored, nothing we can do
-        }
+        AndroidUtils.Interal.registerOnActivityDestroyListener(this, getPreferenceManager());
 
         mDialog = builder.create();
         if (state != null) {

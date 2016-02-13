@@ -1,8 +1,11 @@
 package com.usda.fmsc.android.preferences;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Bundle;
 import android.preference.DialogPreference;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -52,6 +55,36 @@ public class NumberPickerPreference extends DialogPreference {
     }
 
     @Override
+    protected void showDialog(Bundle state) {
+        Context context = getContext();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setTitle(getDialogTitle())
+                .setIcon(getDialogIcon())
+                .setPositiveButton(getPositiveButtonText(), this)
+                .setNegativeButton(getNegativeButtonText(), this);
+
+        View contentView = onCreateDialogView();
+        if (contentView != null) {
+            onBindDialogView(contentView);
+            builder.setView(contentView);
+        } else {
+            builder.setMessage(getDialogMessage());
+        }
+
+        AndroidUtils.Interal.registerOnActivityDestroyListener(this, getPreferenceManager());
+
+        // Create the dialog
+        final Dialog dialog = builder.create();
+        if (state != null) {
+            dialog.onRestoreInstanceState(state);
+        }
+
+        dialog.setOnDismissListener(this);
+        dialog.show();
+    }
+
+    @Override
     protected View onCreateDialogView() {
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -60,6 +93,8 @@ public class NumberPickerPreference extends DialogPreference {
         picker = new NumberPicker(getContext());
         picker.setLayoutParams(layoutParams);
         picker.setBackgroundColor(AndroidUtils.UI.getColor(getContext(), android.R.color.transparent));
+
+        AndroidUtils.UI.setNumberPickerColor(picker, R.color.accent);
 
         FrameLayout dialogView = new FrameLayout(getContext());
         dialogView.addView(picker);
