@@ -2,6 +2,7 @@ package com.usda.fmsc.android.widget.drawables;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -20,18 +21,12 @@ public class RevealBitmapProgressDrawable extends BitmapProgressDrawable {
     private Bitmap revealBitmap(Bitmap foreground, float progress) {
         Bitmap bitmap = Bitmap.createBitmap(foreground.getWidth(), foreground.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
+        Paint paint = new Paint(Color.RED);
         canvas.drawBitmap(foreground, 0, 0, paint);
         paint.setAntiAlias(true);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
-
-        canvas.drawRect(0, bitmap.getWidth(), 0, (int)(bitmap.getHeight() * progress), paint);
-
-        //float radius = (float)(getScreenSize().x *.35);
-        //float x = (float) ((getScreenSize().x*.5) + (radius * .5));
-        //float y = (float)  ((getScreenSize().y*.5) + (radius * .5));
-        //canvas.drawCircle(x, y, radius, paint);
+        canvas.drawRect(0, 0, bitmap.getWidth(), bitmap.getHeight() - (int)(bitmap.getHeight() * progress), paint);
 
         return bitmap;
     }

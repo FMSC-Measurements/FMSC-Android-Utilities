@@ -1,7 +1,8 @@
 <resources>
     <dimen name="toolbar_height">56dp</dimen>
 
-    <dimen name="fcb__rear_accept_image_padding">16dp</dimen>
+    <dimen name="fcb__rear_accept_image_padding">8dp</dimen>
+    <dimen name="fcb__front_accept_image_padding">8dp</dimen>
 
     <dimen name="fab_size_normal">56dp</dimen>
     <dimen name="fab_size_mini">40dp</dimen>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Placeholder for the front view, to be set if no one is provided. The
+front view represents the "not checked" state.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fcb__decline_color"
+    android:padding="@dimen/fcb__front_accept_image_padding" >
+
+    <ImageView
+        android:id="@+id/iv__card__decline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"/>
+</FrameLayout>

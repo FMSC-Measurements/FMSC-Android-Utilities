@@ -12,9 +12,9 @@
     <color name="shadow_end">#00000000</color>
 
     <!-- Default color to apply onto front view when none is provided -->
-    <color name="fcb__front_color">@color/grey_500</color>
+    <color name="fcb__decline_color">@color/grey_500</color>
     <!-- Default color to apply onto rear view when none is provided -->
-    <drawable name="fcb__rear_color">@color/green_500</drawable>
+    <color name="fcb__accept_color">@color/green_500</color>
 
 
     <color name="textDark">#de000000</color>

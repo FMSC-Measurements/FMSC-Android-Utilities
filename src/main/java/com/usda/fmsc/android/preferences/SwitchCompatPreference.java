@@ -27,14 +27,8 @@ import com.usda.fmsc.android.R;
 
 public class SwitchCompatPreference extends CheckBoxPreference {
 
-    public SwitchCompatPreference(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public SwitchCompatPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    public SwitchCompatPreference(Context context) {
+        super(context);
         init();
     }
 
@@ -43,8 +37,14 @@ public class SwitchCompatPreference extends CheckBoxPreference {
         init();
     }
 
-    public SwitchCompatPreference(Context context) {
-        super(context);
+    public SwitchCompatPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public SwitchCompatPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 

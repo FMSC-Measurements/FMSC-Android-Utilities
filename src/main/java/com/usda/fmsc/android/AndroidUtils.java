@@ -371,6 +371,17 @@ public class AndroidUtils {
             return resizedBitmap;
         }
 
+        public static Bitmap scaleBitmap(Bitmap realImage, float maxImageSize, boolean filter) {
+            float ratio = Math.min(
+                    maxImageSize / realImage.getWidth(),
+                    maxImageSize / realImage.getHeight());
+            int width = Math.round(ratio * realImage.getWidth());
+            int height = Math.round(ratio * realImage.getHeight());
+
+            return Bitmap.createScaledBitmap(realImage, width, height, filter);
+        }
+
+
 
         /**
          * Get center child in X Axes

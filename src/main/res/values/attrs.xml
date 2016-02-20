@@ -30,13 +30,19 @@
         <!-- Set the flip animation duration (default: 150ms) -->
         <attr name="flipAnimationDuration" format="integer" />
         <!-- Front view layout resource (for checked state -> false) -->
-        <attr name="frontLayout" format="reference" />
+        <attr name="declineLayout" format="reference" />
+        <!-- Rear view layout resource (for checked state -> false) -->
+        <attr name="acceptLayout" format="reference" />
         <!-- Rear view color resource (for checked state -> true) -->
-        <attr name="rearColor" format="reference" />
+        <attr name="acceptColor" format="reference" />
         <!-- Rear accept image resource -->
-        <attr name="rearAcceptImage" format="reference" />
+        <attr name="acceptImage" format="reference" />
+        <!-- Front decline image resource -->
+        <attr name="declineImage" format="reference" />
         <!-- Whether or not to show the "accept" image (default: true) -->
         <attr name="showAcceptImage" format="boolean" />
+        <!-- Whether or not to show the "accept" image (default: false) -->
+        <attr name="showDeclineImage" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="RecyclerViewPager">

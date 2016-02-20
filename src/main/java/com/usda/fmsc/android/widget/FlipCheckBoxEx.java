@@ -17,12 +17,6 @@ import android.widget.ViewFlipper;
 import com.usda.fmsc.android.R;
 
 public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener, View.OnLongClickListener {
-
-	/*
-	 * TODO list: - Image "accept" animation customizable - Rear face
-	 * customization (not just color)
-	 */
-
     /** Dummy listener to prevent NPE's. */
     private static final OnFlipCheckedChangeListener DUMMY_LISTENER = new OnFlipCheckedChangeListener() {
         @Override
@@ -31,14 +25,14 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     };
 
     /** Child index to access the <i>front</i> view. */
-    private static final int FRONT_VIEW_CHILD_INDEX = 0;
+    private static final int DECLINE_VIEW_CHILD_INDEX = 0;
     /** Child index to access the <i>rear</i> view. */
-    private static final int REAR_VIEW_CHILD_INDEX = 1;
+    private static final int ACCEPT_VIEW_CHILD_INDEX = 1;
 
     /** The item is not checked (and is displaying the <i>front</i> view). */
-    public static final int STATUS_NOT_CHECKED = FRONT_VIEW_CHILD_INDEX;
+    public static final int STATUS_NOT_CHECKED = DECLINE_VIEW_CHILD_INDEX;
     /** The item is checked (and is displaying the <i>rear</i> view). */
-    public static final int STATUS_CHECKED = REAR_VIEW_CHILD_INDEX;
+    public static final int STATUS_CHECKED = ACCEPT_VIEW_CHILD_INDEX;
     /** Use this to apply a default resource value. */
     public static final int DEFAULT_RESOURCE = 0;
 
@@ -54,6 +48,10 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     private ViewFlipper mViewFlipper;
     /** Reference to the <i>rear</i> view's ImageView. */
     private ImageView mIVAccept;
+    /** Reference to the <i>front</i> view's ImageView. */
+    private ImageView mIVDecline;
+
+    View mAcceptView, mDeclineView;
 
 	/* Attributes */
 
@@ -69,6 +67,8 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     private long mFlipAnimationDuration;
     /** Show the "accept" image. */
     private boolean mShowAcceptImage;
+    /** Show the "decline" image. */
+    private boolean mShowDeclineImage;
 
 	/* Constructors */
 
@@ -135,11 +135,16 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.FlipCheckBoxEx, defStyle, defStyleRes);
         try {
-            setFrontView(a.getResourceId(R.styleable.FlipCheckBoxEx_frontLayout, 0));
 
-            setRearColorResource(a.getResourceId(R.styleable.FlipCheckBoxEx_rearColor, 0));
+            setAcceptView(a.getResourceId(R.styleable.FlipCheckBoxEx_acceptLayout, 0));
 
-            setAcceptImageResource(a.getResourceId(R.styleable.FlipCheckBoxEx_rearAcceptImage, 0));
+            setDeclineView(a.getResourceId(R.styleable.FlipCheckBoxEx_declineLayout, 0));
+
+            setAcceptColorResource(a.getResourceId(R.styleable.FlipCheckBoxEx_acceptColor, 0));
+
+            setAcceptImageResource(a.getResourceId(R.styleable.FlipCheckBoxEx_acceptImage, 0));
+
+            setDeclineImageResource(a.getResourceId(R.styleable.FlipCheckBoxEx_declineImage, 0));
 
             setCheckedInmediate(a.getBoolean(R.styleable.FlipCheckBoxEx_checked, false));
 
@@ -152,6 +157,8 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
             setFlipAnimationDuration((long) a.getInteger(R.styleable.FlipCheckBoxEx_flipAnimationDuration, 150));
 
             setShowAcceptImage(a.getBoolean(R.styleable.FlipCheckBoxEx_showAcceptImage, true));
+
+            setShowDeclineImage(a.getBoolean(R.styleable.FlipCheckBoxEx_showDeclineImage, true));
         } catch (Exception ex) {
             Log.e(FlipCheckBoxEx.class.getSimpleName(),
                     "Error applying provided attributes");
@@ -197,12 +204,49 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      * Find this component's view references.
      */
     private void findViewReferences() {
-        mViewFlipper = (ViewFlipper) this;
+        mViewFlipper = this;
         mIVAccept = (ImageView) mViewFlipper.findViewById(R.id.include_back)
-                .findViewById(R.id.iv__card_back__accept);
+                .findViewById(R.id.iv__card__accept);
+        mIVDecline = (ImageView) mViewFlipper.findViewById(R.id.include_front)
+                .findViewById(R.id.iv__card__decline);
     }
 
 	/* Attribute access */
+
+    /**
+     * Set the rear view to be displayed when this component is in a <i>
+     * checked</i> state. If an invalid resource or {@link #DEFAULT_RESOURCE} is
+     * passed, then the default view will be applied.
+     *
+     * @param layoutResId
+     *            The layout resource identifier.
+     */
+    public void setAcceptView(int layoutResId) {
+        setAcceptView(LayoutInflater.from(getContext()).inflate(
+                layoutResId > 0 ? layoutResId : R.layout.fcb_simple_card_accept,
+                null));
+    }
+
+    /**
+     * Set the rear view to be displayed when this component is in a <i>
+     * checked</i> state. The provided <i>view</i> must not be {@code null}, or
+     * an exception will be thrown.
+     *
+     * @param view
+     *            The view. Must not be {@code null}.
+     */
+    public void setAcceptView(View view) {
+        if (view == null)
+            throw new IllegalArgumentException(
+                    "The provided view must not be null");
+
+        mAcceptView = view;
+
+        mIVAccept = (ImageView) mAcceptView.findViewById(R.id.iv__card__accept);
+
+        mViewFlipper.removeViewAt(ACCEPT_VIEW_CHILD_INDEX);
+        mViewFlipper.addView(view, ACCEPT_VIEW_CHILD_INDEX);
+    }
 
     /**
      * Set the front view to be displayed when this component is in a <i>not
@@ -212,9 +256,9 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      * @param layoutResId
      *            The layout resource identifier.
      */
-    public void setFrontView(int layoutResId) {
-        setFrontView(LayoutInflater.from(getContext()).inflate(
-                layoutResId > 0 ? layoutResId : R.layout.fcb_simple_card_front,
+    public void setDeclineView(int layoutResId) {
+        setDeclineView(LayoutInflater.from(getContext()).inflate(
+                layoutResId > 0 ? layoutResId : R.layout.fcb_simple_card_decline,
                 null));
     }
 
@@ -226,13 +270,17 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      * @param view
      *            The view. Must not be {@code null}.
      */
-    public void setFrontView(View view) {
+    public void setDeclineView(View view) {
         if (view == null)
             throw new IllegalArgumentException(
                     "The provided view must not be null");
 
-        mViewFlipper.removeViewAt(FRONT_VIEW_CHILD_INDEX);
-        mViewFlipper.addView(view, FRONT_VIEW_CHILD_INDEX);
+        mDeclineView = view;
+
+        mIVDecline = (ImageView) mDeclineView.findViewById(R.id.iv__card__decline);
+
+        mViewFlipper.removeViewAt(DECLINE_VIEW_CHILD_INDEX);
+        mViewFlipper.addView(view, DECLINE_VIEW_CHILD_INDEX);
     }
 
     /**
@@ -241,8 +289,8 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      *
      * @return The <i>front</i> view.
      */
-    public View getFrontView() {
-        return mViewFlipper.getChildAt(FRONT_VIEW_CHILD_INDEX);
+    public View getDeclineView() {
+        return mViewFlipper.getChildAt(DECLINE_VIEW_CHILD_INDEX);
     }
 
     /**
@@ -251,7 +299,7 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      * @param color
      *            The color.
      */
-    public void setRearColor(int color) {
+    public void setAcceptColor(int color) {
         mViewFlipper.findViewById(R.id.include_back).setBackgroundColor(color);
     }
 
@@ -263,9 +311,8 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      * @param resIdColor
      *            The color resource.
      */
-    public void setRearColorResource(int resIdColor) {
-        mViewFlipper.findViewById(R.id.include_back).setBackgroundResource(
-                resIdColor > 0 ? resIdColor : R.drawable.fcb__rear_color);
+    public void setAcceptColorResource(int resIdColor) {
+        mAcceptView.setBackgroundResource(resIdColor > 0 ? resIdColor : R.color.fcb__accept_color);
     }
 
     /**
@@ -274,8 +321,25 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      *
      * @return The <i>rear</i> view.
      */
-    public View getRearView() {
-        return mViewFlipper.getChildAt(REAR_VIEW_CHILD_INDEX);
+    public View getAcceptView() {
+        return mViewFlipper.getChildAt(ACCEPT_VIEW_CHILD_INDEX);
+    }
+
+    /**
+     * Convenience method to replace the "decline" image being displayed on the
+     * front of the component. Passing an invalid resource or
+     * {@link #DEFAULT_RESOURCE} will apply the default image.
+     * <p/>
+     * Check the method {@link #getDeclineImage()} if you need to apply further
+     * customizations to that view.
+     *
+     * @param imageResId
+     *            The image resource identifier.
+     * @see #getDeclineImage()
+     */
+    public void setDeclineImageResource(int imageResId) {
+        mIVDecline.setImageResource(imageResId > 0 ? imageResId
+                : R.drawable.places_ic_clear);
     }
 
     /**
@@ -296,6 +360,16 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     }
 
     /**
+     * Get the ImageView reference which is being used to display the "decline"
+     * mark onto the front view, so can apply further customizations if needed.
+     *
+     * @return The "decline" ImageView.
+     */
+    public ImageView getDeclineImage() {
+        return mIVDecline;
+    }
+
+    /**
      * Get the ImageView reference which is being used to display the "accept"
      * mark onto the rear view, so can apply further customizations if needed.
      *
@@ -303,6 +377,19 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      */
     public ImageView getAcceptImage() {
         return mIVAccept;
+    }
+
+    /**
+     * Set whether or not the "decline" image on rear face should be displayed
+     * when the user checks this component.
+     *
+     * @param showDeclineImage
+     *            Show or hide the "decline" image.
+     * @see #getDeclineImage()
+     */
+    public void setShowDeclineImage(boolean showDeclineImage) {
+        mShowDeclineImage = showDeclineImage;
+        mIVDecline.setVisibility(showDeclineImage ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -316,6 +403,16 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     public void setShowAcceptImage(boolean showAcceptImage) {
         mShowAcceptImage = showAcceptImage;
         mIVAccept.setVisibility(showAcceptImage ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Returns whether or not the "decline" image on rear face is being
+     * displayed.
+     *
+     * @return Will return {@code true} if showing, {@code false} otherwise.
+     */
+    public boolean isShowingDeclineImage() {
+        return mShowDeclineImage;
     }
 
     /**
@@ -502,7 +599,6 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     /**
      * Get the listener receiving call backs upon state changes.
      *
-     * @return
      */
     public OnFlipCheckedChangeListener getOnFlipCheckedChangeListener() {
         return mOnCheckedChangeListener;
@@ -608,6 +704,6 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     }
 
     public interface OnFlipCheckedChangeListener {
-        public void onCheckedChanged(FlipCheckBoxEx flipCardView, boolean isChecked);
+        void onCheckedChanged(FlipCheckBoxEx flipCardView, boolean isChecked);
     }
 }

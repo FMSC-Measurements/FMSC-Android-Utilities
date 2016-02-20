@@ -6,10 +6,10 @@
 
     <include
         android:id="@+id/include_front"
-        layout="@layout/fcb_simple_card_front" />
+        layout="@layout/fcb_simple_card_decline" />
 
     <include
         android:id="@+id/include_back"
-        layout="@layout/fcb_simple_card_back" />
+        layout="@layout/fcb_simple_card_accept" />
 
 </merge>
