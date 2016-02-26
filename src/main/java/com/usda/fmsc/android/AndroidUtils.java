@@ -22,6 +22,7 @@ import android.os.Vibrator;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -502,11 +503,13 @@ public class AndroidUtils {
         }
 
         public static int getColor(Context context, int id) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                return context.getColor(id);
-            } else {
-                return context.getResources().getColor(id);
-            }
+            return context.getResources().getColor(id);
+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                return context.getColor(id);
+//            } else {
+//                return context.getResources().getColor(id);
+//            }
         }
 
 
@@ -519,6 +522,9 @@ public class AndroidUtils {
             getDrawable(context, edgeDrawableId).setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_ATOP);
         }
 
+        public static void setHomeIndicatorIcon(AppCompatActivity activity, int drawable) {
+            activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
+        }
 
         public static void setEnableViewGroup(ViewGroup layout, boolean enabled) {
             setEnableViewGroup(layout, enabled, 1);
