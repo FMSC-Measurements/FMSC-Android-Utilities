@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -21,6 +22,7 @@ import android.os.Build;
 import android.os.Vibrator;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +36,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -526,9 +529,15 @@ public class AndroidUtils {
             activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
         }
 
+
+        public static void setSnackbarTextColor(Snackbar snackbar, int color) {
+            ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(color);
+        }
+
         public static void setEnableViewGroup(ViewGroup layout, boolean enabled) {
             setEnableViewGroup(layout, enabled, 1);
         }
+
 
         public static void setEnableViewGroup(ViewGroup layout, boolean enabled, int recursive) {
             layout.setEnabled(enabled);

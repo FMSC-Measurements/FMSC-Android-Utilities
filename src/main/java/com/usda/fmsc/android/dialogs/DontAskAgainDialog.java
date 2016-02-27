@@ -88,31 +88,33 @@ public class DontAskAgainDialog {
 
 
     private void setValue(Object value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (value != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        if (checkBox.isChecked()) {
-            editor.putBoolean(askKey, true);
+            if (checkBox.isChecked()) {
+                editor.putBoolean(askKey, false);
+            }
+
+            Class c = value.getClass();
+
+            if (c.equals(Integer.class)) {
+                editor.putInt(valueKey, (Integer)value);
+            } else if (c.equals(String.class)) {
+                editor.putString(valueKey, (String)value);
+            } else if (c.equals(Boolean.class)) {
+                editor.putBoolean(valueKey, (Boolean)value);
+            } else if (c.equals(Float.class)) {
+                editor.putFloat(valueKey, (Float)value);
+            } else if (c.equals(Long.class)) {
+                editor.putLong(valueKey, (Long)value);
+            } else if (c.equals(Set.class)) {
+                editor.putStringSet(valueKey, (Set<String>)value);
+            } else if (c.equals(Double.class)) {
+                editor.putLong(valueKey, Double.doubleToRawLongBits((Double)value));
+            }
+
+            editor.apply();
         }
-
-        Class c = value.getClass();
-
-        if (c.equals(Integer.class)) {
-            editor.putInt(valueKey, (Integer)value);
-        } else if (c.equals(String.class)) {
-            editor.putString(valueKey, (String)value);
-        } else if (c.equals(Boolean.class)) {
-            editor.putBoolean(valueKey, (Boolean)value);
-        } else if (c.equals(Float.class)) {
-            editor.putFloat(valueKey, (Float)value);
-        } else if (c.equals(Long.class)) {
-            editor.putLong(valueKey, (Long)value);
-        } else if (c.equals(Set.class)) {
-            editor.putStringSet(valueKey, (Set<String>)value);
-        } else if (c.equals(Double.class)) {
-            editor.putLong(valueKey, Double.doubleToRawLongBits((Double)value));
-        }
-
-        editor.apply();
     }
 
     public void setPositiveButton(String text,OnClickListener listener) {
