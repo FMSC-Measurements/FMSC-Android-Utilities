@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -595,7 +596,20 @@ public class AndroidUtils {
             }
         }
 
+        public static void setTextSizeForWidth(Paint paint, float desiredWidth, String text) {
+            final float testTextSize = 48f;
 
+            // Get the bounds of the text, using our testTextSize.
+            paint.setTextSize(testTextSize);
+            Rect bounds = new Rect();
+            paint.getTextBounds(text, 0, text.length(), bounds);
+
+            // Calculate the desired size as a proportion of our testTextSize.
+            float desiredTextSize = testTextSize * desiredWidth / bounds.width();
+
+            // Set the paint for that size.
+            paint.setTextSize(desiredTextSize);
+        }
     }
 
     public static class Interal {
