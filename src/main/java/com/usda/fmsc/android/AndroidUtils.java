@@ -1,7 +1,9 @@
 package com.usda.fmsc.android;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -23,10 +25,12 @@ import android.os.Build;
 import android.os.Vibrator;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,8 +44,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -507,17 +517,18 @@ public class AndroidUtils {
         }
 
         public static int getColor(Context context, int id) {
-            return context.getResources().getColor(id);
+            //return context.getResources().getColor(id);
 
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                return context.getColor(id);
-//            } else {
-//                return context.getResources().getColor(id);
-//            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                return context.getColor(id);
+            } else {
+                return context.getResources().getColor(id);
+            }
         }
 
 
-        public static void setOverscrollColor(Resources resources, Context context, int color) {
+        public static void setOverscrollColor(Resources resources, Context context, int resColorId) {
+            int color = getColor(context, resColorId);
 
             int glowDrawableId = resources.getIdentifier("overscroll_glow", "drawable", "android");
             getDrawable(context, glowDrawableId).setColorFilter(color, PorterDuff.Mode.MULTIPLY);
@@ -613,7 +624,6 @@ public class AndroidUtils {
     }
 
     public static class Interal {
-
         public static void registerOnActivityDestroyListener(Object obj, PreferenceManager preferenceManager) {
             try {
                 Method method = preferenceManager.getClass().getDeclaredMethod(
@@ -632,6 +642,31 @@ public class AndroidUtils {
             fraction = Math.min(fraction, 1f);
             fraction = animator.getInterpolator().getInterpolation(fraction);
             return fraction;
+        }
+
+        public static void collapseTextView(TextView tv, int maxCollapsedLines) {
+            //animateTextLines(tv, maxCollapsedLines);
+            final int height = tv.getMeasuredHeight();
+            tv.setHeight(0);
+            tv.setMaxLines(maxCollapsedLines); //expand fully
+            tv.measure(View.MeasureSpec.makeMeasureSpec(tv.getMeasuredWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            final int newHeight = tv.getMeasuredHeight();
+            ObjectAnimator animation = ObjectAnimator.ofInt(tv, "height", height, newHeight);
+            animation.setDuration(300).start();
+            tv.setEllipsize(TextUtils.TruncateAt.END);
+        }
+
+        public static void expandTextView(TextView tv) {
+            //animateTextLines(tv, Integer.MAX_VALUE);
+            final int height = tv.getMeasuredHeight();
+            tv.setHeight(height);
+            tv.setMaxLines(Integer.MAX_VALUE); //expand fully
+            tv.measure(View.MeasureSpec.makeMeasureSpec(tv.getMeasuredWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            final int newHeight = tv.getMeasuredHeight();
+            ObjectAnimator animation = ObjectAnimator.ofInt(tv, "height", height, newHeight);
+            animation.setDuration(300).start();
         }
     }
 

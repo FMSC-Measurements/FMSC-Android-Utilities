@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.usda.fmsc.android.R;
+
 public class RecyclerViewEx extends RecyclerView {
 
     private boolean hasHeader, hasFooter;
+    private AdapterEx adapter;
 
 
     public RecyclerViewEx(Context context) {
@@ -26,14 +29,22 @@ public class RecyclerViewEx extends RecyclerView {
 
     public void setViewHasHeader(boolean hasHeader) {
         this.hasHeader = hasHeader;
+
+        if (adapter != null) {
+            adapter.setViewHasHeader(hasHeader);
+        }
     }
 
     public boolean hasHeader() {
         return this.hasHeader;
     }
 
-    public void setViewHashFooter(boolean hasFooter) {
+    public void setViewHasFooter(boolean hasFooter) {
         this.hasFooter = hasFooter;
+
+        if (adapter != null) {
+            adapter.setViewHasFooter(hasHeader);
+        }
     }
 
     public boolean hasFooter() {
@@ -53,8 +64,8 @@ public class RecyclerViewEx extends RecyclerView {
     public void setAdapter(AdapterEx adapter) {
         super.setAdapter(adapter);
 
-        setViewHasHeader(adapter.hasHeader());
-        setViewHashFooter(adapter.hasFooter());
+        adapter.setViewHasHeader(hasHeader);
+        adapter.setViewHasFooter(hasFooter);
     }
 
 
@@ -152,7 +163,7 @@ public class RecyclerViewEx extends RecyclerView {
         public abstract int getItemCountEx();
 
 
-        public void setViewHasHeader(boolean hasHeader) {
+        void setViewHasHeader(boolean hasHeader) {
             this.hasHeader = hasHeader;
         }
 
@@ -160,12 +171,33 @@ public class RecyclerViewEx extends RecyclerView {
             return this.hasHeader;
         }
 
-        public void setViewHasFooter(boolean hasFooter) {
+        void setViewHasFooter(boolean hasFooter) {
             this.hasFooter = hasFooter;
         }
 
         public boolean hasFooter() {
             return hasFooter;
+        }
+    }
+
+    public abstract static class BaseAdapterEx extends RecyclerViewEx.AdapterEx<ViewHolderEx> {
+        public BaseAdapterEx(Context context) {
+            super(context);
+        }
+
+        @Override
+        public int getItemViewTypeEx(int position) {
+            return INVALID_TYPE;
+        }
+
+        @Override
+        public ViewHolderEx onCreateFooterViewHolder(ViewGroup parent) {
+            return new ViewHolderEx(inflater.inflate(R.layout.footer, null));
+        }
+
+        @Override
+        public ViewHolderEx onCreateHeaderViewHolder(ViewGroup parent) {
+            return new ViewHolderEx(inflater.inflate(R.layout.header, null));
         }
     }
 
