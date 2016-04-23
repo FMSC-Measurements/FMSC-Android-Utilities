@@ -25,6 +25,9 @@ import android.os.Build;
 import android.os.Vibrator;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -55,10 +58,25 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class AndroidUtils {
     public static class App {
+        private static boolean playServicesAvailable;
+
+        public static boolean isPackageInstalled(Context context, String packagename) {
+            PackageManager pm = context.getPackageManager();
+            try {
+                pm.getPackageInfo(packagename, PackageManager.GET_ACTIVITIES);
+                return true;
+            } catch (PackageManager.NameNotFoundException e) {
+                return false;
+            }
+        }
+
         private boolean isServiceRunning(Context ctx, String serviceName) {
             ActivityManager manager = (ActivityManager) ctx.getApplicationContext().getSystemService(ctx.ACTIVITY_SERVICE);
             for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -107,17 +125,21 @@ public class AndroidUtils {
             }
         }
 
-        public static Integer checkPlayServices(Activity activity, int resultCode) {
-            GoogleApiAvailability googleApi = GoogleApiAvailability.getInstance();
-            int result = googleApi.isGooglePlayServicesAvailable(activity);
+        public static int checkPlayServices(Activity activity, int resultCode) {
+            int result = 0;
 
-            if (result != ConnectionResult.SUCCESS &&
-                    (!googleApi.isUserResolvableError(result) ||
-                            !googleApi.showErrorDialogFragment(activity, result, resultCode))) {
-                return result;
+            if (!playServicesAvailable) {
+                GoogleApiAvailability googleApi = GoogleApiAvailability.getInstance();
+                result = googleApi.isGooglePlayServicesAvailable(activity);
+
+                if (result != ConnectionResult.SUCCESS &&
+                        (!googleApi.isUserResolvableError(result) || !googleApi.showErrorDialogFragment(activity, result, resultCode))) {
+                } else {
+                    playServicesAvailable = true;
+                }
             }
 
-            return null;
+            return result;
         }
 
 
@@ -137,6 +159,15 @@ public class AndroidUtils {
         public static boolean checkPermission(Context context, String permission) {
             return Build.VERSION.SDK_INT < 23 || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
         }
+
+        public static void navigateAppStore(Context context, String packageName) {
+            try {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
+            }
+        }
+
     }
 
     public static class Device {
@@ -184,31 +215,13 @@ public class AndroidUtils {
         }
 
 
-        public static boolean isPackageInstalled(Context context, String packagename) {
-            PackageManager pm = context.getPackageManager();
+        public static boolean isInternetAvailable() {
             try {
-                pm.getPackageInfo(packagename, PackageManager.GET_ACTIVITIES);
-                return true;
-            } catch (PackageManager.NameNotFoundException e) {
+                HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
+                return (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
+            } catch (Exception e) {
                 return false;
             }
-        }
-
-        public static void navigateAppStore(Context context, String packageName) {
-            try {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
-            } catch (android.content.ActivityNotFoundException anfe) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
-            }
-        }
-
-
-        public static boolean hasJellyBean() {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-        }
-
-        public static boolean hasLollipop() {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
         }
     }
 
@@ -508,7 +521,7 @@ public class AndroidUtils {
             }
         }
 
-        public static Drawable getDrawable(Context context, int id) {
+        public static Drawable getDrawable(Context context, @DrawableRes int id) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 return context.getResources().getDrawable(id, context.getTheme());
             } else {
@@ -516,7 +529,8 @@ public class AndroidUtils {
             }
         }
 
-        public static int getColor(Context context, int id) {
+        @ColorInt
+        public static int getColor(Context context, @ColorRes  int id) {
             //return context.getResources().getColor(id);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -527,7 +541,7 @@ public class AndroidUtils {
         }
 
 
-        public static void setOverscrollColor(Resources resources, Context context, int resColorId) {
+        public static void setOverscrollColor(Resources resources, Context context, @ColorRes  int resColorId) {
             int color = getColor(context, resColorId);
 
             int glowDrawableId = resources.getIdentifier("overscroll_glow", "drawable", "android");
@@ -537,12 +551,12 @@ public class AndroidUtils {
             getDrawable(context, edgeDrawableId).setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_ATOP);
         }
 
-        public static void setHomeIndicatorIcon(AppCompatActivity activity, int drawable) {
+        public static void setHomeIndicatorIcon(AppCompatActivity activity, @DrawableRes int drawable) {
             activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
         }
 
 
-        public static void setSnackbarTextColor(Snackbar snackbar, int color) {
+        public static void setSnackbarTextColor(Snackbar snackbar, @ColorInt int color) {
             ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(color);
         }
 
@@ -590,7 +604,7 @@ public class AndroidUtils {
             }
         }
 
-        public static void setNumberPickerColor(NumberPicker picker, int colorId) {
+        public static void setNumberPickerColor(NumberPicker picker, @ColorRes int colorId) {
             int color = getColor(picker.getContext(), colorId);
 
             Field[] pickerFields = NumberPicker.class.getDeclaredFields();
@@ -680,6 +694,12 @@ public class AndroidUtils {
         public static int pxToDp(Context context, float pxValue) {
             final float scale = context.getResources().getDisplayMetrics().density;
             return (int) (pxValue / scale + 0.5f);
+        }
+
+        public static float rgbToHsvHue(@ColorInt int color) {
+            float[] hsv = new float[3];
+            Color.colorToHSV(color, hsv);
+            return hsv[0];
         }
     }
 }

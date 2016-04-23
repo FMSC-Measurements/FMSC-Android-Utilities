@@ -300,7 +300,11 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
      *            The color.
      */
     public void setAcceptColor(int color) {
-        mViewFlipper.findViewById(R.id.include_back).setBackgroundColor(color);
+        View view = mViewFlipper.findViewById(R.id.fl_accept);
+
+        if (view != null) {
+            view.setBackgroundColor(color);
+        }
     }
 
     /**

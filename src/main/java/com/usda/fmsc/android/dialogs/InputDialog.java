@@ -51,8 +51,9 @@ public class InputDialog extends AlertDialog.Builder {
         return input.getText().toString();
     }
 
-    public void setInputText(String text) {
+    public InputDialog setInputText(String text) {
         inputText = text;
+        return this;
     }
 
     public EditText getInput() {
