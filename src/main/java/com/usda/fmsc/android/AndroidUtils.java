@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
@@ -215,13 +216,27 @@ public class AndroidUtils {
         }
 
 
-        public static boolean isInternetAvailable() {
-            try {
-                HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
-                return (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
-            } catch (Exception e) {
-                return false;
-            }
+        public static void isInternetAvailable(final InternetAvailableCallback callback) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    boolean available;
+                    try {
+                        HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
+                        available = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
+                    } catch (Exception e) {
+                        available = false;
+                    }
+
+                    if (callback != null) {
+                        callback.onCheckInternet(available);
+                    }
+                }
+            }).start();
+        }
+
+        public interface InternetAvailableCallback {
+            void onCheckInternet(boolean internetAvailable);
         }
     }
 
