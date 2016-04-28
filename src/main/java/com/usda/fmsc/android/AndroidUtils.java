@@ -1,7 +1,9 @@
 package com.usda.fmsc.android;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -20,13 +22,19 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,15 +48,36 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class AndroidUtils {
     public static class App {
+        private static boolean playServicesAvailable;
+
+        public static boolean isPackageInstalled(Context context, String packagename) {
+            PackageManager pm = context.getPackageManager();
+            try {
+                pm.getPackageInfo(packagename, PackageManager.GET_ACTIVITIES);
+                return true;
+            } catch (PackageManager.NameNotFoundException e) {
+                return false;
+            }
+        }
+
         private boolean isServiceRunning(Context ctx, String serviceName) {
             ActivityManager manager = (ActivityManager) ctx.getApplicationContext().getSystemService(ctx.ACTIVITY_SERVICE);
             for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -97,17 +126,21 @@ public class AndroidUtils {
             }
         }
 
-        public static Integer checkPlayServices(Activity activity, int resultCode) {
-            GoogleApiAvailability googleApi = GoogleApiAvailability.getInstance();
-            int result = googleApi.isGooglePlayServicesAvailable(activity);
+        public static int checkPlayServices(Activity activity, int resultCode) {
+            int result = 0;
 
-            if (result != ConnectionResult.SUCCESS &&
-                    (!googleApi.isUserResolvableError(result) ||
-                            !googleApi.showErrorDialogFragment(activity, result, resultCode))) {
-                return result;
+            if (!playServicesAvailable) {
+                GoogleApiAvailability googleApi = GoogleApiAvailability.getInstance();
+                result = googleApi.isGooglePlayServicesAvailable(activity);
+
+                if (result != ConnectionResult.SUCCESS &&
+                        (!googleApi.isUserResolvableError(result) || !googleApi.showErrorDialogFragment(activity, result, resultCode))) {
+                } else {
+                    playServicesAvailable = true;
+                }
             }
 
-            return null;
+            return result;
         }
 
 
@@ -127,6 +160,15 @@ public class AndroidUtils {
         public static boolean checkPermission(Context context, String permission) {
             return Build.VERSION.SDK_INT < 23 || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
         }
+
+        public static void navigateAppStore(Context context, String packageName) {
+            try {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
+            }
+        }
+
     }
 
     public static class Device {
@@ -174,31 +216,27 @@ public class AndroidUtils {
         }
 
 
-        public static boolean isPackageInstalled(Context context, String packagename) {
-            PackageManager pm = context.getPackageManager();
-            try {
-                pm.getPackageInfo(packagename, PackageManager.GET_ACTIVITIES);
-                return true;
-            } catch (PackageManager.NameNotFoundException e) {
-                return false;
-            }
+        public static void isInternetAvailable(final InternetAvailableCallback callback) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    boolean available;
+                    try {
+                        HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
+                        available = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
+                    } catch (Exception e) {
+                        available = false;
+                    }
+
+                    if (callback != null) {
+                        callback.onCheckInternet(available);
+                    }
+                }
+            }).start();
         }
 
-        public static void navigateAppStore(Context context, String packageName) {
-            try {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
-            } catch (android.content.ActivityNotFoundException anfe) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)));
-            }
-        }
-
-
-        public static boolean hasJellyBean() {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-        }
-
-        public static boolean hasLollipop() {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+        public interface InternetAvailableCallback {
+            void onCheckInternet(boolean internetAvailable);
         }
     }
 
@@ -498,7 +536,7 @@ public class AndroidUtils {
             }
         }
 
-        public static Drawable getDrawable(Context context, int id) {
+        public static Drawable getDrawable(Context context, @DrawableRes int id) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 return context.getResources().getDrawable(id, context.getTheme());
             } else {
@@ -506,18 +544,20 @@ public class AndroidUtils {
             }
         }
 
-        public static int getColor(Context context, int id) {
-            return context.getResources().getColor(id);
+        @ColorInt
+        public static int getColor(Context context, @ColorRes  int id) {
+            //return context.getResources().getColor(id);
 
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                return context.getColor(id);
-//            } else {
-//                return context.getResources().getColor(id);
-//            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                return context.getColor(id);
+            } else {
+                return context.getResources().getColor(id);
+            }
         }
 
 
-        public static void setOverscrollColor(Resources resources, Context context, int color) {
+        public static void setOverscrollColor(Resources resources, Context context, @ColorRes  int resColorId) {
+            int color = getColor(context, resColorId);
 
             int glowDrawableId = resources.getIdentifier("overscroll_glow", "drawable", "android");
             getDrawable(context, glowDrawableId).setColorFilter(color, PorterDuff.Mode.MULTIPLY);
@@ -526,12 +566,12 @@ public class AndroidUtils {
             getDrawable(context, edgeDrawableId).setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_ATOP);
         }
 
-        public static void setHomeIndicatorIcon(AppCompatActivity activity, int drawable) {
+        public static void setHomeIndicatorIcon(AppCompatActivity activity, @DrawableRes int drawable) {
             activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
         }
 
 
-        public static void setSnackbarTextColor(Snackbar snackbar, int color) {
+        public static void setSnackbarTextColor(Snackbar snackbar, @ColorInt int color) {
             ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(color);
         }
 
@@ -579,7 +619,7 @@ public class AndroidUtils {
             }
         }
 
-        public static void setNumberPickerColor(NumberPicker picker, int colorId) {
+        public static void setNumberPickerColor(NumberPicker picker, @ColorRes int colorId) {
             int color = getColor(picker.getContext(), colorId);
 
             Field[] pickerFields = NumberPicker.class.getDeclaredFields();
@@ -613,7 +653,6 @@ public class AndroidUtils {
     }
 
     public static class Interal {
-
         public static void registerOnActivityDestroyListener(Object obj, PreferenceManager preferenceManager) {
             try {
                 Method method = preferenceManager.getClass().getDeclaredMethod(
@@ -633,6 +672,31 @@ public class AndroidUtils {
             fraction = animator.getInterpolator().getInterpolation(fraction);
             return fraction;
         }
+
+        public static void collapseTextView(TextView tv, int maxCollapsedLines) {
+            //animateTextLines(tv, maxCollapsedLines);
+            final int height = tv.getMeasuredHeight();
+            tv.setHeight(0);
+            tv.setMaxLines(maxCollapsedLines); //expand fully
+            tv.measure(View.MeasureSpec.makeMeasureSpec(tv.getMeasuredWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            final int newHeight = tv.getMeasuredHeight();
+            ObjectAnimator animation = ObjectAnimator.ofInt(tv, "height", height, newHeight);
+            animation.setDuration(300).start();
+            tv.setEllipsize(TextUtils.TruncateAt.END);
+        }
+
+        public static void expandTextView(TextView tv) {
+            //animateTextLines(tv, Integer.MAX_VALUE);
+            final int height = tv.getMeasuredHeight();
+            tv.setHeight(height);
+            tv.setMaxLines(Integer.MAX_VALUE); //expand fully
+            tv.measure(View.MeasureSpec.makeMeasureSpec(tv.getMeasuredWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            final int newHeight = tv.getMeasuredHeight();
+            ObjectAnimator animation = ObjectAnimator.ofInt(tv, "height", height, newHeight);
+            animation.setDuration(300).start();
+        }
     }
 
     public static class Convert {
@@ -645,6 +709,12 @@ public class AndroidUtils {
         public static int pxToDp(Context context, float pxValue) {
             final float scale = context.getResources().getDisplayMetrics().density;
             return (int) (pxValue / scale + 0.5f);
+        }
+
+        public static float rgbToHsvHue(@ColorInt int color) {
+            float[] hsv = new float[3];
+            Color.colorToHSV(color, hsv);
+            return hsv[0];
         }
     }
 }

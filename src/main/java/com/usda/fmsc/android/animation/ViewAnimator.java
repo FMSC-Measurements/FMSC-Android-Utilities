@@ -70,12 +70,6 @@ public class ViewAnimator {
         return animator;
     }
 
-public interface IEndEvent {
-    void onEventEnd();
-}
-
-
-
     public static class SimpleAnimatorListener implements Animator.AnimatorListener {
         @Override
         public void onAnimationCancel(Animator animator) {

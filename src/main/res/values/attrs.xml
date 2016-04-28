@@ -94,4 +94,8 @@
             <enum name="normal" value="56"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="PopupMenuButton">
+        <attr name="menuRes" format="reference"/>
+    </declare-styleable>
 </resources>
