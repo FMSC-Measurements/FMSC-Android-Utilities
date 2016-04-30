@@ -3,7 +3,6 @@ package com.usda.fmsc.android;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -22,18 +21,18 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Vibrator;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -48,21 +47,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
-import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.URL;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.UUID;
 
 public class AndroidUtils {
     public static class App {
@@ -79,7 +71,7 @@ public class AndroidUtils {
         }
 
         private boolean isServiceRunning(Context ctx, String serviceName) {
-            ActivityManager manager = (ActivityManager) ctx.getApplicationContext().getSystemService(ctx.ACTIVITY_SERVICE);
+            ActivityManager manager = (ActivityManager) ctx.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
             for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
                 if (serviceName.equals(service.service.getClassName())) {
                     return true;
@@ -93,11 +85,10 @@ public class AndroidUtils {
         }
 
         public static void openFileIntent(Activity context, String mimeType, String[] extraMimes, int resultCode) {
-
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType(mimeType);
 
-            if (extraMimes != null && extraMimes.length > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && extraMimes != null && extraMimes.length > 0) {
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimes);
             }
 
@@ -133,9 +124,7 @@ public class AndroidUtils {
                 GoogleApiAvailability googleApi = GoogleApiAvailability.getInstance();
                 result = googleApi.isGooglePlayServicesAvailable(activity);
 
-                if (result != ConnectionResult.SUCCESS &&
-                        (!googleApi.isUserResolvableError(result) || !googleApi.showErrorDialogFragment(activity, result, resultCode))) {
-                } else {
+                if (result == ConnectionResult.SUCCESS || (!googleApi.isUserResolvableError(result) && !googleApi.showErrorDialogFragment(activity, result, resultCode))) {
                     playServicesAvailable = true;
                 }
             }
@@ -237,6 +226,22 @@ public class AndroidUtils {
 
         public interface InternetAvailableCallback {
             void onCheckInternet(boolean internetAvailable);
+        }
+
+
+        public static String getAndroidID(Context context) {
+            return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+
+        public static String getDeviceID(Context context) {
+            final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+            final String tmDevice, tmSerial, androidId;
+            tmDevice = "" + tm.getDeviceId();
+            tmSerial = "" + tm.getSimSerialNumber();
+            androidId = "" + getAndroidID(context);
+
+            return new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode()).toString();
         }
     }
 
@@ -567,7 +572,13 @@ public class AndroidUtils {
         }
 
         public static void setHomeIndicatorIcon(AppCompatActivity activity, @DrawableRes int drawable) {
-            activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
+            ActionBar actionBar = activity.getSupportActionBar();
+
+            if (actionBar != null){
+                actionBar.setHomeAsUpIndicator(drawable);
+            } else {
+                throw new RuntimeException("SupportActionBar not set.");
+            }
         }
 
 
@@ -630,6 +641,7 @@ public class AndroidUtils {
                         ColorDrawable colorDrawable = new ColorDrawable(color);
                         pf.set(picker, colorDrawable);
                     } catch (Exception e) {
+                        //
                     }
                     break;
                 }
@@ -661,6 +673,7 @@ public class AndroidUtils {
                 method.setAccessible(true);
                 method.invoke(preferenceManager, obj);
             } catch (Exception e) {
+                //
             }
         }
     }

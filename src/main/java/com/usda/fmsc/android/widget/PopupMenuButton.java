@@ -9,12 +9,10 @@ import android.support.annotation.IdRes;
 import android.support.annotation.MenuRes;
 import android.support.v7.widget.PopupMenu;
 import android.util.AttributeSet;
-import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
-import com.esri.android.map.popup.Popup;
 import com.usda.fmsc.android.R;
 
 public class PopupMenuButton extends ImageButton implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {

@@ -215,6 +215,7 @@ public class LinearLayoutManagerEx extends android.support.v7.widget.LinearLayou
         super.setOrientation(orientation);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void clearChildSize() {
         hasChildSize = false;
         setChildSize(DEFAULT_CHILD_SIZE);

@@ -14,7 +14,6 @@ public class ResizeAnimation extends Animation {
     private float mFromWidth;
 
 
-
     public ResizeAnimation(View v, float toWidth, float toHeight) {
         mToHeight = toHeight;
         mToWidth = toWidth;
@@ -35,8 +34,7 @@ public class ResizeAnimation extends Animation {
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-        float height =
-                (mToHeight - mFromHeight) * interpolatedTime + mFromHeight;
+        float height = (mToHeight - mFromHeight) * interpolatedTime + mFromHeight;
         float width = (mToWidth - mFromWidth) * interpolatedTime + mFromWidth;
         ViewGroup.LayoutParams p = mView.getLayoutParams();
         p.height = (int) height;

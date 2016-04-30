@@ -30,8 +30,7 @@ public class ElevationTransition extends Transition {
 
     private static final String PROPNAME_ELEVATION = "trans.elevation";
 
-    public ElevationTransition() {
-    }
+    public ElevationTransition() { }
 
     public ElevationTransition(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -69,7 +68,7 @@ public class ElevationTransition extends Transition {
         a.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                view.setElevation((float)animation.getAnimatedValue());
+                view.setElevation((float) animation.getAnimatedValue());
             }
         });
 
@@ -85,11 +84,12 @@ public class ElevationTransition extends Transition {
     }
 
     @SafeVarargs
-    public static void startTransition(Activity activity, Intent intent,Pair<View, String>... pairs) {
+    public static void startTransition(Activity activity, Intent intent, Pair<View, String>... pairs) {
         startTransition(activity, intent, 0, pairs);
     }
 
     @SafeVarargs
+    @SuppressWarnings("unchecked")
     public static void startTransition(Activity activity, Intent intent, int requestCode, Pair<View, String>... pairs) {
         ArrayList<Pair<View, String>> transitionPairs = new ArrayList<>();
 

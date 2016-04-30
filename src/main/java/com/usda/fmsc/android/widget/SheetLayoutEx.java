@@ -36,8 +36,7 @@ public class SheetLayoutEx extends FrameLayout {
     private static final int FAB_EXPAND = 1;
 
     @IntDef({FAB_CIRCLE, FAB_EXPAND})
-    private @interface Fab {
-    }
+    private @interface Fab { }
 
     private LinearLayout mFabExpandLayout;
     private ImageView mFab;

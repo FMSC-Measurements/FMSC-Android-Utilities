@@ -24,7 +24,7 @@ import com.usda.fmsc.android.AndroidUtils;
 import com.usda.fmsc.android.listeners.DeclaredOnClickListener;
 import com.usda.fmsc.android.R;
 import com.usda.fmsc.android.widget.drawables.CheckMarkProgressDrawable;
-import com.usda.fmsc.android.widget.drawables.ProgressDrawable;
+import com.usda.fmsc.android.widget.drawables.IProgressDrawable;
 
 public class MultiStateTouchCheckBox extends View {
     private static int DEFAULT_CHECKED_COLOR = Color.RED;
@@ -46,7 +46,7 @@ public class MultiStateTouchCheckBox extends View {
     private int checkMarkColor = DEFAULT_CHECKMARK_COLOR;
     private int drawToColor, drawFromColor;
 
-    private ProgressDrawable drawable;
+    private IProgressDrawable drawable;
 
     private OnCheckedStateChangeListener listener;
     private OnClickListener onClickListener;
@@ -305,7 +305,7 @@ public class MultiStateTouchCheckBox extends View {
         partialColor = color;
     }
 
-    public void setCheckBoxDrawable(ProgressDrawable drawable) {
+    public void setCheckBoxDrawable(IProgressDrawable drawable) {
         this.drawable = drawable;
         ViewGroup.LayoutParams params = this.getLayoutParams();
 

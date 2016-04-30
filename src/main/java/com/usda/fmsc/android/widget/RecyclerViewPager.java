@@ -100,6 +100,7 @@ public class RecyclerViewPager extends RecyclerView {
         super.onRestoreInstanceState(state);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setAdapter(Adapter adapter) {
         mViewPagerAdapter = new RecyclerViewPagerAdapter(this, adapter);
@@ -150,7 +151,7 @@ public class RecyclerViewPager extends RecyclerView {
      * get item position in center of viewpager
      */
     public int getCurrentPosition() {
-        int curPosition = -1;
+        int curPosition;
         if (getLayoutManager().canScrollHorizontally()) {
             curPosition = AndroidUtils.UI.getCenterXChildPosition(this);
         } else {

@@ -3,12 +3,10 @@ package com.usda.fmsc.android.widget.drawables;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class CheckMarkProgressDrawable implements ProgressDrawable {
+public class CheckMarkProgressDrawable implements IProgressDrawable {
     private float[] points = new float[6];
 
-    public CheckMarkProgressDrawable() {
-
-    }
+    public CheckMarkProgressDrawable() { }
 
     @Override
     public void onDraw(Canvas canvas, Paint correctPaint, float progress) {

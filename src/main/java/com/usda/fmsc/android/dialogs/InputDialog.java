@@ -8,20 +8,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 public class InputDialog extends AlertDialog.Builder {
-
     protected EditText input;
     private String inputText;
-    private int textStyle;
     private Context context;
 
     public InputDialog(Context context) {
-        this(context, -1);
-    }
-
-    public InputDialog(Context context, int textStyle) {
         super(context);
         this.context = context;
-        this.textStyle = textStyle;
     }
 
     @NonNull

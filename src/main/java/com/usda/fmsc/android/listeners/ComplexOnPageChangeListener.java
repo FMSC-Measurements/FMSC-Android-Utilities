@@ -22,8 +22,8 @@ public class ComplexOnPageChangeListener implements ViewPager.OnPageChangeListen
                 if (isPageChanged) {
                     onPageChanged();
                     isPageChanged = false;
+                    break;
                 }
-                break;
             case ViewPager.SCROLL_STATE_DRAGGING:
                 break;
             case ViewPager.SCROLL_STATE_SETTLING:

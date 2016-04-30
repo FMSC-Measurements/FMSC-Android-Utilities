@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 
 public class EnumSelectionDialog<T extends Enum<T>> extends AlertDialog.Builder {
-    private EnumSelectionDialog dialog;
-
     private Enum[] items;
     private String[] itemNames;
     private Enum selectedItem;
@@ -14,8 +12,6 @@ public class EnumSelectionDialog<T extends Enum<T>> extends AlertDialog.Builder 
 
     public EnumSelectionDialog(Context context, Class<? extends Enum> enumType) {
         super(context);
-
-        dialog = this;
 
         items = enumType.getEnumConstants();
 
@@ -39,8 +35,9 @@ public class EnumSelectionDialog<T extends Enum<T>> extends AlertDialog.Builder 
         }
     }
 
+    @SuppressWarnings("unchecked")
     public T getSelectedItem() {
-        return ((T)selectedItem);
+        return ((T) selectedItem);
     }
 
     public void setOnClickListener(DialogInterface.OnClickListener listener) {

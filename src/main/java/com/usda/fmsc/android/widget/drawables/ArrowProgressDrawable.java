@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
-public class ArrowProgressDrawable implements ProgressDrawable {
+public class ArrowProgressDrawable implements IProgressDrawable {
     protected PointF[] points;
     protected double rotate;
 
@@ -22,8 +22,8 @@ public class ArrowProgressDrawable implements ProgressDrawable {
 
     @Override
     public void onDraw(Canvas canvas, Paint correctPaint, float progress) {
-        if(progress > 0) {
-            if (progress < 2/3f) {
+        if (progress > 0) {
+            if (progress < 2 / 3f) {
                 float x = points[0].x + (points[1].x - points[0].x) * progress;
                 float y = points[0].y + (points[1].y - points[0].y) * progress;
                 canvas.drawLine(points[0].x, points[0].y, x, y, correctPaint);
@@ -46,7 +46,7 @@ public class ArrowProgressDrawable implements ProgressDrawable {
     public void onSizeChanged(int w, int h, int oldw, int oldh, int size, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom) {
         float len = h / 3f * 0.8f;
 
-        PointF center = new PointF(w / 2f, h/ 2f);
+        PointF center = new PointF(w / 2f, h / 2f);
 
         points[0] = new PointF(center.x, center.y + len);
         points[1] = new PointF(center.x, center.y - len);
@@ -61,18 +61,18 @@ public class ArrowProgressDrawable implements ProgressDrawable {
                 double x1 = x * Math.cos(rotate) - y * Math.sin(rotate);
                 double y1 = x * Math.sin(rotate) + y * Math.cos(rotate);
 
-                p.x = (float)(x1 + center.x);
-                p.y = (float)(y1 + center.y);
+                p.x = (float) (x1 + center.x);
+                p.y = (float) (y1 + center.y);
             }
         }
     }
 
     protected PointF DegreesToXY(float degrees, float radius, PointF origin) {
-        PointF xy = new PointF(0,0);
-        float radians = (float)(degrees * Math.PI / 180f);
+        PointF xy = new PointF(0, 0);
+        float radians = (float) (degrees * Math.PI / 180f);
 
-        xy.x = (float)Math.cos(radians) * radius + origin.x;
-        xy.y = (float)Math.sin(-radians) * radius + origin.y;
+        xy.x = (float) Math.cos(radians) * radius + origin.x;
+        xy.y = (float) Math.sin(-radians) * radius + origin.y;
 
         return xy;
     }

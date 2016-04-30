@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import com.usda.fmsc.android.R;
 
 public class RecyclerViewEx extends RecyclerView {
-
     private boolean hasHeader, hasFooter;
     private AdapterEx adapter;
 

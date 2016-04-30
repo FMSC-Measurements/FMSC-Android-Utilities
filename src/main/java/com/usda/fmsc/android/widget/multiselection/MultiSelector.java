@@ -134,6 +134,7 @@ public class MultiSelector {
             listener.onItemSelectionChange(holder, isSelcted);
         }
     }
+
     private void onClearSelections() {
         for (Listener listener : _Listeners) {
             listener.onClearSelections();
@@ -154,6 +155,7 @@ public class MultiSelector {
 
     public interface Listener {
         void onItemSelectionChange(SelectableHolder holder, boolean isSelected);
+
         void onClearSelections();
     }
 }

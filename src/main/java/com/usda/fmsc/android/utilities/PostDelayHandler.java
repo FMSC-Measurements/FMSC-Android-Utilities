@@ -7,6 +7,7 @@ public class PostDelayHandler {
     private int delay;
     private Handler handler;
 
+
     public PostDelayHandler(int delayMilliseconds) {
         this(delayMilliseconds, null);
     }
@@ -33,5 +34,4 @@ public class PostDelayHandler {
     public void setDelay(int delayMilliseconds) {
         this.delay = delayMilliseconds;
     }
-
 }

@@ -7,12 +7,12 @@ import android.support.annotation.NonNull;
 import android.text.InputType;
 
 public class NumericInputDialog extends InputDialog {
-
     protected int flags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED;
 
     public NumericInputDialog(Context context) {
         super(context);
     }
+
 
     @NonNull
     @Override

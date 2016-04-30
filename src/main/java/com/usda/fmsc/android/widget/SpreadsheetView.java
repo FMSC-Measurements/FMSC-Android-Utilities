@@ -68,9 +68,8 @@ public class SpreadsheetView extends ViewGroup {
     /**
      * Simple constructor to use when creating a view from code.
      *
-     * @param context
-     *            The Context the view is running in, through which it can
-     *            access the current theme, resources, etc.
+     * @param context The Context the view is running in, through which it can
+     *                access the current theme, resources, etc.
      */
     public SpreadsheetView(Context context) {
         this(context, null);
@@ -82,15 +81,13 @@ public class SpreadsheetView extends ViewGroup {
      * that were specified in the XML file. This version uses a default style of
      * 0, so the only attribute values applied are those in the Context's Theme
      * and the given AttributeSet.
-     *
+     * <p/>
      * The method onFinishInflate() will be called after all children have been
      * added.
      *
-     * @param context
-     *            The Context the view is running in, through which it can
-     *            access the current theme, resources, etc.
-     * @param attrs
-     *            The attributes of the XML tag that is inflating the view.
+     * @param context The Context the view is running in, through which it can
+     *                access the current theme, resources, etc.
+     * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public SpreadsheetView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -133,10 +130,9 @@ public class SpreadsheetView extends ViewGroup {
     /**
      * Sets the data behind this SpreadsheetView.
      *
-     * @param adapter
-     *            The TableAdapter which is responsible for maintaining the data
-     *            backing this list and for producing a view to represent an
-     *            item in that data set.
+     * @param adapter The TableAdapter which is responsible for maintaining the data
+     *                backing this list and for producing a view to represent an
+     *                item in that data set.
      */
     public void setAdapter(TableAdapter adapter) {
         if (this.adapter != null) {
@@ -250,9 +246,7 @@ public class SpreadsheetView extends ViewGroup {
 
         scrollBounds();
 
-        if (scrollX == 0) {
-            // no op
-        } else if (scrollX > 0) {
+        if (scrollX > 0) {
             while (widths[firstColumn + 1] < scrollX) {
                 if (!rowViewList.isEmpty()) {
                     removeLeft();
@@ -263,7 +257,7 @@ public class SpreadsheetView extends ViewGroup {
             while (getFilledWidth() < width) {
                 addRight();
             }
-        } else {
+        } else if (scrollX < 0) {
             while (!rowViewList.isEmpty() && getFilledWidth() - widths[firstColumn + rowViewList.size()] >= width) {
                 removeRight();
             }
@@ -284,9 +278,7 @@ public class SpreadsheetView extends ViewGroup {
             }
         }
 
-        if (scrollY == 0) {
-            // no op
-        } else if (scrollY > 0) {
+        if (scrollY > 0) {
             while (heights[firstRow + 1] < scrollY) {
                 if (!columnViewList.isEmpty()) {
                     removeTop();
@@ -297,7 +289,7 @@ public class SpreadsheetView extends ViewGroup {
             while (getFilledHeight() < height) {
                 addBottom();
             }
-        } else {
+        } else if (scrollY < 0) {
             while (!columnViewList.isEmpty() && getFilledHeight() - heights[firstRow + columnViewList.size()] >= height) {
                 removeBottom();
             }
@@ -614,11 +606,9 @@ public class SpreadsheetView extends ViewGroup {
     }
 
     private int scrollBounds(int desiredScroll, int firstCell, int sizes[], int viewSize) {
-        if (desiredScroll == 0) {
-            // no op
-        } else if (desiredScroll < 0) {
+        if (desiredScroll < 0) {
             desiredScroll = Math.max(desiredScroll, -sumArray(sizes, 1, firstCell));
-        } else {
+        } else if (desiredScroll > 0) {
             desiredScroll = Math.min(desiredScroll, Math.max(0, sumArray(sizes, firstCell + 1, sizes.length - 1 - firstCell) + sizes[0] - viewSize));
         }
         return desiredScroll;
@@ -637,20 +627,18 @@ public class SpreadsheetView extends ViewGroup {
     }
 
     private int[] adjustFirstCellsAndScroll(int scroll, int firstCell, int sizes[]) {
-        if (scroll == 0) {
-            // no op
-        } else if (scroll > 0) {
+        if (scroll > 0) {
             while (sizes[firstCell + 1] < scroll) {
                 firstCell++;
                 scroll -= sizes[firstCell];
             }
-        } else {
+        } else if (scroll < 0) {
             while (scroll < 0) {
                 scroll += sizes[firstCell];
                 firstCell--;
             }
         }
-        return new int[] { scroll, firstCell };
+        return new int[]{scroll, firstCell};
     }
 
     private void shadowsVisibility() {
@@ -751,11 +739,9 @@ public class SpreadsheetView extends ViewGroup {
     }
 
 
-
     public void setFinalLayout() {
         finalLayout = true;
     }
-
 
 
     private class TableAdapterDataSetObserver extends DataSetObserver {

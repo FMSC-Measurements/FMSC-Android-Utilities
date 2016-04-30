@@ -6,19 +6,16 @@ import android.graphics.Paint;
 
 import com.usda.fmsc.android.AndroidUtils;
 
-public abstract class BitmapProgressDrawable implements ProgressDrawable {
-
-    private Bitmap bitmap, originalBitmap;
+public abstract class BitmapProgressDrawable implements IProgressDrawable {
+    private Bitmap bitmap;
     protected float padding = .15f, bitmapScale = .5f;
 
     public BitmapProgressDrawable(Bitmap bitmap) {
-        this.bitmap = originalBitmap = bitmap;
+        this.bitmap = bitmap;
     }
 
     @Override
     public final void onDraw(Canvas canvas, Paint completePaint, float progress) {
-        //canvas.drawBitmap(onDrawBitmap(bitmap, progress), (int)(bitmap.getWidth() * padding), (int)(bitmap.getHeight() * padding), null);
-
         if (progress > 0) {
             int left = (canvas.getWidth() - bitmap.getWidth()) / 2;
             int top = (canvas.getHeight() - bitmap.getHeight()) / 2;
@@ -31,24 +28,6 @@ public abstract class BitmapProgressDrawable implements ProgressDrawable {
 
     @Override
     public void onSizeChanged(int w, int h, int oldw, int oldh, int size, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom) {
-//        double nW, nH;
-//
-//        if (originalBitmap.getWidth() > originalBitmap.getHeight()) {
-//            nW = (w * bitmapScale);
-//
-//            double adj = nW / originalBitmap.getWidth();
-//
-//            nH = (originalBitmap.getHeight() / adj);
-//        } else {
-//            nH = (h * bitmapScale);
-//
-//            double adj = nH / originalBitmap.getHeight();
-//
-//            nW = (originalBitmap.getWidth() / adj);
-//        }
-//
-//        bitmap = Bitmap.createScaledBitmap(originalBitmap, (int)nW, (int)nH, false);
-
         bitmap = AndroidUtils.UI.scaleBitmap(bitmap, w * bitmapScale, true);
     }
 }

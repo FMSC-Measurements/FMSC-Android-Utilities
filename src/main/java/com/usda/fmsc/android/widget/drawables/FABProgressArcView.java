@@ -70,15 +70,12 @@ public final class FABProgressArcView extends ProgressBar {
     }
 
     public void requestCompleteAnimation() {
-
         postDelayed(new Runnable() {
             @Override
             public void run() {
                 getDrawable().requestCompleteAnimation(internalListener);
             }
         }, SHOW_SCALE_ANIM_DELAY);
-
-        //getDrawable().requestCompleteAnimation(internalListener);
     }
 
     private FABProgressArcDrawable getDrawable() {

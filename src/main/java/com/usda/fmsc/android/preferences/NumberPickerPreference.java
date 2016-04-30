@@ -17,7 +17,6 @@ import com.usda.fmsc.android.AndroidUtils;
 import com.usda.fmsc.android.R;
 
 public class NumberPickerPreference extends DialogPreference {
-
     public static final int DEFAULT_MAX_VALUE = 100;
     public static final int DEFAULT_MIN_VALUE = 0;
 
@@ -127,15 +126,6 @@ public class NumberPickerPreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-//        int value = 0;
-//
-//        if (restorePersistedValue) {
-//            value = defaultValue != null ? (int)defaultValue : getSharedPreferences().getInt(getKey(), 0);
-//            setValue(value);
-//        }
-//
-//        setSummary(Integer.toString(value));
-
         setValue(restorePersistedValue ? getPersistedInt(minValue) : (Integer) defaultValue);
     }
 

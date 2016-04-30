@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.usda.fmsc.android.AndroidUtils;
 import com.usda.fmsc.android.R;
 import com.usda.fmsc.android.widget.drawables.FABProgressArcDrawable;
 import com.usda.fmsc.android.widget.drawables.FABProgressArcView;
@@ -18,7 +19,6 @@ import com.usda.fmsc.android.widget.drawables.FABProgressArcView;
 
 @CoordinatorLayout.DefaultBehavior(FABProgressCircleEx.Behavior.class)
 public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDrawable.ArcListener {
-
     private final int SIZE_NORMAL = 1;
     private final int SIZE_MINI = 2;
 
@@ -26,8 +26,6 @@ public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDr
     private int arcWidth;
     private int circleSize;
     private boolean roundedStroke;
-
-    private Drawable completeIconDrawable;
 
     private boolean viewsAdded;
     private FABProgressArcView progressArc;
@@ -62,14 +60,10 @@ public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDr
         if (attrs != null) {
             TypedArray attrArray = getAttributes(attrs);
             try {
-                arcColor = attrArray.getColor(R.styleable.FABProgressCircleEx_arcColor,
-                        getResources().getColor(R.color.primaryLighter));
-                arcWidth = attrArray.getDimensionPixelSize(R.styleable.FABProgressCircleEx_arcWidth,
-                        getResources().getDimensionPixelSize(R.dimen.progress_arc_stroke_width));
-                completeIconDrawable = attrArray.getDrawable(R.styleable.FABProgressCircleEx_finalIcon);
+                arcColor = attrArray.getColor(R.styleable.FABProgressCircleEx_arcColor, AndroidUtils.UI.getColor(getContext(), R.color.primaryLighter));
+                arcWidth = attrArray.getDimensionPixelSize(R.styleable.FABProgressCircleEx_arcWidth, getResources().getDimensionPixelSize(R.dimen.progress_arc_stroke_width));
                 circleSize = attrArray.getInt(R.styleable.FABProgressCircleEx_circleSize, 1);
                 roundedStroke = attrArray.getBoolean(R.styleable.FABProgressCircleEx_roundedStroke, false);
-                //reusable = attrArray.getBoolean(R.styleable.FABProgressCircleEx_reusable, false);
             } finally {
                 attrArray.recycle();
             }
@@ -81,12 +75,14 @@ public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDr
     }
 
 
-    @Override protected void onFinishInflate() {
+    @Override
+    protected void onFinishInflate() {
         super.onFinishInflate();
         checkChildCount();
     }
 
-    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (!viewsAdded) {
             addArcView();
@@ -138,7 +134,8 @@ public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDr
         progressArc.requestCompleteAnimation();
     }
 
-    @Override public void onArcAnimationComplete() {
+    @Override
+    public void onArcAnimationComplete() {
         hide();
 
         if (listener != null) {
@@ -160,9 +157,10 @@ public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDr
 
 
     private FloatingActionButton button;
+
     public FloatingActionButton getButton() {
         if (button == null) {
-            button = (FloatingActionButton)getChildAt(0);
+            button = (FloatingActionButton) getChildAt(0);
         }
 
         return button;

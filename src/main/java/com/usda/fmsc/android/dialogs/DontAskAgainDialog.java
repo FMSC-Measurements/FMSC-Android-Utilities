@@ -7,10 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.widget.CheckBox;
 
+import com.usda.fmsc.android.R;
+
 import java.util.Set;
 
 public class DontAskAgainDialog {
-    SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
     private String title, message, askKey, valueKey;
     private String posBtnText, negBtnText, neuBtnText;
     private CheckBox checkBox;
@@ -34,7 +36,7 @@ public class DontAskAgainDialog {
         dialog.setMessage(message);
 
         checkBox = new CheckBox(context);
-        checkBox.setText("Don't ask again.");
+        checkBox.setText(R.string.str_dont_ask);
 
         dialog.setView(checkBox);
 
@@ -52,7 +54,7 @@ public class DontAskAgainDialog {
         }
 
 
-        if(neuBtnText != null && neuBtnText.length() > 0) {
+        if (neuBtnText != null && neuBtnText.length() > 0) {
             dialog.setNeutralButton(neuBtnText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -66,7 +68,7 @@ public class DontAskAgainDialog {
         }
 
 
-        if(negBtnText != null && negBtnText.length() > 0){
+        if (negBtnText != null && negBtnText.length() > 0) {
             dialog.setNegativeButton(negBtnText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -87,6 +89,7 @@ public class DontAskAgainDialog {
     }
 
 
+    @SuppressWarnings("unchecked")
     private void setValue(Object value) {
         if (value != null) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -98,26 +101,26 @@ public class DontAskAgainDialog {
             Class c = value.getClass();
 
             if (c.equals(Integer.class)) {
-                editor.putInt(valueKey, (Integer)value);
+                editor.putInt(valueKey, (Integer) value);
             } else if (c.equals(String.class)) {
-                editor.putString(valueKey, (String)value);
+                editor.putString(valueKey, (String) value);
             } else if (c.equals(Boolean.class)) {
-                editor.putBoolean(valueKey, (Boolean)value);
+                editor.putBoolean(valueKey, (Boolean) value);
             } else if (c.equals(Float.class)) {
-                editor.putFloat(valueKey, (Float)value);
+                editor.putFloat(valueKey, (Float) value);
             } else if (c.equals(Long.class)) {
-                editor.putLong(valueKey, (Long)value);
+                editor.putLong(valueKey, (Long) value);
             } else if (c.equals(Set.class)) {
-                editor.putStringSet(valueKey, (Set<String>)value);
+                editor.putStringSet(valueKey, (Set<String>) value);
             } else if (c.equals(Double.class)) {
-                editor.putLong(valueKey, Double.doubleToRawLongBits((Double)value));
+                editor.putLong(valueKey, Double.doubleToRawLongBits((Double) value));
             }
 
             editor.apply();
         }
     }
 
-    public void setPositiveButton(String text,OnClickListener listener) {
+    public void setPositiveButton(String text, OnClickListener listener) {
         onPosClick = listener;
         posBtnText = text;
     }

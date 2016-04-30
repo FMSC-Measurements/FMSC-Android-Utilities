@@ -19,27 +19,27 @@ public class SelectableStringArrayAdapter extends ArrayAdapter<String> {
     private int viewResourceId;
     private int selectedPosition = -1;
 
-    public SelectableStringArrayAdapter(Activity activity, int resourceId,
-                                        ArrayList<String> list) {
-        super(activity,resourceId,list);
+    public SelectableStringArrayAdapter(Activity activity, int resourceId, ArrayList<String> list) {
+        super(activity, resourceId, list);
 
-        mInflater = (LayoutInflater)activity
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = LayoutInflater.from(activity);
         viewResourceId = resourceId;
         items = list;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        TextView tv = (TextView)convertView;
+        TextView tv = (TextView) convertView;
         if (tv == null) {
-            tv = (TextView)mInflater.inflate(viewResourceId, null);
+            tv = (TextView) mInflater.inflate(viewResourceId, null);
         }
         tv.setText(items.get(position));
 
         // Change the background color
-        if (position==selectedPosition) tv.setBackgroundColor(SELECTED_COLOR);
-        else tv.setBackgroundColor(NON_SELECTED_COLOR);
+        if (position == selectedPosition)
+            tv.setBackgroundColor(SELECTED_COLOR);
+        else
+            tv.setBackgroundColor(NON_SELECTED_COLOR);
 
         return tv;
     }

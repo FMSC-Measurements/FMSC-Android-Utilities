@@ -43,7 +43,9 @@ public abstract class EnumPreference extends ListCompatPreference {
 
 
     protected abstract CharSequence[] getItemNames();
+
     protected abstract int[] getItemValues();
+
 
     @Override
     protected void showDialog(Bundle state) {
@@ -91,7 +93,7 @@ public abstract class EnumPreference extends ListCompatPreference {
         int value = 0;
 
         if (restorePersistedValue) {
-            value = defaultValue != null ? (int)defaultValue : getSharedPreferences().getInt(getKey(), 0);
+            value = defaultValue != null ? (int) defaultValue : getSharedPreferences().getInt(getKey(), 0);
             setValue(value);
         }
 

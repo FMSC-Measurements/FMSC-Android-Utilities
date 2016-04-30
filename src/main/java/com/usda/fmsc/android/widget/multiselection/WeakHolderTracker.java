@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 class WeakHolderTracker {
-    private SparseArray<WeakReference<SelectableHolder>> mHoldersByPosition =
-            new SparseArray<WeakReference<SelectableHolder>>();
+    private SparseArray<WeakReference<SelectableHolder>> mHoldersByPosition = new SparseArray<WeakReference<SelectableHolder>>();
 
     /**
      * Returns the holder with a given position. If non-null, the returned
      * holder is guaranteed to have getPosition() == position.
+     *
      * @param position
      * @return
      */

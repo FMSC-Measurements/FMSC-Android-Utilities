@@ -8,6 +8,7 @@ public abstract class ModalMultiSelectorCallback implements ActionMode.Callback 
 
     private boolean mClearOnPrepare = true;
 
+    @SuppressWarnings("UnusedDeclaration")
     public ModalMultiSelectorCallback(MultiSelector multiSelector) {
         mMultiSelector = multiSelector;
     }

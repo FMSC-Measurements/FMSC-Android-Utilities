@@ -9,14 +9,13 @@ import android.util.AttributeSet;
 
 public class EnumSelectionPreference extends ListCompatPreference {
     private String[] itemNames;
-    Class<? extends Enum> enumType;
+    private Class<? extends Enum> enumType;
     private DialogInterface.OnClickListener listener;
 
     public EnumSelectionPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    @TargetApi(21)
     public EnumSelectionPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
@@ -66,8 +65,9 @@ public class EnumSelectionPreference extends ListCompatPreference {
         }
     }
 
+
     public void setValue(int value) {
-        getSharedPreferences().edit().putInt(getKey(), value);
+        getSharedPreferences().edit().putInt(getKey(), value).commit();
 
         if (itemNames != null) {
             setSummary(itemNames[value]);
@@ -77,30 +77,17 @@ public class EnumSelectionPreference extends ListCompatPreference {
     public int getEnumValue() {
         return getSharedPreferences().getInt(getKey(), 0);
     }
-//    @Override
-//    protected void onDialogClosed(boolean positiveResult) {
-//        if (positiveResult) {
-//            int newValue = picker.getValue();
-//            if (callChangeListener(newValue)) {
-//                setValue(newValue);
-//            }
-//        }
-//    }
+
 
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
-
         return itemNames[index];
-
-        //return a.getInt(index, 0);
     }
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         setValue(restorePersistedValue ? getPersistedInt(0) : (Integer) defaultValue);
     }
-
-
 
     public void setEnumType(Class<? extends Enum> enumType) {
         this.enumType = enumType;

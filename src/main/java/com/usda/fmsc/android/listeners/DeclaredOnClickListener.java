@@ -42,11 +42,11 @@ public class DeclaredOnClickListener implements View.OnClickListener {
     }
 
     @NonNull
-    private Method resolveMethod(@Nullable Context context, @NonNull String name) {
+    private Method resolveMethod(@Nullable Context context, @NonNull String methodName) {
         while (context != null) {
             try {
                 if (!context.isRestricted()) {
-                    return context.getClass().getMethod(mMethodName, View.class);
+                    return context.getClass().getMethod(methodName, View.class);
                 }
             } catch (NoSuchMethodException e) {
                 // Failed to find method, keep searching up the hierarchy.
@@ -63,7 +63,7 @@ public class DeclaredOnClickListener implements View.OnClickListener {
         final int id = mHostView.getId();
         final String idText = id == -1 ? "" : " with id '"
                 + mHostView.getContext().getResources().getResourceEntryName(id) + "'";
-        throw new IllegalStateException("Could not find method " + mMethodName
+        throw new IllegalStateException("Could not find method " + methodName
                 + "(View) in a parent or ancestor Context for android:onClick "
                 + "attribute defined on view " + mHostView.getClass() + idText);
     }

@@ -3,10 +3,21 @@ package com.usda.fmsc.android.dialogs;
 import android.app.Dialog;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 public class DialogFragmentEx extends DialogFragment {
+    @IntDef({STYLE_NORMAL, STYLE_NO_TITLE, STYLE_NO_FRAME, STYLE_NO_INPUT})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface DialogStyle {
+    }
+
+    @DialogStyle
     private int style = -1;
     private int theme = -1;
 
@@ -22,11 +33,9 @@ public class DialogFragmentEx extends DialogFragment {
      *
      * @param titleId   Resource ID to a string representing the title of this GenericDialogFragment.
      * @param messageId Resource ID to a string representing the message of this GenericDialogFragment.
-     *
      * @return a new instance of a GenericDialogFragment.
      */
-    public static DialogFragmentEx newInstance(int titleId, int messageId)
-    {
+    public static DialogFragmentEx newInstance(int titleId, int messageId) {
         final Bundle args = new Bundle();
         final DialogFragmentEx dFrag = new DialogFragmentEx();
 
@@ -39,20 +48,18 @@ public class DialogFragmentEx extends DialogFragment {
         return dFrag;
     }
 
+    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
-    {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         final AlertDialog.Builder dlg = new AlertDialog.Builder(getActivity());
         dlg.setTitle(getArguments().getInt("title"));
         dlg.setMessage(getArguments().getInt("message"));
 
         // Optionally attempt to set a theme
-        if (style != -1 && theme != -1)
-        {
-            //setStyle(style, theme);
-        }
-        else // No custom theme, business as usual.
-        {
+        if (style != STYLE_NORMAL && theme != -1) {
+            setStyle(style, theme);
+        } else {
+            // No custom theme, business as usual.
             setStyle(DialogFragment.STYLE_NORMAL, 0);
         }
 
@@ -67,31 +74,26 @@ public class DialogFragmentEx extends DialogFragment {
         return dlg.create();
     }
 
-    public void setNegativeButton(int titleId, OnClickListener onNegativeClickListener)
-    {
+    public void setNegativeButton(int titleId, OnClickListener onNegativeClickListener) {
         this.onNegativeClickListener = onNegativeClickListener;
         this.negativeTitle = titleId;
     }
 
-    public void setNeutralButton(int titleId, OnClickListener onNeutralClickListener)
-    {
-        this.onNegativeClickListener = onNeutralClickListener;
+    public void setNeutralButton(int titleId, OnClickListener onNeutralClickListener) {
+        this.onNeutralClickListener = onNeutralClickListener;
         this.neutralTitle = titleId;
     }
 
-    public void setPositiveButton(int titleId, OnClickListener onPositiveClickListener)
-    {
+    public void setPositiveButton(int titleId, OnClickListener onPositiveClickListener) {
         this.onPositiveClickListener = onPositiveClickListener;
         this.positiveTitle = titleId;
     }
 
-    public void setStyle(int newStyle)
-    {
+    public void setStyle(int newStyle) {
         this.style = newStyle;
     }
 
-    public void setTheme(int newTheme)
-    {
+    public void setTheme(int newTheme) {
         this.theme = newTheme;
     }
 }
