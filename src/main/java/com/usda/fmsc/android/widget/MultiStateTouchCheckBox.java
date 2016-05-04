@@ -54,7 +54,6 @@ public class MultiStateTouchCheckBox extends View {
 
     public MultiStateTouchCheckBox(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-        init(context, attrs);
     }
 
     public MultiStateTouchCheckBox(Context context, AttributeSet attrs, int defStyleAttr) {
