@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">AndroidEx</string>
     <string name="str_dont_ask">Don\'t Ask Again</string>
+    <string name="str_ok">OK</string>
 </resources>

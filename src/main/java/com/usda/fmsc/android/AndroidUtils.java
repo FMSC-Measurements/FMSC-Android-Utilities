@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -28,8 +29,10 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
@@ -131,8 +134,6 @@ public class AndroidUtils {
 
             return result;
         }
-
-
         public static boolean checkCoarseLocationPermission(Context context) {
             return checkPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
         }
@@ -148,6 +149,25 @@ public class AndroidUtils {
 
         public static boolean checkPermission(Context context, String permission) {
             return Build.VERSION.SDK_INT < 23 || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+        }
+
+        public static void requestPermission(final Activity activity, final String permission, final int requestCode, String explanation) {
+            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                if (explanation != null && ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                    new AlertDialog.Builder(activity)
+                            .setMessage(explanation)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(activity, new String[]{ permission }, requestCode);
+                                }
+                            })
+                            .show();
+
+                } else {
+                    ActivityCompat.requestPermissions(activity, new String[]{ permission }, requestCode);
+                }
+            }
         }
 
         public static void navigateAppStore(Context context, String packageName) {
