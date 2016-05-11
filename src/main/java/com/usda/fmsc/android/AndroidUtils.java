@@ -134,40 +134,75 @@ public class AndroidUtils {
 
             return result;
         }
-        public static boolean checkCoarseLocationPermission(Context context) {
-            return checkPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
 
-        public static boolean checkFineLocationPermission(Context context) {
-            return checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
-        }
+
 
         public static boolean checkLocationPermission(Context context) {
             return checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
                     checkPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
-        public static boolean checkPermission(Context context, String permission) {
-            return Build.VERSION.SDK_INT < 23 || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+        public static boolean checkNetworkPermission(Context context) {
+            return checkPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) &&
+                    checkPermission(context, Manifest.permission.INTERNET);
         }
 
-        public static void requestPermission(final Activity activity, final String permission, final int requestCode, String explanation) {
-            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-                if (explanation != null && ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+        public static boolean checkStoragePermission(Context context) {
+            return checkPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
+                    checkPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+
+        public static boolean checkBluetoothPermission(Context context) {
+            return checkPermission(context, Manifest.permission.BLUETOOTH) &&
+                    checkPermission(context, Manifest.permission.BLUETOOTH_ADMIN);
+        }
+
+        public static boolean checkPhonePermission(Context context) {
+            return checkPermission(context, Manifest.permission.READ_PHONE_STATE);
+        }
+
+
+        public static boolean checkPermission(Context context, String permission) {
+            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+        }
+
+        public static boolean checkPermissions(Context context, String[] permissions) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+
+                for (String p : permissions) {
+                    if (ContextCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_GRANTED)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static boolean requestPermission(final Activity activity, final String permission, final int requestCode, String explanation) {
+            return requestPermission(activity, new String[] { permission }, requestCode, explanation);
+        }
+
+        public static boolean requestPermission(final Activity activity, final String[] permissions, final int requestCode, String explanation) {
+            if (!checkPermissions(activity, permissions)) {
+                if (explanation != null && ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[0])) {
                     new AlertDialog.Builder(activity)
                             .setMessage(explanation)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ActivityCompat.requestPermissions(activity, new String[]{ permission }, requestCode);
+                                    ActivityCompat.requestPermissions(activity, permissions, requestCode);
                                 }
                             })
                             .show();
 
                 } else {
-                    ActivityCompat.requestPermissions(activity, new String[]{ permission }, requestCode);
+                    ActivityCompat.requestPermissions(activity, permissions, requestCode);
                 }
+            } else {
+                return true;
             }
+
+            return false;
         }
 
         public static void navigateAppStore(Context context, String packageName) {
