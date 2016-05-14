@@ -12,7 +12,6 @@ public class LinearLayoutManagerWithSmoothScroller extends LinearLayoutManager {
         super(context, VERTICAL, false);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public LinearLayoutManagerWithSmoothScroller(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
     }

@@ -484,7 +484,15 @@ public class AndroidUtils {
             return Bitmap.createScaledBitmap(realImage, width, height, filter);
         }
 
+        public static Bitmap scaleMinBitmap(Bitmap realImage, float minImageSize, boolean filter) {
+            float ratio = Math.min(
+                    minImageSize / realImage.getWidth(),
+                    minImageSize / realImage.getHeight());
+            int width = Math.round(ratio * realImage.getWidth());
+            int height = Math.round(ratio * realImage.getHeight());
 
+            return Bitmap.createScaledBitmap(realImage, width, height, filter);
+        }
 
         /**
          * Get center child in X Axes

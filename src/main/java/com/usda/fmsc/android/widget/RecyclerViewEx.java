@@ -63,15 +63,16 @@ public class RecyclerViewEx extends RecyclerView {
     public void setAdapter(AdapterEx adapter) {
         super.setAdapter(adapter);
 
-        adapter.setViewHasHeader(hasHeader);
-        adapter.setViewHasFooter(hasFooter);
+        this.adapter = adapter;
+        this.adapter.setViewHasHeader(hasHeader);
+        this.adapter.setViewHasFooter(hasFooter);
     }
 
 
 
     public static abstract class AdapterEx<VH extends ViewHolder> extends RecyclerView.Adapter<VH> {
-        public final int HEADER = -1;
-        public final int FOOTER = -2;
+        public final int HEADER = Integer.MAX_VALUE;
+        public final int FOOTER = Integer.MIN_VALUE;
         public final int INVALID_TYPE = 0;
 
         private boolean hasHeader, hasFooter;
