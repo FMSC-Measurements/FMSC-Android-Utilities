@@ -1,6 +1,5 @@
 package com.usda.fmsc.android.utilities;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -15,11 +14,11 @@ public class BitmapManager {
     private HashMap<String, String> keyToUri;
     private HashMap<String, ScaleOptions> scaleOptions;
 
-    public BitmapManager(Context context) {
-        this(context, 1000);
+    public BitmapManager() {
+        this(1000);
     }
 
-    public BitmapManager(Context context, int maxImageSize) {
+    public BitmapManager(int maxImageSize) {
         this.imageLimitSize = maxImageSize;
 
         cacher = new BitmapCacher();
@@ -53,6 +52,12 @@ public class BitmapManager {
         }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+
+        recycle();
+    }
 
     public void put(String key, String uri, Bitmap bitmap) {
         put(key, uri, bitmap, new ScaleOptions());

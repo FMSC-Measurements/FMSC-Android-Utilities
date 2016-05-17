@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.usda.fmsc.android.AndroidUtils;
 import com.usda.fmsc.android.R;
 
 public class PopupMenuButton extends ImageButton implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
@@ -42,6 +43,7 @@ public class PopupMenuButton extends ImageButton implements View.OnClickListener
         setOnClickListener(this);
         setBackground(null);
         popupMenu = new PopupMenu(context, this);
+        AndroidUtils.UI.addIconsToPopupMenu(popupMenu);
         popupMenu.setOnMenuItemClickListener(this);
 
         if (attrs != null) {
