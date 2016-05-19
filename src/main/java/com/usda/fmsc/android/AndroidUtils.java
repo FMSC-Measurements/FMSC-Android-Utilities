@@ -39,11 +39,13 @@ import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Adapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
@@ -302,7 +304,12 @@ public class AndroidUtils {
     }
 
     public static class UI {
+        public static final float ENABLED_ALPHA = 1.0f;
+        public static final float DISABLED_ALPHA = 0.5f;
 
+        public static final int ENABLED_ICON_ALPHA = (int)(ENABLED_ALPHA * 255);
+        public static final int DISABLED_ICON_ALPHA = (int)(DISABLED_ALPHA * 255);
+        
         public static void removeSelectionOnUnfocus(final EditText editText) {
             removeSelectionOnUnfocus(editText, false);
         }
@@ -427,7 +434,7 @@ public class AndroidUtils {
 
 
         public static void setContentDescToast(View view) {
-            setContentDescToast(view, view.getContentDescription(), true);
+            setContentDescToast(view, view.getContentDescription(), false);
         }
 
         public static void setContentDescToast(View view, boolean vibrate) {
@@ -436,7 +443,7 @@ public class AndroidUtils {
         }
 
         public static void setContentDescToast(View view, CharSequence desc) {
-            setContentDescToast(view, desc, true);
+            setContentDescToast(view, desc, false);
         }
 
         public static void setContentDescToast(View view, final CharSequence desc, final boolean vibrate) {
@@ -745,6 +752,83 @@ public class AndroidUtils {
 
             // Set the paint for that size.
             paint.setTextSize(desiredTextSize);
+        }
+
+
+        public static void enableButton(Button button) {
+            button.setEnabled(true);
+            button.setAlpha(ENABLED_ALPHA);
+        }
+
+        public static void disableButton(Button button) {
+            button.setEnabled(false);
+            button.setAlpha(DISABLED_ALPHA);
+        }
+
+
+        public static void enableMenuItem(MenuItem menuItem) {
+            menuItem.setEnabled(true);
+
+            Drawable icon = menuItem.getIcon();
+
+            if (icon != null) {
+                icon.mutate().setAlpha(ENABLED_ICON_ALPHA);
+            }
+        }
+
+        public static void enableMenuItem(MenuItem menuItem, int id) {
+            menuItem.setEnabled(true);
+
+            try {
+                menuItem.setIcon(id);
+                menuItem.getIcon().mutate().setAlpha(ENABLED_ICON_ALPHA);
+            } catch (Exception e) {
+                //
+            }
+        }
+
+        public static void enableMenuItem(MenuItem menuItem, Drawable drawable) {
+            menuItem.setEnabled(true);
+
+            try {
+                drawable.mutate().setAlpha(ENABLED_ICON_ALPHA);
+                menuItem.setIcon(drawable);
+            } catch (Exception e) {
+                //
+            }
+        }
+
+
+        public static void disableMenuItem(MenuItem menuItem) {
+            menuItem.setEnabled(false);
+
+            Drawable icon = menuItem.getIcon();
+
+            if (icon != null) {
+                icon.mutate().setAlpha(DISABLED_ICON_ALPHA);
+            }
+        }
+
+        public static void disableMenuItem(MenuItem menuItem, int id) {
+            menuItem.setEnabled(false);
+
+            try {
+                menuItem.setIcon(id);
+                menuItem.getIcon().mutate().setAlpha(DISABLED_ICON_ALPHA);
+            } catch (Exception e) {
+                //
+            }
+        }
+
+        public static void disableMenuItem(MenuItem menuItem, Drawable drawable) {
+            menuItem.setEnabled(false);
+
+            try {
+                drawable.mutate().setAlpha(DISABLED_ICON_ALPHA);
+                menuItem.setIcon(drawable);
+            } catch (Exception e) {
+                //
+            }
         }
     }
 

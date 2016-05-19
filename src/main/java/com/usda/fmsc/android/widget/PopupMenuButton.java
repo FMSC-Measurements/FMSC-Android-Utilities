@@ -92,7 +92,11 @@ public class PopupMenuButton extends ImageButton implements View.OnClickListener
         MenuItem item = getMenuItem(res);
 
         if (item != null) {
-            item.setEnabled(enabled);
+            if (enabled) {
+                AndroidUtils.UI.enableMenuItem(item);
+            } else {
+                AndroidUtils.UI.disableMenuItem(item);
+            }
         }
     }
 

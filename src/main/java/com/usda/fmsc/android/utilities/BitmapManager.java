@@ -1,5 +1,6 @@
 package com.usda.fmsc.android.utilities;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -13,17 +14,22 @@ public class BitmapManager {
 
     private HashMap<String, String> keyToUri;
     private HashMap<String, ScaleOptions> scaleOptions;
+    private HashMap<String, Boolean> isResources;
 
-    public BitmapManager() {
-        this(1000);
+    private Resources resources;
+
+    public BitmapManager(Resources resources) {
+        this(resources, 1000);
     }
 
-    public BitmapManager(int maxImageSize) {
+    public BitmapManager(Resources resources, int maxImageSize) {
+        this.resources = resources;
         this.imageLimitSize = maxImageSize;
 
         cacher = new BitmapCacher();
         keyToUri = new HashMap<>();
         scaleOptions = new HashMap<>();
+        isResources = new HashMap<>();
     }
 
 
@@ -32,15 +38,21 @@ public class BitmapManager {
             Bitmap bmp = cacher.get(key);
 
             if (bmp == null || bmp.isRecycled()) {
-                bmp = BitmapFactory.decodeFile(keyToUri.get(key));
+                if (isResources.get(key)) {
+                    bmp = BitmapFactory.decodeResource(resources, Integer.parseInt(keyToUri.get(key)));
+                } else {
+                    bmp = BitmapFactory.decodeFile(keyToUri.get(key));
+                }
 
                 ScaleOptions options = scaleOptions.get(key);
                 int size = options.getSize() == 0 ? imageLimitSize : options.getSize();
 
-                if (options.getScaleMode() == ScaleMode.Max) {
-                    bmp = AndroidUtils.UI.scaleBitmap(bmp, size, false);
-                } else {
-                    bmp = AndroidUtils.UI.scaleMinBitmap(bmp, size, false);
+                if (bmp.getHeight() > size || bmp.getWidth() > size || options.isUpScale()) {
+                    if (options.getScaleMode() == ScaleMode.Max) {
+                        bmp = AndroidUtils.UI.scaleBitmap(bmp, size, false);
+                    } else {
+                        bmp = AndroidUtils.UI.scaleMinBitmap(bmp, size, false);
+                    }
                 }
 
                 cacher.put(key, bmp);
@@ -60,10 +72,14 @@ public class BitmapManager {
     }
 
     public void put(String key, String uri, Bitmap bitmap) {
-        put(key, uri, bitmap, new ScaleOptions());
+        put(key, uri, bitmap, new ScaleOptions(), false);
     }
 
     public void put(String key, String uri, Bitmap bitmap, ScaleOptions options) {
+        put(key, uri, bitmap, options, false);
+    }
+
+    public void put(String key, String uri, Bitmap bitmap, ScaleOptions options, boolean isResource) {
         cacher.put(key, bitmap);
         keyToUri.put(key, uri);
 
@@ -95,14 +111,20 @@ public class BitmapManager {
     public static class ScaleOptions {
         private int size;
         private ScaleMode scaleMode;
+        private boolean upScale;
 
         public ScaleOptions() {
-            this(0, BitmapManager.ScaleMode.Max);
+            this(0, BitmapManager.ScaleMode.Max, false);
         }
 
-        public ScaleOptions(int size, ScaleMode mode) {
+        public ScaleOptions(int size, ScaleMode scaleMode) {
+            this(size, scaleMode, false);
+        }
+
+        public ScaleOptions(int size, ScaleMode scaleMode, boolean upScale) {
             this.size = size;
-            scaleMode = mode;
+            this.scaleMode = scaleMode;
+            this.upScale = upScale;
         }
 
         public int getSize() {
@@ -119,6 +141,14 @@ public class BitmapManager {
 
         public void setScaleMode(ScaleMode scaleMode) {
             this.scaleMode = scaleMode;
+        }
+
+        public boolean isUpScale() {
+            return upScale;
+        }
+
+        public void setUpScale(boolean upScale) {
+            this.upScale = upScale;
         }
     }
 

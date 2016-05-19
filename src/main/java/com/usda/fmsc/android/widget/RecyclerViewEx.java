@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import com.usda.fmsc.android.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RecyclerViewEx extends RecyclerView {
     private boolean hasHeader, hasFooter;
     private AdapterEx adapter;
@@ -111,13 +114,9 @@ public class RecyclerViewEx extends RecyclerView {
 
         public abstract VH onCreateViewHolderEx(ViewGroup parent, int viewType);
 
-        public VH onCreateHeaderViewHolder(ViewGroup parent) {
-            return null;
-        }
+        public abstract VH onCreateHeaderViewHolder(ViewGroup parent);
 
-        public VH onCreateFooterViewHolder(ViewGroup parent) {
-            return null;
-        }
+        public abstract VH onCreateFooterViewHolder(ViewGroup parent);
 
 
         @Override
@@ -180,6 +179,7 @@ public class RecyclerViewEx extends RecyclerView {
         }
     }
 
+
     public abstract static class BaseAdapterEx extends RecyclerViewEx.AdapterEx<ViewHolderEx> {
         public BaseAdapterEx(Context context) {
             super(context);
@@ -192,15 +192,14 @@ public class RecyclerViewEx extends RecyclerView {
 
         @Override
         public ViewHolderEx onCreateFooterViewHolder(ViewGroup parent) {
-            return new ViewHolderEx(inflater.inflate(R.layout.footer, null));
+            return new ViewHolderEx(inflater.inflate(R.layout.rv_footer, parent, false));
         }
 
         @Override
         public ViewHolderEx onCreateHeaderViewHolder(ViewGroup parent) {
-            return new ViewHolderEx(inflater.inflate(R.layout.header, null));
+            return new ViewHolderEx(inflater.inflate(R.layout.rv_header, parent, false));
         }
     }
-
 
     public static class ViewHolderEx extends RecyclerViewEx.ViewHolder {
         public ViewHolderEx(View itemView) {
