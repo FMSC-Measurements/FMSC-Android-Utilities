@@ -4,3 +4,4 @@ FlipCheckBoxEx 			based on FlipCheckBox by Francisco Manuel Lopez Jurado
 SpreadsheetView 		based on TableFixHeaders by Brais Gabín (InQBarna)
 SheetLayoutEx			based on SheetLayout by Cristopher Oyarzún (coyarzun89)
 SheetFabEx				based on MateralSheetFab by Gordon Wong (gordonwong)
+DeviceOrientationEx		based on DeviceOrientation by abdelhady

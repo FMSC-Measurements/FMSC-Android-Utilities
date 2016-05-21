@@ -19,6 +19,20 @@ public class ParcelTools {
     }
 
 
+    public static void writeNFloat(Parcel dest, Float value) {
+        if (value != null) {
+            writeBool(dest, true);
+            dest.writeFloat(value);
+        } else {
+            writeBool(dest, false);
+        }
+    }
+
+    public static Float readNFloat(Parcel source) {
+        return readBool(source) ? source.readFloat() : null;
+    }
+    
+
     public static void writeNInt(Parcel dest, Integer value) {
         if (value != null) {
             writeBool(dest, true);

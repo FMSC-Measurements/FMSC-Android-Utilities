@@ -164,6 +164,10 @@ public class AndroidUtils {
             return checkPermission(context, Manifest.permission.READ_PHONE_STATE);
         }
 
+        public static boolean checkCameraPermission(Context context) {
+            return checkPermission(context, Manifest.permission.CAMERA);
+        }
+
 
         public static boolean checkPermission(Context context, String permission) {
             return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);

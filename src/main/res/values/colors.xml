@@ -7,8 +7,7 @@
     <item name="primaryLightest" type="color">@color/green_200</item>
     <item name="accent" type="color">@color/primaryLight</item>
 
-
-    <color name="shadow_start">#80000000</color>
+    <color name="shadow_start">@color/black_500</color>
     <color name="shadow_end">#00000000</color>
 
     <!-- Default color to apply onto front view when none is provided -->
@@ -309,8 +308,14 @@
     <color name="grey_700">#616161</color>
     <color name="grey_800">#424242</color>
     <color name="grey_900">#212121</color>
+
+    <!--Black-->
+    <color name="black_500">#80000000</color>
     <color name="black_1000">#000000</color>
-    <color name="white_1000">#ffffff</color>
+
+    <!--White-->
+    <color name="white_500">#80FFFFFF</color>
+    <color name="white_1000">#FFFFFF</color>
 
     <!--blue grey-->
     <color name="blue_grey_50">#ECEFF1</color>

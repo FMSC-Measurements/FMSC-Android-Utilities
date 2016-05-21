@@ -120,46 +120,53 @@ public class DontAskAgainDialog {
         }
     }
 
-    public void setPositiveButton(String text, OnClickListener listener) {
+    public DontAskAgainDialog setPositiveButton(String text, OnClickListener listener) {
         onPosClick = listener;
         posBtnText = text;
+        return this;
     }
 
-    public void setPositiveButton(String text, OnClickListener listener, Object value) {
+    public DontAskAgainDialog setPositiveButton(String text, OnClickListener listener, Object value) {
         onPosClick = listener;
         posBtnText = text;
         val1 = value;
+        return this;
     }
 
-    public void setNeutralButton(String text, OnClickListener listener) {
+    public DontAskAgainDialog setNeutralButton(String text, OnClickListener listener) {
         onNeuClick = listener;
         neuBtnText = text;
+        return this;
     }
 
-    public void setNeutralButton(String text, OnClickListener listener, Object value) {
+    public DontAskAgainDialog setNeutralButton(String text, OnClickListener listener, Object value) {
         onNeuClick = listener;
         neuBtnText = text;
         val2 = value;
+        return this;
     }
 
-    public void setNegativeButton(String text, OnClickListener listener) {
+    public DontAskAgainDialog setNegativeButton(String text, OnClickListener listener) {
         onNegClick = listener;
         negBtnText = text;
-
+        return this;
     }
 
-    public void setNegativeButton(String text, OnClickListener listener, Object value) {
+    public DontAskAgainDialog setNegativeButton(String text, OnClickListener listener, Object value) {
         onNegClick = listener;
         negBtnText = text;
         val3 = value;
+        return this;
     }
 
-    public void setTitle(String title) {
+    public DontAskAgainDialog setTitle(String title) {
         this.title = title;
+        return this;
     }
 
-    public void setMessage(String message) {
+    public DontAskAgainDialog setMessage(String message) {
         this.message = message;
+        return this;
     }
 
 
