@@ -124,6 +124,22 @@ public class PopupMenuButton extends ImageButton implements View.OnClickListener
         }
     }
 
+    public void setItemCheckable(@IdRes int res, boolean checkable) {
+        MenuItem item = getMenuItem(res);
+
+        if (item != null) {
+            item.setCheckable(checkable);
+        }
+    }
+
+    public void setItemChecked(@IdRes int res, boolean checked) {
+        MenuItem item = getMenuItem(res);
+
+        if (item != null) {
+            item.setChecked(checked);
+        }
+    }
+
     public MenuItem getMenuItem(@IdRes int res) {
         if (popupMenu.getMenu() != null)
             return popupMenu.getMenu().findItem(res);
