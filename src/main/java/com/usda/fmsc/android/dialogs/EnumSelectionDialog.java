@@ -11,9 +11,13 @@ public class EnumSelectionDialog<T extends Enum<T>> extends AlertDialog.Builder 
     private DialogInterface.OnClickListener listener;
 
     public EnumSelectionDialog(Context context, Class<? extends Enum> enumType) {
+        this(context, enumType.getEnumConstants());
+    }
+
+    public EnumSelectionDialog(Context context, Enum[] enums) {
         super(context);
 
-        items = enumType.getEnumConstants();
+        this.items = enums;
 
         if (items.length > 0) {
 

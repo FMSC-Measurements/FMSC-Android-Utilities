@@ -58,7 +58,7 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
         add(item, true);
     }
 
-    public void add(T item, boolean notify) {
+    public synchronized void add(T item, boolean notify) {
         items.add(item);
 
         if (notify)
@@ -69,7 +69,7 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
         add(index, item, true);
     }
 
-    public void add(int index, T item, boolean notify) {
+    public synchronized void add(int index, T item, boolean notify) {
         items.add(index, item);
 
         if (notify)
@@ -81,7 +81,7 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
         remove(item, true);
     }
 
-    public void remove(T item, boolean notify) {
+    public synchronized void remove(T item, boolean notify) {
         int index = items.indexOf(item);
 
         if (index >= 0) {
@@ -96,7 +96,7 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
         return remove(index, true);
     }
 
-    public T remove(int index, boolean notify) {
+    public synchronized T remove(int index, boolean notify) {
         if (index < 0 || index >= items.size()) {
             throw new IndexOutOfBoundsException();
         }
@@ -114,7 +114,7 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
         clear(true);
     }
 
-    public void clear(boolean notify) {
+    public synchronized void clear(boolean notify) {
         items.clear();
 
         if (notify)
