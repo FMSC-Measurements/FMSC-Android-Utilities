@@ -24,6 +24,7 @@ public class InputDialog extends AlertDialog.Builder {
 
         input = new EditText(context);
         input.setText(inputText);
+        input.setSingleLine();
 
         dialog.setView(input);
 
