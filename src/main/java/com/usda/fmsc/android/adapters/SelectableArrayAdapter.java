@@ -35,7 +35,6 @@ public abstract class SelectableArrayAdapter<T> extends ArrayAdapter<T> {
 
     public void setSelected(int position) {
         selectedPosition = position;
-
     }
 
     public void setSelectedColor(int selectedColor) {
