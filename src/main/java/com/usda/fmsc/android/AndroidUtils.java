@@ -140,6 +140,23 @@ public class AndroidUtils {
 
 
 
+        public static boolean checkPermission(Context context, String permission) {
+            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+        }
+
+        public static boolean checkPermissions(Context context, String[] permissions) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+
+                for (String p : permissions) {
+                    if (ContextCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_GRANTED)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+
         public static boolean checkLocationPermission(Context context) {
             return checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
                     checkPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -169,21 +186,6 @@ public class AndroidUtils {
         }
 
 
-        public static boolean checkPermission(Context context, String permission) {
-            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
-        }
-
-        public static boolean checkPermissions(Context context, String[] permissions) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-
-                for (String p : permissions) {
-                    if (ContextCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_GRANTED)
-                        return false;
-                }
-            }
-
-            return true;
-        }
 
         public static boolean requestPermission(final Activity activity, final String permission, final int requestCode, String explanation) {
             return requestPermission(activity, new String[] { permission }, requestCode, explanation);
@@ -212,6 +214,51 @@ public class AndroidUtils {
             return false;
         }
 
+
+        public static boolean requestLocationPermission(final Activity activity, final int requestCode) {
+            return requestPermission(activity,
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    requestCode, null);
+        }
+
+        public static boolean requestNetworkPermission(final Activity activity, final int requestCode) {
+            return requestPermission(activity,
+                    new String[] { Manifest.permission.ACCESS_NETWORK_STATE, android.Manifest.permission.INTERNET},
+                    requestCode, null);
+        }
+
+        public static boolean requestStoragePermission(final Activity activity, final int requestCode) {
+            return requestPermission(activity,
+                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    requestCode, null);
+        }
+
+        public static boolean requestBluetoothPermission(final Activity activity, final int requestCode) {
+            return requestPermission(activity,
+                    new String[] { Manifest.permission.BLUETOOTH , android.Manifest.permission.BLUETOOTH_ADMIN},
+                    requestCode, null);
+        }
+
+        public static boolean requestPhonePermission(final Activity activity, final int requestCode) {
+            return requestPermission(activity,
+                    new String[] { Manifest.permission.READ_PHONE_STATE },
+                    requestCode, null);
+        }
+
+        public static boolean requestPhonePermission(final Activity activity, final int requestCode, String explanation) {
+            return requestPermission(activity,
+                    new String[] { Manifest.permission.READ_PHONE_STATE },
+                    requestCode, explanation);
+        }
+
+        public static boolean requestCameraPermission(final Activity activity, final int requestCode) {
+            return requestPermission(activity,
+                    new String[] { Manifest.permission.CAMERA },
+                    requestCode, null);
+        }
+
+
+
         public static void navigateAppStore(Context context, String packageName) {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
@@ -220,6 +267,16 @@ public class AndroidUtils {
             }
         }
 
+
+        public static String getVersionName(Context context) {
+            try {
+                return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                //
+            }
+
+            return "";
+        }
     }
 
     public static class Device {
