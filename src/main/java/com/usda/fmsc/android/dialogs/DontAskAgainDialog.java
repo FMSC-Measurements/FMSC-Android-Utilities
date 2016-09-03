@@ -12,12 +12,15 @@ import com.usda.fmsc.android.R;
 import java.util.Set;
 
 public class DontAskAgainDialog {
-    private SharedPreferences sharedPreferences;
-    private String title, message, askKey, valueKey;
+    private final SharedPreferences sharedPreferences;
+    private String title;
+    private String message;
+    private final String askKey;
+    private final String valueKey;
     private String posBtnText, negBtnText, neuBtnText;
     private CheckBox checkBox;
     private Object val1 = 0, val2 = 1, val3 = 2;
-    private Context context;
+    private final Context context;
 
     public DontAskAgainDialog(Context context, String askKey, String valueKey, SharedPreferences sharedPreferences) {
         this.context = context;
@@ -26,7 +29,7 @@ public class DontAskAgainDialog {
         this.sharedPreferences = sharedPreferences;
     }
 
-    OnClickListener onPosClick, onNegClick, onNeuClick;
+    private OnClickListener onPosClick, onNegClick, onNeuClick;
 
     @NonNull
     public AlertDialog create() {
