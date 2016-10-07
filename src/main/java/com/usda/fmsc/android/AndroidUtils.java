@@ -694,8 +694,9 @@ public class AndroidUtils {
         }
 
         public static Drawable getDrawable(Context context, @DrawableRes int id) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                return context.getResources().getDrawable(id, context.getTheme());
+            final int version = Build.VERSION.SDK_INT;
+            if (version >= 23) {
+                return ContextCompat.getDrawable(context, id);
             } else {
                 return context.getResources().getDrawable(id);
             }
@@ -703,10 +704,9 @@ public class AndroidUtils {
 
         @ColorInt
         public static int getColor(Context context, @ColorRes  int id) {
-            //return context.getResources().getColor(id);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                return context.getColor(id);
+            final int version = Build.VERSION.SDK_INT;
+            if (version >= 23) {
+                return ContextCompat.getColor(context, id);
             } else {
                 return context.getResources().getColor(id);
             }
