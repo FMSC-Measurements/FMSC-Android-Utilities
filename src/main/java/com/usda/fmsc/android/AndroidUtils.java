@@ -703,7 +703,7 @@ public class AndroidUtils {
         }
 
         @ColorInt
-        public static int getColor(Context context, @ColorRes  int id) {
+        public static int getColor(Context context, @ColorRes int id) {
             final int version = Build.VERSION.SDK_INT;
             if (version >= 23) {
                 return ContextCompat.getColor(context, id);
@@ -711,7 +711,6 @@ public class AndroidUtils {
                 return context.getResources().getColor(id);
             }
         }
-
 
         public static void setOverscrollColor(Resources resources, Context context, @ColorRes  int resColorId) {
             int color = getColor(context, resColorId);
