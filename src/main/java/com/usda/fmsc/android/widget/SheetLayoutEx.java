@@ -24,6 +24,9 @@ import android.widget.LinearLayout;
 
 import com.usda.fmsc.android.R;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import io.codetail.animation.SupportAnimator;
 
 public class SheetLayoutEx extends FrameLayout {
@@ -36,6 +39,7 @@ public class SheetLayoutEx extends FrameLayout {
     private static final int FAB_EXPAND = 1;
 
     @IntDef({FAB_CIRCLE, FAB_EXPAND})
+    @Retention(RetentionPolicy.SOURCE)
     private @interface Fab { }
 
     private LinearLayout mFabExpandLayout;
