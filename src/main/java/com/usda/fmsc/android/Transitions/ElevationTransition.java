@@ -97,11 +97,14 @@ public class ElevationTransition extends Transition {
 
         // We also want to transition the status and navigation bar barckground. Otherwise they will flicker
         transitionPairs.add(Pair.create(activity.findViewById(android.R.id.statusBarBackground), Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME));
-        transitionPairs.add(Pair.create(activity.findViewById(android.R.id.navigationBarBackground), Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME));
 
+        View vNavbarBack = activity.findViewById(android.R.id.navigationBarBackground);
+        if (vNavbarBack != null) {
+            transitionPairs.add(Pair.create(vNavbarBack, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME));
+        }
 
         Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                transitionPairs.toArray(new Pair[transitionPairs.size()])).toBundle();
+                    transitionPairs.toArray(new Pair[transitionPairs.size()])).toBundle();
 
         if (requestCode == 0)
             activity.startActivity(intent, bundle);

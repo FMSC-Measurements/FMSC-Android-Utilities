@@ -48,11 +48,11 @@ public class ParcelTools {
 
 
     public static void writeBool(Parcel dest, boolean value) {
-        dest.writeByte((byte)(value ? 1 : 0));
+        dest.writeInt(value ? 1 : 0);
     }
     
     public static boolean readBool(Parcel source) {
-        return source.readByte() > 0;
+        return source.readInt() > 0;
     }
 
 
