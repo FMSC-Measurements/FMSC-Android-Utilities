@@ -126,13 +126,41 @@ public class NumberPickerPreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        setValue(restorePersistedValue ? getPersistedInt(minValue) : (int) defaultValue);
+        int value;
+        if (restorePersistedValue) {
+            try {
+                value = getPersistedInt(minValue);
+            } catch (Exception e) {
+                try {
+                    value = (int)getPersistedLong(minValue);
+                } catch (Exception e2) {
+                    value = minValue;
+                }
+            }
+        } else {
+            try {
+                value = (Integer)defaultValue;
+            } catch (Exception e) {
+                value = minValue;
+            }
+        }
+
+        setValue(value);
     }
 
     public void setValue(int value) {
         this.value = value;
-        persistInt(this.value);
 
+        try {
+            persistInt(this.value);
+        } catch (Exception e) {
+            persistLong(this.value);
+        }
+
+        setValueInSummary();
+    }
+
+    private void setValueInSummary() {
         if (useValueInSummary) {
             setSummary(Integer.toString(this.value));
         }
