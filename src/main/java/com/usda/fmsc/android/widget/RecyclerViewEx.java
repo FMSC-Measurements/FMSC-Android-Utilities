@@ -74,9 +74,9 @@ public class RecyclerViewEx extends RecyclerView {
 
 
     public static abstract class AdapterEx<VH extends ViewHolder> extends RecyclerView.Adapter<VH> {
-        public final int HEADER = Integer.MAX_VALUE;
-        public final int FOOTER = Integer.MIN_VALUE;
-        public final int INVALID_TYPE = 0;
+        public static final int HEADER = Integer.MAX_VALUE;
+        public static final int FOOTER = Integer.MIN_VALUE;
+        public static final int INVALID_TYPE = 0;
 
         private boolean hasHeader, hasFooter;
 
