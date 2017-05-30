@@ -7,7 +7,7 @@ import android.hardware.SensorManager;
 import android.media.ExifInterface;
 
 /**
- * Created by abdelhady on 9/23/14.
+ * Based on DeviceOrientation by abdelhady (9/23/14).
  *
  * to use this class do the following 3 steps in your activity:
  *
@@ -85,11 +85,11 @@ public class DeviceOrientationEx implements SensorEventListener {
     private float averagePitch = 0;
     private float averageAzimuth = 0;
     private float averageRoll = 0;
-    private int screen_orientation = ORIENTATION_PORTRAIT;
-    private int old_screen_orientation = screen_orientation;
+    private ScreenOrientation screen_orientation = ScreenOrientation.Portrait;
+    private ScreenOrientation old_screen_orientation = screen_orientation;
 
-    float[] mGravity;
-    float[] mGeomagnetic;
+    private float[] mGravity;
+    private float[] mGeomagnetic;
 
     private float[] pitches;
     private float[] azimuthes;
@@ -147,7 +147,6 @@ public class DeviceOrientationEx implements SensorEventListener {
                 screen_orientation = calculateScreenOrientation();
 
                 if (screen_orientation != old_screen_orientation) {
-
                     if (listener != null) {
                         postDelayHandler.post(orientationChanged);
                     } else {
@@ -169,7 +168,7 @@ public class DeviceOrientationEx implements SensorEventListener {
     }
 
     public ScreenOrientation getScreenOrientation() {
-        return ScreenOrientation.parse(screen_orientation);
+        return screen_orientation;
     }
 
     public void setScreenOrientationChangedListener(ScreenOrientationChangeListener listener) {
@@ -195,26 +194,26 @@ public class DeviceOrientationEx implements SensorEventListener {
         return average;
     }
 
-    private int calculateScreenOrientation() {
+    private ScreenOrientation calculateScreenOrientation() {
         // finding local screen_orientation dip
-        if (((screen_orientation == ORIENTATION_PORTRAIT || screen_orientation == ORIENTATION_PORTRAIT_REVERSE)
+        if (((screen_orientation == ScreenOrientation.Portrait || screen_orientation == ScreenOrientation.PortraitReverse)
                 && (averageRoll > -30 && averageRoll < 30))) {
             if (averagePitch > 0)
-                return ORIENTATION_PORTRAIT_REVERSE;
+                return ScreenOrientation.PortraitReverse;
             else
-                return ORIENTATION_PORTRAIT;
+                return ScreenOrientation.Portrait;
         } else {
             // divides between all orientations
             if (Math.abs(averagePitch) >= 30) {
                 if (averagePitch > 0)
-                    return ORIENTATION_PORTRAIT_REVERSE;
+                    return ScreenOrientation.PortraitReverse;
                 else
-                    return ORIENTATION_PORTRAIT;
+                    return ScreenOrientation.Portrait;
             } else {
                 if (averageRoll > 0) {
-                    return ORIENTATION_LANDSCAPE_REVERSE;
+                    return ScreenOrientation.LandscapeReverse;
                 } else {
-                    return ORIENTATION_LANDSCAPE;
+                    return ScreenOrientation.Landscape;
                 }
             }
         }

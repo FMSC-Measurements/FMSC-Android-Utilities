@@ -419,6 +419,7 @@ public class CameraFragment extends Fragment {
             viewCapture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    onCapturePressed();
                     takePicture();
                 }
             });
@@ -757,6 +758,12 @@ public class CameraFragment extends Fragment {
         mTextureView.setTransform(matrix);
     }
 
+    protected void onCapturePressed() {
+        if (listener != null) {
+            listener.onCapturePressed();
+        }
+    }
+
     /**
      * Initiate a still image capture.
      */
@@ -1035,6 +1042,7 @@ public class CameraFragment extends Fragment {
     public interface CameraListener {
         void onPrecapture();
         void onCaptured();
+        void onCapturePressed();
         void onImageReady(Image image);
         void onImageSaved(String filePath);
         void onError(String message);
