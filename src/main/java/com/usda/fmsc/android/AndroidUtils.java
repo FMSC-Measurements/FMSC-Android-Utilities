@@ -36,6 +36,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -890,9 +891,34 @@ public class AndroidUtils {
                 //
             }
         }
+
+        public static void createToastForToolbarTitle(final Activity activity, Toolbar toolbar) {
+            createToastForToolbarTitle(activity, toolbar, null);
+        }
+
+        public static void createToastForToolbarTitle(final Activity activity, final Toolbar toolbar, final String text) {
+            try {
+                Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
+                f.setAccessible(true);
+
+                final TextView titleView = (TextView) f.get(toolbar);
+
+                titleView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        CharSequence titleText = text == null ? titleView.getText() : text;
+
+                        Toast.makeText(activity, titleText, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static class Interal {
+    public static class Internal {
         public static void registerOnActivityDestroyListener(Object obj, PreferenceManager preferenceManager) {
             try {
                 Method method = preferenceManager.getClass().getDeclaredMethod(

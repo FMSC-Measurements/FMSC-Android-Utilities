@@ -71,7 +71,7 @@ public class NumberPickerPreference extends DialogPreference {
             builder.setMessage(getDialogMessage());
         }
 
-        AndroidUtils.Interal.registerOnActivityDestroyListener(this, getPreferenceManager());
+        AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
 
         // Create the dialog
         final Dialog dialog = builder.create();

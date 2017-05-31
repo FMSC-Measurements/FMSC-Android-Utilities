@@ -5,6 +5,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.ExifInterface;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.renderscript.Float2;
 
 /**
  * Based on DeviceOrientation by abdelhady (9/23/14).
@@ -234,26 +237,68 @@ public class DeviceOrientationEx implements SensorEventListener {
     };
 
 
-    public static class Orientation {
-        private float azimuth;
-        private float pitch;
-        private float roll;
+    public static class Orientation implements Parcelable {
+        public static final Parcelable.Creator<Orientation> CREATOR = new Parcelable.Creator<Orientation>() {
+            @Override
+            public Orientation createFromParcel(Parcel source) {
+                return new Orientation(source);
+            }
 
-        public Orientation(float azimuth, float pitch, float roll) {
+            @Override
+            public Orientation[] newArray(int size) {
+                return new Orientation[size];
+            }
+        };
+
+        private Float azimuth;
+        private Float pitch;
+        private Float roll;
+
+        public Orientation(Float azimuth, Float pitch, Float roll) {
             this.pitch = pitch;
             this.azimuth = azimuth;
             this.roll = roll;
         }
 
-        public float getAzimuth() {
+        public Orientation(Parcel parcel) {
+            azimuth = ParcelTools.readNFloat(parcel);
+            pitch = ParcelTools.readNFloat(parcel);
+            roll = ParcelTools.readNFloat(parcel);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            ParcelTools.writeNFloat(dest, azimuth);
+            ParcelTools.writeNFloat(dest, pitch);
+            ParcelTools.writeNFloat(dest, roll);
+        }
+
+        public void setAzimuth(Float azimuth) {
+            this.azimuth = azimuth;
+        }
+
+        public void setPitch(Float pitch) {
+            this.pitch = pitch;
+        }
+
+        public void setRoll(Float roll) {
+            this.roll = roll;
+        }
+
+        public Float getAzimuth() {
             return azimuth;
         }
 
-        public float getPitch() {
+        public Float getPitch() {
             return pitch;
         }
 
-        public float getRoll() {
+        public Float getRoll() {
             return roll;
         }
     }

@@ -67,7 +67,7 @@ public abstract class EnumPreference extends ListCompatPreference {
                     }
                 });
 
-        AndroidUtils.Interal.registerOnActivityDestroyListener(this, getPreferenceManager());
+        AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
 
         mDialog = builder.create();
         if (state != null) {

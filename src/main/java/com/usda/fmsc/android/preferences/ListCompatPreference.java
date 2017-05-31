@@ -59,7 +59,7 @@ public class ListCompatPreference extends ListPreference {
                 .setPositiveButton(getPositiveButtonText(), this)
                 .setSingleChoiceItems(getEntries(), selected, this);
 
-        AndroidUtils.Interal.registerOnActivityDestroyListener(this, getPreferenceManager());
+        AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
 
         mDialog = builder.create();
         if (state != null) {
