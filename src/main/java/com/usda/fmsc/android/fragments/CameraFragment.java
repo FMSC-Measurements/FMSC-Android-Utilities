@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -41,12 +40,9 @@ import android.view.ViewGroup;
 
 import com.usda.fmsc.android.AndroidUtils;
 import com.usda.fmsc.android.R;
-import com.usda.fmsc.android.utilities.DeviceOrientationEx;
 import com.usda.fmsc.android.widget.views.AutoFitTextureView;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -923,6 +918,8 @@ public class CameraFragment extends Fragment {
                     saveDir = dir.getAbsolutePath();
                 }
             }
+
+            dir.mkdirs();
         }
 
         return saveDir;
@@ -934,7 +931,7 @@ public class CameraFragment extends Fragment {
     }
 
     private File createImageFile() {
-        return new File(String.format("%s%s%s.jpg", getImageSaveDir(), File.separator, generateFileName()));
+        return new File(getImageSaveDir(), generateFileName() + ".jpg");
     }
 
 
@@ -997,6 +994,12 @@ public class CameraFragment extends Fragment {
             FileOutputStream output = null;
 
             try {
+                if (!mFile.exists()) {
+                    if (!mFile.createNewFile()) {
+                        throw new IOException("File Not Created");
+                    }
+                }
+
                 output = new FileOutputStream(mFile);
                 output.write(bytes);
             } catch (IOException e) {
