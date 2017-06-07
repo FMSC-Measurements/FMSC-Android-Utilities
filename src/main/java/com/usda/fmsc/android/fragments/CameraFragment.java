@@ -916,10 +916,14 @@ public class CameraFragment extends Fragment {
                 dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
                 if (dir != null) {
                     saveDir = dir.getAbsolutePath();
+                } else {
+                    throw new RuntimeException("Cannot get Directory");
                 }
             }
 
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                Log.d("", "Directory not created");
+            }
         }
 
         return saveDir;
