@@ -179,6 +179,11 @@ public class CameraFragment extends Fragment {
         }
 
         @Override
+        public void onClosed(@NonNull CameraDevice camera) {
+            stopBackgroundThread();
+        }
+
+        @Override
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             mCameraOpenCloseLock.release();
             cameraDevice.close();
@@ -440,8 +445,8 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onPause() {
-        closeCamera();
         stopBackgroundThread();
+        closeCamera();
 
         super.onPause();
     }

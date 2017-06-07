@@ -19,6 +19,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -362,6 +364,16 @@ public class AndroidUtils {
             androidId = "" + getAndroidID(context);
 
             return new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode()).toString();
+        }
+
+
+        public static boolean isFullOrientationAvailable(Context context) {
+            PackageManager pm = context.getPackageManager();
+            return pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_COMPASS) && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE);
+        }
+
+        public static boolean isCameraAvailable(Context context) {
+            return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_COMPASS);
         }
     }
 
