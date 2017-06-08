@@ -289,17 +289,29 @@ public class DeviceOrientationEx implements SensorEventListener {
         public void setRoll(Float roll) {
             this.roll = roll;
         }
-
+        
         public Float getAzimuth() {
             return azimuth;
+        }
+
+        public Float getRationalAzimuth() {
+            return azimuth % 360;
         }
 
         public Float getPitch() {
             return pitch;
         }
 
+        public Float getRationalPitch() {
+            return pitch % 360;
+        }
+
         public Float getRoll() {
             return roll;
+        }
+
+        public Float getRationalRoll() {
+            return roll % 360;
         }
     }
 
