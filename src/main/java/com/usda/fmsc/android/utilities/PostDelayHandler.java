@@ -22,6 +22,15 @@ public class PostDelayHandler {
         }
     }
 
+    public void post() {
+        if (this.runnable != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+
+        handler.postDelayed(this.runnable, delay);
+    }
+
+
     public void post(Runnable runnable) {
         if (this.runnable != null) {
             handler.removeCallbacksAndMessages(null);
