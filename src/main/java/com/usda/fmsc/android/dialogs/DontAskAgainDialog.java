@@ -173,6 +173,10 @@ public class DontAskAgainDialog {
     }
 
 
+    public boolean isDontAskAgainChecked() {
+        return checkBox.isChecked();
+    }
+
     public interface OnClickListener {
         void onClick(DialogInterface dialogInterface, int i, Object value);
     }
