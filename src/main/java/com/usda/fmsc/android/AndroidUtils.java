@@ -373,7 +373,7 @@ public class AndroidUtils {
         }
 
         public static boolean isCameraAvailable(Context context) {
-            return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_COMPASS);
+            return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         }
     }
 
