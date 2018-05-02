@@ -3,13 +3,13 @@ package com.usda.fmsc.android.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcelable;
-import android.support.v7.recyclerview.BuildConfig;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.usda.fmsc.android.BuildConfig;
 import com.usda.fmsc.android.adapters.RecyclerViewPagerAdapter;
 import com.usda.fmsc.android.AndroidUtils;
 import com.usda.fmsc.android.R;

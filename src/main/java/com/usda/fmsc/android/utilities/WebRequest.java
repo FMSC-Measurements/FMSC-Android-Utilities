@@ -11,26 +11,13 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 public class WebRequest {
-    private static WebRequest mInstance;
     private RequestQueue mRequestQueue;
-    private static Context mCtx;
 
-    private WebRequest(Context context) {
-        mCtx = context;
-        mRequestQueue = getRequestQueue();
-    }
-
-    public static synchronized WebRequest getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new WebRequest(context);
-        }
-        return mInstance;
+    public WebRequest(Context context) {
+        mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
     public RequestQueue getRequestQueue() {
-        if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
-        }
         return mRequestQueue;
     }
 
@@ -38,11 +25,11 @@ public class WebRequest {
         getRequestQueue().add(req);
     }
 
-    public static void addRequest(Request request, Context context) {
-        getInstance(context).addToRequestQueue(request);
+    public void addRequest(Request request) {
+        addToRequestQueue(request);
     }
 
-    public static void getJson(String url, Context context, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
-        addRequest(new JsonObjectRequest(url, listener, errorListener), context);
+    public void getJson(String url, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        addRequest(new JsonObjectRequest(url, listener, errorListener));
     }
 }

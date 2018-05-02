@@ -3,10 +3,11 @@ package com.usda.fmsc.android.widget.layoutmanagers;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.recyclerview.BuildConfig;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+
+import com.usda.fmsc.android.BuildConfig;
 
 import java.lang.reflect.Field;
 
