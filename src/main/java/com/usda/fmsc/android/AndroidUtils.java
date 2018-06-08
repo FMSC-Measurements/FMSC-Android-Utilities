@@ -21,6 +21,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -648,9 +649,7 @@ public class AndroidUtils {
             int middleX = lvLocationOnScreen[0] + recyclerView.getWidth() / 2;
             if (childCount > 0) {
                 view.getLocationOnScreen(vLocationOnScreen);
-                if (vLocationOnScreen[0] <= middleX && vLocationOnScreen[0] + view.getWidth() >= middleX) {
-                    return true;
-                }
+                return vLocationOnScreen[0] <= middleX && vLocationOnScreen[0] + view.getWidth() >= middleX;
             }
             return false;
         }
@@ -663,9 +662,7 @@ public class AndroidUtils {
             int middleY = lvLocationOnScreen[1] + recyclerView.getHeight() / 2;
             if (childCount > 0) {
                 view.getLocationOnScreen(vLocationOnScreen);
-                if (vLocationOnScreen[1] <= middleY && vLocationOnScreen[1] + view.getHeight() >= middleY) {
-                    return true;
-                }
+                return vLocationOnScreen[1] <= middleY && vLocationOnScreen[1] + view.getHeight() >= middleY;
             }
             return false;
         }
@@ -996,4 +993,34 @@ public class AndroidUtils {
             return hsv[0];
         }
     }
+
+//    public static class Media {
+//        public static Bitmap rotateImage(Bitmap bitmap) {
+//            ExifInterface ei = new ExifInterface(bitmap);
+//            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+//                    ExifInterface.ORIENTATION_UNDEFINED);
+//
+//            Bitmap rotatedBitmap = null;
+//            switch(orientation) {
+//
+//                case ExifInterface.ORIENTATION_ROTATE_90:
+//                    rotatedBitmap = rotateImage(bitmap, 90);
+//                    break;
+//
+//                case ExifInterface.ORIENTATION_ROTATE_180:
+//                    rotatedBitmap = rotateImage(bitmap, 180);
+//                    break;
+//
+//                case ExifInterface.ORIENTATION_ROTATE_270:
+//                    rotatedBitmap = rotateImage(bitmap, 270);
+//                    break;
+//
+//                case ExifInterface.ORIENTATION_NORMAL:
+//                default:
+//                    rotatedBitmap = bitmap;
+//            }
+//
+//            return bitmap;
+//        }
+//    }
 }

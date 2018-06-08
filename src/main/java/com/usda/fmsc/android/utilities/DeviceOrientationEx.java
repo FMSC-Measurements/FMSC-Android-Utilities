@@ -55,7 +55,7 @@ public class DeviceOrientationEx implements SensorEventListener {
 
         private final int value;
 
-        private ScreenOrientation(int value) {
+        ScreenOrientation(int value) {
             this.value = value;
         }
 

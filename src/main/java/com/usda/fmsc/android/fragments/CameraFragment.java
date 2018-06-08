@@ -412,7 +412,7 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        mTextureView = (TextureView)view.findViewById(R.id.frag_camera_texture);
+        mTextureView = view.findViewById(R.id.frag_camera_texture);
 
         View viewCapture = view.findViewById(R.id.frag_camera_control);
         if (viewCapture != null) {
