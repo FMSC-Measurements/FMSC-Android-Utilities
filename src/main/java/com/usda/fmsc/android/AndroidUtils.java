@@ -34,6 +34,7 @@ import android.support.annotation.DrawableRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -60,6 +61,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
@@ -994,6 +996,27 @@ public class AndroidUtils {
         }
     }
 
+    public static class Files {
+        public static Uri getUri(Activity activity, String appId, String filePath) {
+            return getUri(activity, appId, new File(filePath));
+        }
+
+        public static Uri getUri(Activity activity, String appId, File file) {
+            Uri uri;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                // Use file Uri before Android Nougat ( 7.0 )
+                uri = Uri.fromFile(file);
+            } else {
+                // Android Nougat ( 7.0 ) and later,
+                // use a FileProvider, AndroidManifest provider, and /res/xml/provider_paths.xml
+                uri = FileProvider.getUriForFile(activity,
+                        appId + ".provider",
+                        file);
+            }
+
+            return uri;
+        }
+    }
 //    public static class Media {
 //        public static Bitmap rotateImage(Bitmap bitmap) {
 //            ExifInterface ei = new ExifInterface(bitmap);
