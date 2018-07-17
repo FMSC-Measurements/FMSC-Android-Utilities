@@ -3,8 +3,10 @@ package com.usda.fmsc.android;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,9 +21,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -68,6 +67,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
 
+@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
+@SuppressLint("HardwareIds")
 public class AndroidUtils {
     public static class App {
         private static boolean playServicesAvailable;
@@ -84,19 +85,17 @@ public class AndroidUtils {
 
         private boolean isServiceRunning(Context ctx, String serviceName) {
             ActivityManager manager = (ActivityManager) ctx.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-                if (serviceName.equals(service.service.getClassName())) {
-                    return true;
+            if (manager != null) {
+                for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                    if (serviceName.equals(service.service.getClassName())) {
+                        return true;
+                    }
                 }
             }
             return false;
         }
 
-        public static void openFileIntent(Activity context, String minmeType, int resultCode) {
-            openFileIntent(context, minmeType, null, resultCode);
-        }
-
-        public static void openFileIntent(Activity context, String mimeType, String[] extraMimes, int resultCode) {
+        private static Intent getOpenFileIntent(Context context, String mimeType, String[] extraMimes) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType(mimeType);
 
@@ -122,12 +121,33 @@ public class AndroidUtils {
                 chooserIntent = Intent.createChooser(intent, "Open file");
             }
 
+            return chooserIntent;
+        }
+
+        public static void openFileIntent(Activity activity, String minmeType, int resultCode) {
+            openFileIntent(activity, minmeType, null, resultCode);
+        }
+
+        public static void openFileIntent(Activity activity, String mimeType, String[] extraMimes, int resultCode) {
             try {
-                context.startActivityForResult(chooserIntent, resultCode);
+                activity.startActivityForResult(getOpenFileIntent(activity, mimeType, extraMimes), resultCode);
             } catch (android.content.ActivityNotFoundException ex) {
-                Toast.makeText(context.getApplicationContext(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity.getApplicationContext(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
             }
         }
+
+        public static void openFileIntentFromFragment(Fragment fragment, String minmeType, int resultCode) {
+            openFileIntentFromFragment(fragment, minmeType, null, resultCode);
+        }
+
+        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, String[] extraMimes, int resultCode) {
+            try {
+                fragment.startActivityForResult(getOpenFileIntent(fragment.getActivity(), mimeType, extraMimes), resultCode);
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(fragment.getActivity(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
 
         public static int checkPlayServices(Activity activity, int resultCode) {
             int result = 0;
@@ -288,7 +308,9 @@ public class AndroidUtils {
     public static class Device {
         public static void vibrate(Context context, long millisecond) {
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            v.vibrate(millisecond);
+            if (v != null) {
+                v.vibrate(millisecond);
+            }
         }
 
         public static void vibrate(Context context, long[] pattern) {
@@ -297,7 +319,9 @@ public class AndroidUtils {
 
         public static void vibrate(Context context, long[] pattern, int repeat) {
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            v.vibrate(pattern, repeat);
+            if (v != null) {
+                v.vibrate(pattern, repeat);
+            }
         }
 
 
@@ -359,14 +383,23 @@ public class AndroidUtils {
         }
 
         public static String getDeviceID(Context context) {
-            final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (App.checkPhonePermission(context)) {
+                final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
-            final String tmDevice, tmSerial, androidId;
-            tmDevice = "" + tm.getDeviceId();
-            tmSerial = "" + tm.getSimSerialNumber();
-            androidId = "" + getAndroidID(context);
+                final String tmDevice, tmSerial, androidId;
 
-            return new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode()).toString();
+                if (tm != null) {
+                    tmDevice = tm.getDeviceId();
+                    tmSerial = tm.getSimSerialNumber();
+                    androidId = getAndroidID(context);
+
+                    return new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode()).toString();
+                }
+
+                throw new RuntimeException("Unable to get TELEPHONY_SERVICE");
+            } else {
+                throw new RuntimeException("No Phone Permission");
+            }
         }
 
 
@@ -413,7 +446,9 @@ public class AndroidUtils {
                 public void onClick(View view) {
                     InputMethodManager imm = (InputMethodManager) view.getContext()
                             .getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
 
                     editText.setSelection(setEndSelected ? editText.getText().length() : 0);
                     editText.clearFocus();
@@ -431,11 +466,12 @@ public class AndroidUtils {
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-
                     if (editText.hasFocus()) {
                         InputMethodManager imm = (InputMethodManager) view.getContext()
                                 .getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        if (imm != null) {
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
 
                         editText.setSelection(setEndSelected ? editText.getText().length() : 0);
                         editText.clearFocus();
@@ -455,7 +491,9 @@ public class AndroidUtils {
                 public void onClick(View view) {
                     InputMethodManager imm = (InputMethodManager) view.getContext()
                             .getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
 
                     for (final EditText editText : editTexts) {
                         editText.setSelection(setEndSelected ? editText.getText().length() : 0);
@@ -475,7 +513,9 @@ public class AndroidUtils {
                 public boolean onTouch(View v, MotionEvent event) {
                     InputMethodManager imm = (InputMethodManager) view.getContext()
                             .getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
 
                     for (final EditText editText : editTexts) {
                         editText.setSelection(setEndSelected ? editText.getText().length() : 0);
@@ -490,7 +530,9 @@ public class AndroidUtils {
             View view = activity.getCurrentFocus();
             if (view != null) {
                 InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         }
 
@@ -694,7 +736,7 @@ public class AndroidUtils {
             if (menu != null) {
                 if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
                     try {
-                        Method m = menu.getClass().getDeclaredMethod(
+                        @SuppressLint("PrivateApi") Method m = menu.getClass().getDeclaredMethod(
                                 "setOptionalIconsVisible", Boolean.TYPE);
                         m.setAccessible(true);
                         m.invoke(menu, true);
@@ -705,19 +747,19 @@ public class AndroidUtils {
             }
         }
 
+        @SuppressWarnings("deprecation")
         public static Drawable getDrawable(Context context, @DrawableRes int id) {
-            final int version = Build.VERSION.SDK_INT;
-            if (version >= 23) {
+            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return ContextCompat.getDrawable(context, id);
             } else {
                 return context.getResources().getDrawable(id);
             }
         }
 
+        @SuppressWarnings("deprecation")
         @ColorInt
         public static int getColor(Context context, @ColorRes int id) {
-            final int version = Build.VERSION.SDK_INT;
-            if (version >= 23) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return ContextCompat.getColor(context, id);
             } else {
                 return context.getResources().getColor(id);
@@ -930,9 +972,10 @@ public class AndroidUtils {
     }
 
     public static class Internal {
+        @SuppressWarnings("JavaReflectionInvocation")
         public static void registerOnActivityDestroyListener(Object obj, PreferenceManager preferenceManager) {
             try {
-                Method method = preferenceManager.getClass().getDeclaredMethod(
+                @SuppressLint("PrivateApi") Method method = preferenceManager.getClass().getDeclaredMethod(
                         "registerOnActivityDestroyListener",
                         PreferenceManager.OnActivityDestroyListener.class);
                 method.setAccessible(true);
@@ -1017,6 +1060,7 @@ public class AndroidUtils {
             return uri;
         }
     }
+
 //    public static class Media {
 //        public static Bitmap rotateImage(Bitmap bitmap) {
 //            ExifInterface ei = new ExifInterface(bitmap);
