@@ -96,14 +96,14 @@ public class AndroidUtils {
         }
 
         private static Intent getOpenFileIntent(Context context, String mimeType, String[] extraMimes) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);// Intent.ACTION_GET_CONTENT);
             intent.setType(mimeType);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && extraMimes != null && extraMimes.length > 0) {
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimes);
             }
 
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            //intent.addCategory(Intent.CATEGORY_OPENABLE);
 
             // special intent for Samsung file manager
             Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
