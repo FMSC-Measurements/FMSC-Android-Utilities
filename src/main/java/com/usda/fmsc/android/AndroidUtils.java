@@ -23,7 +23,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -53,7 +52,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,7 +97,7 @@ public class AndroidUtils {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);// Intent.ACTION_GET_CONTENT);
             intent.setType(mimeType);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && extraMimes != null && extraMimes.length > 0) {
+            if (extraMimes != null && extraMimes.length > 0) {
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimes);
             }
 
@@ -167,16 +165,13 @@ public class AndroidUtils {
 
 
         public static boolean checkPermission(Context context, String permission) {
-            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+            return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
         }
 
         public static boolean checkPermissions(Context context, String[] permissions) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-
-                for (String p : permissions) {
-                    if (ContextCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_GRANTED)
-                        return false;
-                }
+            for (String p : permissions) {
+                if (ContextCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_GRANTED)
+                    return false;
             }
 
             return true;
@@ -747,23 +742,13 @@ public class AndroidUtils {
             }
         }
 
-        @SuppressWarnings("deprecation")
         public static Drawable getDrawable(Context context, @DrawableRes int id) {
-            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return ContextCompat.getDrawable(context, id);
-            } else {
-                return context.getResources().getDrawable(id);
-            }
+            return ContextCompat.getDrawable(context, id);
         }
 
-        @SuppressWarnings("deprecation")
         @ColorInt
         public static int getColor(Context context, @ColorRes int id) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return ContextCompat.getColor(context, id);
-            } else {
-                return context.getResources().getColor(id);
-            }
+            return ContextCompat.getColor(context, id);
         }
 
         public static void setOverscrollColor(Resources resources, Context context, @ColorRes  int resColorId) {
@@ -808,30 +793,6 @@ public class AndroidUtils {
                     child.setEnabled(enabled);
                 }
 
-            }
-        }
-
-        public static void applyShadow(View view, int elevation) {
-            if (Build.VERSION.SDK_INT  < Build.VERSION_CODES.LOLLIPOP && elevation > 0) {
-                Context context = view.getContext();
-                ViewGroup parent = (ViewGroup) view.getParent();
-
-                View shadow = new View(context);
-                shadow.setBackground(getDrawable(context, R.drawable.shadow));
-
-                if (parent instanceof RelativeLayout) {
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                    params.addRule(RelativeLayout.ALIGN_BOTTOM, view.getId());
-                    params.height = Convert.dpToPx(context, 8);
-                    shadow.setLayoutParams(params);
-                }
-
-                shadow.setMinimumHeight(elevation);
-
-                int index = parent.indexOfChild(view);
-                parent.addView(shadow, index + 1);
             }
         }
 
@@ -1045,19 +1006,9 @@ public class AndroidUtils {
         }
 
         public static Uri getUri(Activity activity, String appId, File file) {
-            Uri uri;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                // Use file Uri before Android Nougat ( 7.0 )
-                uri = Uri.fromFile(file);
-            } else {
-                // Android Nougat ( 7.0 ) and later,
-                // use a FileProvider, AndroidManifest provider, and /res/xml/provider_paths.xml
-                uri = FileProvider.getUriForFile(activity,
-                        appId + ".provider",
-                        file);
-            }
-
-            return uri;
+            return FileProvider.getUriForFile(activity,
+                    appId + ".provider",
+                    file);
         }
     }
 
