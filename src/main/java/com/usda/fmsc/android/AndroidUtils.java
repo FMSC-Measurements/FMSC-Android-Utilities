@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Service;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -81,11 +82,11 @@ public class AndroidUtils {
             }
         }
 
-        private boolean isServiceRunning(Context ctx, String serviceName) {
+        public static boolean isServiceRunning(Context ctx, Class serviceClass) {
             ActivityManager manager = (ActivityManager) ctx.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
             if (manager != null) {
                 for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-                    if (serviceName.equals(service.service.getClassName())) {
+                    if (serviceClass.getName().equals(service.service.getClassName())) {
                         return true;
                     }
                 }
