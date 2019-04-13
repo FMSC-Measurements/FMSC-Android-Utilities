@@ -49,6 +49,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -647,6 +648,15 @@ public class AndroidUtils {
                 }
             }
             return childCount;
+        }
+
+        public static View getChildAtPosition(final AdapterView view, final int position) {
+            final int index = position - view.getFirstVisiblePosition();
+            if ((index >= 0) && (index < view.getChildCount())) {
+                return view.getChildAt(index);
+            } else {
+                return null;
+            }
         }
 
         /**

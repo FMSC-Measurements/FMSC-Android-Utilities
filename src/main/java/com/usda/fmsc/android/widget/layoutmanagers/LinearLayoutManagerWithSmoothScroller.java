@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 
 public class LinearLayoutManagerWithSmoothScroller extends LinearLayoutManager {
+    private boolean scrollingEnabled = true;
 
     public LinearLayoutManagerWithSmoothScroller(Context context) {
         super(context, VERTICAL, false);
@@ -18,15 +19,34 @@ public class LinearLayoutManagerWithSmoothScroller extends LinearLayoutManager {
 
     @Override
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
-        RecyclerView.SmoothScroller smoothScroller = new TopSnappedSmoothScroller(recyclerView.getContext());
+        RecyclerView.SmoothScroller smoothScroller = new SnappedSmoothScroller(recyclerView.getContext());
         smoothScroller.setTargetPosition(position);
         startSmoothScroll(smoothScroller);
     }
 
-    private class TopSnappedSmoothScroller extends LinearSmoothScroller {
-        public TopSnappedSmoothScroller(Context context) {
-            super(context);
+    @Override
+    public void setRecycleChildrenOnDetach(boolean recycleChildrenOnDetach) {
+        super.setRecycleChildrenOnDetach(recycleChildrenOnDetach);
+    }
 
+    @Override
+    public boolean canScrollHorizontally() {
+        return this.scrollingEnabled && super.canScrollHorizontally();
+    }
+
+    @Override
+    public boolean canScrollVertically() {
+        return this.scrollingEnabled && super.canScrollVertically();
+    }
+
+    public void setScrollingEnabled(boolean enabled) {
+        this.scrollingEnabled = enabled;
+    }
+
+    private class SnappedSmoothScroller extends LinearSmoothScroller {
+
+        public SnappedSmoothScroller(Context context) {
+            super(context);
         }
 
         @Override
@@ -37,6 +57,11 @@ public class LinearLayoutManagerWithSmoothScroller extends LinearLayoutManager {
 
         @Override
         protected int getVerticalSnapPreference() {
+            return SNAP_TO_START;
+        }
+
+        @Override
+        protected int getHorizontalSnapPreference() {
             return SNAP_TO_START;
         }
     }

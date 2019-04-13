@@ -3,6 +3,7 @@ package com.usda.fmsc.android.widget.layoutmanagers;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +22,8 @@ import java.lang.reflect.Field;
  * If animations are not used at all then a normal measuring procedure will run and child views will be measured during
  * the measure pass.
  */
-public class LinearLayoutManagerEx extends android.support.v7.widget.LinearLayoutManager {
+@SuppressWarnings("UnusedDeclaration")
+public class LinearLayoutManagerEx extends LinearLayoutManager {
 
     private static boolean canMakeInsetsDirty = true;
     private static Field insetsDirtyField = null;
@@ -34,30 +36,26 @@ public class LinearLayoutManagerEx extends android.support.v7.widget.LinearLayou
     private final RecyclerView view;
 
     private int childSize = DEFAULT_CHILD_SIZE;
-    private boolean hasChildSize;
+    private boolean hasChildSize, scrollingEnabled = true;
     private int overScrollMode = ViewCompat.OVER_SCROLL_ALWAYS;
     private final Rect tmpRect = new Rect();
 
-    @SuppressWarnings("UnusedDeclaration")
     public LinearLayoutManagerEx(Context context) {
         super(context);
         this.view = null;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public LinearLayoutManagerEx(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
         this.view = null;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public LinearLayoutManagerEx(RecyclerView view) {
         super(view.getContext());
         this.view = view;
         this.overScrollMode = ViewCompat.getOverScrollMode(view);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public LinearLayoutManagerEx(RecyclerView view, int orientation, boolean reverseLayout) {
         super(view.getContext(), orientation, reverseLayout);
         this.view = view;
@@ -216,7 +214,6 @@ public class LinearLayoutManagerEx extends android.support.v7.widget.LinearLayou
         super.setOrientation(orientation);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void clearChildSize() {
         hasChildSize = false;
         setChildSize(DEFAULT_CHILD_SIZE);
@@ -268,6 +265,20 @@ public class LinearLayoutManagerEx extends android.support.v7.widget.LinearLayou
         // as view is recycled let's not keep old measured values
         makeInsetsDirty(p);
         recycler.recycleView(child);
+    }
+
+    public void setScrollingEnabled(boolean enabled) {
+        this.scrollingEnabled = enabled;
+    }
+
+    @Override
+    public boolean canScrollHorizontally() {
+        return this.scrollingEnabled && super.canScrollHorizontally();
+    }
+
+    @Override
+    public boolean canScrollVertically() {
+        return this.scrollingEnabled && super.canScrollVertically();
     }
 
     private static void makeInsetsDirty(RecyclerView.LayoutParams p) {
