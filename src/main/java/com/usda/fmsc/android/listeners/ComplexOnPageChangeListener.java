@@ -3,7 +3,7 @@ package com.usda.fmsc.android.listeners;
 import android.support.v4.view.ViewPager;
 
 public class ComplexOnPageChangeListener implements ViewPager.OnPageChangeListener {
-    boolean isPageChanged;
+    private boolean isPageChanged = false;
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
