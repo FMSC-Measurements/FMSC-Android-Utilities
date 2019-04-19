@@ -14,7 +14,7 @@ public abstract class EnumPreference extends ListCompatPreference {
     private int[] itemValues;
     private CharSequence[] itemNames;
 
-    DialogInterface.OnClickListener listener;
+    private DialogInterface.OnClickListener listener;
 
     public EnumPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -77,7 +77,7 @@ public abstract class EnumPreference extends ListCompatPreference {
     }
 
     public void setValue(int value) {
-        getSharedPreferences().edit().putInt(getKey(), value).commit();
+        getSharedPreferences().edit().putInt(getKey(), value).apply();
         setSummary(itemNames[value]);
     }
 
@@ -96,8 +96,6 @@ public abstract class EnumPreference extends ListCompatPreference {
             value = defaultValue != null ? (int) defaultValue : getSharedPreferences().getInt(getKey(), 0);
             setValue(value);
         }
-
-        setSummary(itemNames[value]);
     }
 
     public void setOnClickListener(DialogInterface.OnClickListener listener) {

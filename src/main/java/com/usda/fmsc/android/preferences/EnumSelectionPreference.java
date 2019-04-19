@@ -67,7 +67,7 @@ public class EnumSelectionPreference extends ListCompatPreference {
 
 
     public void setValue(int value) {
-        getSharedPreferences().edit().putInt(getKey(), value).commit();
+        getSharedPreferences().edit().putInt(getKey(), value).apply();
 
         if (itemNames != null) {
             setSummary(itemNames[value]);
