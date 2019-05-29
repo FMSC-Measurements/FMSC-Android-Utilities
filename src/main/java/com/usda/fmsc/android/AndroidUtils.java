@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
+import android.content.pm.PackageInfo;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -291,14 +292,15 @@ public class AndroidUtils {
         }
 
 
-        public static String getVersionName(Context context) {
+        public static String getAppVersion(Context context) {
             try {
-                return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+                PackageInfo pi =  context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                return String.format("%s-%s", pi.versionName.substring(0, pi.versionName.indexOf('-')), pi.versionCode);
             } catch (PackageManager.NameNotFoundException e) {
                 //
             }
 
-            return "";
+            return null;
         }
     }
 
