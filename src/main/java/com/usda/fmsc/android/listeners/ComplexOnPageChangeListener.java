@@ -1,6 +1,6 @@
 package com.usda.fmsc.android.listeners;
 
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 
 public class ComplexOnPageChangeListener implements ViewPager.OnPageChangeListener {
     private boolean isPageChanged = false;

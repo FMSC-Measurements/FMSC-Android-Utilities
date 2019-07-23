@@ -3,10 +3,10 @@ package com.usda.fmsc.android.dialogs;
 import android.app.Dialog;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

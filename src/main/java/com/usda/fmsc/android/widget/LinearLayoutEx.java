@@ -2,7 +2,7 @@ package com.usda.fmsc.android.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.UiThread;
+import androidx.annotation.UiThread;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;

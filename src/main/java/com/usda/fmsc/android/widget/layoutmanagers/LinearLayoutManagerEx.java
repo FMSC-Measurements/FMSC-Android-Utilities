@@ -2,9 +2,9 @@ package com.usda.fmsc.android.widget.layoutmanagers;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -13,8 +13,8 @@ import com.usda.fmsc.android.BuildConfig;
 import java.lang.reflect.Field;
 
 /**
- * {@link android.support.v7.widget.LinearLayoutManager} which wraps its content. Note that this class will always
- * wrap the content regardless of {@link android.support.v7.widget.RecyclerView} layout parameters.
+ * {@link LinearLayoutManager} which wraps its content. Note that this class will always
+ * wrap the content regardless of {@link RecyclerView} layout parameters.
  * <p/>
  * Now it's impossible to run add/remove animations with child views which have arbitrary dimensions (height for
  * VERTICAL orientation and width for HORIZONTAL). However if child views have fixed dimensions

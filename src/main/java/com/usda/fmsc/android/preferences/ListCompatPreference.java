@@ -7,8 +7,8 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialog;
 import android.util.AttributeSet;
 
 import com.usda.fmsc.android.AndroidUtils;
