@@ -10,12 +10,7 @@ import android.view.ViewTreeObserver;
 public class TransitionHelper {
 
     public static void fixSharedElementTransitionForStatusAndNavigationBar(final Activity activity) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            return;
-
         final View decor = activity.getWindow().getDecorView();
-        if (decor == null)
-            return;
         activity.postponeEnterTransition();
         decor.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -29,8 +24,6 @@ public class TransitionHelper {
     }
 
     public static void setSharedElementEnterTransition(final Activity activity, int transition) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            return;
         activity.getWindow().setSharedElementEnterTransition(TransitionInflater.from(activity).inflateTransition(transition));
     }
 }

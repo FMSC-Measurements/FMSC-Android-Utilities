@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import androidx.collection.LruCache;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class BitmapCacher {
     private LruCache<String, Bitmap> mMemoryCache;
@@ -45,7 +46,7 @@ public class BitmapCacher {
     public Bitmap get(String key) {
         Bitmap bmp = mMemoryCache.get(key);
 
-        return bmp == null || bmp.isRecycled() ? null : Bitmap.createBitmap(mMemoryCache.get(key));
+        return bmp == null || bmp.isRecycled() ? null : Bitmap.createBitmap(Objects.requireNonNull(mMemoryCache.get(key)));
     }
 
     public Bitmap remove(String key) {

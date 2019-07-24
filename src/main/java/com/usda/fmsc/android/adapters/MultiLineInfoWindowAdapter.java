@@ -12,7 +12,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
 public class MultiLineInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-    Context context;
+    private Context context;
 
     public MultiLineInfoWindowAdapter(Context context) {
         this.context = context;

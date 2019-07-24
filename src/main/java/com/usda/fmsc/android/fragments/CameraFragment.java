@@ -416,12 +416,9 @@ public class CameraFragment extends Fragment {
 
         View viewCapture = view.findViewById(R.id.frag_camera_control);
         if (viewCapture != null) {
-            viewCapture.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onCapturePressed();
-                    takePicture();
-                }
+            viewCapture.setOnClickListener(v -> {
+                onCapturePressed();
+                takePicture();
             });
         }
     }
@@ -885,15 +882,12 @@ public class CameraFragment extends Fragment {
                 mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
                         mBackgroundHandler);
             } else {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeCamera();
-                        openCamera(mTextureView.getWidth(), mTextureView.getHeight());
-                        imagesCaptured = 0;
+                getActivity().runOnUiThread(() -> {
+                    closeCamera();
+                    openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+                    imagesCaptured = 0;
 
-                        onError("Refreshed Camera");
-                    }
+                    onError("Refreshed Camera");
                 });
             }
         } catch (CameraAccessException e) {

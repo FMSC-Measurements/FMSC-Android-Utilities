@@ -2,7 +2,6 @@ package com.usda.fmsc.android.dialogs;
 
 import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import androidx.annotation.NonNull;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -28,14 +27,10 @@ public class InputDialog extends AlertDialog.Builder {
 
         dialog.setView(input);
 
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-
-            @Override
-            public void onShow(DialogInterface dialog) {
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
-                input.setSelection(input.getText().length());
-            }
+        dialog.setOnShowListener(dialog1 -> {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+            input.setSelection(input.getText().length());
         });
 
         return dialog;

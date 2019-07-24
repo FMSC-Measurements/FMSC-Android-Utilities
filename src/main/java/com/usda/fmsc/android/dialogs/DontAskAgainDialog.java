@@ -44,42 +44,33 @@ public class DontAskAgainDialog {
         dialog.setView(checkBox);
 
         if (posBtnText != null && posBtnText.length() > 0) {
-            dialog.setPositiveButton(posBtnText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    setValue(val1);
+            dialog.setPositiveButton(posBtnText, (dialogInterface, i) -> {
+                setValue(val1);
 
-                    if (onPosClick != null) {
-                        onPosClick.onClick(dialogInterface, i, val1);
-                    }
+                if (onPosClick != null) {
+                    onPosClick.onClick(dialogInterface, i, val1);
                 }
             });
         }
 
 
         if (neuBtnText != null && neuBtnText.length() > 0) {
-            dialog.setNeutralButton(neuBtnText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    setValue(val2);
+            dialog.setNeutralButton(neuBtnText, (dialogInterface, i) -> {
+                setValue(val2);
 
-                    if (onNeuClick != null) {
-                        onNeuClick.onClick(dialogInterface, i, val2);
-                    }
+                if (onNeuClick != null) {
+                    onNeuClick.onClick(dialogInterface, i, val2);
                 }
             });
         }
 
 
         if (negBtnText != null && negBtnText.length() > 0) {
-            dialog.setNegativeButton(negBtnText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    setValue(val3);
+            dialog.setNegativeButton(negBtnText, (dialogInterface, i) -> {
+                setValue(val3);
 
-                    if (onNegClick != null) {
-                        onNegClick.onClick(dialogInterface, i, val3);
-                    }
+                if (onNegClick != null) {
+                    onNegClick.onClick(dialogInterface, i, val3);
                 }
             });
         }

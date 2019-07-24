@@ -56,15 +56,12 @@ public class ViewAnimator {
 
         ValueAnimator animator = ValueAnimator.ofInt(start, end);
 
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                //Update Height
-                int value = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-                layoutParams.height = value;
-                view.setLayoutParams(layoutParams);
-            }
+        animator.addUpdateListener(valueAnimator -> {
+            //Update Height
+            int value = (Integer) valueAnimator.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            layoutParams.height = value;
+            view.setLayoutParams(layoutParams);
         });
 
         return animator;

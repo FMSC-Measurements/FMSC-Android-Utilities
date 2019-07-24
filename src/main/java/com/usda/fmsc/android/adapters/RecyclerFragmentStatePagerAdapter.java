@@ -44,7 +44,7 @@ import com.usda.fmsc.android.R;
  * If you don't like this,you should use custom ContainerIdGenerator by  {@link #setContainerIdGenerator(IContainerIdGenerator)}
  * </p>
  */
-@TargetApi(12)
+
 public abstract class RecyclerFragmentStatePagerAdapter extends RecyclerView.Adapter<RecyclerFragmentStatePagerAdapter.FragmentViewHolder> {
     private static final String TAG = "FragmentStatePagerAdapter";
     private static final boolean DEBUG = false;

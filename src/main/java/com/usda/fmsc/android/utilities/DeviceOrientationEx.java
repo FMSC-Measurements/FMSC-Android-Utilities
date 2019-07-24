@@ -138,11 +138,11 @@ public class DeviceOrientationEx implements SensorEventListener {
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
             mGeomagnetic = event.values;
         if (mGravity != null && mGeomagnetic != null) {
-            float R[] = new float[9];
-            float I[] = new float[9];
+            float[] R = new float[9];
+            float[] I = new float[9];
             boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
             if (success) {
-                float orientationData[] = new float[3];
+                float[] orientationData = new float[3];
                 SensorManager.getOrientation(R, orientationData);
                 averageAzimuth = addValue(orientationData[0], azimuthes);
                 averagePitch = addValue(orientationData[1], pitches);

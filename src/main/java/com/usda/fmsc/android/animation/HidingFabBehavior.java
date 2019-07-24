@@ -15,17 +15,17 @@ public class HidingFabBehavior extends FloatingActionButton.Behavior {
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout,
-                                       FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
+       FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes, @ViewCompat.NestedScrollType int type) {
         return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL ||
                 super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target,
-                        nestedScrollAxes);
+                        nestedScrollAxes, type);
     }
 
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child,
-                               View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+                               View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, @ViewCompat.NestedScrollType int type) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed,
-                dyUnconsumed);
+                dyUnconsumed, type);
 
         if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
             child.hide();

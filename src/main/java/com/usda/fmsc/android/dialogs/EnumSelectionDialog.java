@@ -26,14 +26,11 @@ public class EnumSelectionDialog<T extends Enum<T>> extends AlertDialog.Builder 
                 itemNames[i] = items[i].toString();
             }
 
-            this.setItems(itemNames, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    selectedItem = items[which];
+            this.setItems(itemNames, (dialog, which) -> {
+                selectedItem = items[which];
 
-                    if (listener != null) {
-                        listener.onClick(dialog, which);
-                    }
+                if (listener != null) {
+                    listener.onClick(dialog, which);
                 }
             });
         }

@@ -17,17 +17,12 @@ import com.usda.fmsc.android.widget.animations.OverlayAnimation;
 import io.codetail.animation.arcanimator.Side;
 
 public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
-
-    // interpolators
-    private static final boolean IS_LOLLIPOP = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-
     private static final int ANIMATION_SPEED = 1;
 
     // Animation durations
-    private static final int SHEET_ANIM_DURATION = (IS_LOLLIPOP ? 600 : 300) * ANIMATION_SPEED;
+    private static final int SHEET_ANIM_DURATION = 600 * ANIMATION_SPEED;
     private static final int SHOW_SHEET_COLOR_ANIM_DURATION = (int) (SHEET_ANIM_DURATION * 0.75);
-    private static final int HIDE_SHEET_COLOR_ANIM_DURATION = IS_LOLLIPOP
-            ? (int) (SHEET_ANIM_DURATION * 1.5) : (SHEET_ANIM_DURATION * 2);
+    private static final int HIDE_SHEET_COLOR_ANIM_DURATION = (int) (SHEET_ANIM_DURATION * 1.5);
     private static final int FAB_ANIM_DURATION = 300 * ANIMATION_SPEED;
     private static final int SHOW_OVERLAY_ANIM_DURATION = SheetFab.SHOW_SHEET_ANIM_DELAY
             + SHEET_ANIM_DURATION;
@@ -35,8 +30,7 @@ public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
 
     // Animation delays
     private static final int SHOW_SHEET_ANIM_DELAY = (int) (FAB_ANIM_DURATION * 0.5);
-    private static final int MOVE_FAB_ANIM_DELAY = IS_LOLLIPOP ? (int) (SHEET_ANIM_DURATION * 0.3)
-            : (int) (SHEET_ANIM_DURATION * 0.6);
+    private static final int MOVE_FAB_ANIM_DELAY = (int) (SHEET_ANIM_DURATION * 0.3);
 
     // Other animation constants
     private static final float FAB_SCALE_FACTOR = 0.6f;
@@ -104,12 +98,9 @@ public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
             }
         });
 
-        fab.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showSheet();
-                return true;
-            }
+        fab.setOnLongClickListener(v -> {
+            showSheet();
+            return true;
         });
 
         // Set listener for when FAB view is laid out
@@ -264,16 +255,13 @@ public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
                 FAB_SCALE_FACTOR, FAB_ANIM_DURATION, null);
 
         // Show sheet after a delay
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Hide FAB
-                fab.setVisibility(View.INVISIBLE);
+        new Handler().postDelayed(() -> {
+            // Hide FAB
+            fab.setVisibility(View.INVISIBLE);
 
-                // Show sheet
-                sheetAnimation.morphFromFab(fab, SHEET_ANIM_DURATION,
-                        SHOW_SHEET_COLOR_ANIM_DURATION, endListener);
-            }
+            // Show sheet
+            sheetAnimation.morphFromFab(fab, SHEET_ANIM_DURATION,
+                    SHOW_SHEET_COLOR_ANIM_DURATION, endListener);
         }, SHOW_SHEET_ANIM_DELAY);
     }
 
@@ -282,17 +270,14 @@ public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
         sheetAnimation.morphIntoFab(fab, SHEET_ANIM_DURATION, HIDE_SHEET_COLOR_ANIM_DURATION, null);
 
         // Show FAB after a delay
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Hide sheet
-                sheetAnimation.setSheetVisibility(View.INVISIBLE);
+        new Handler().postDelayed(() -> {
+            // Hide sheet
+            sheetAnimation.setSheetVisibility(View.INVISIBLE);
 
-                // Show FAB
-                fabAnimation.morphFromSheet(anchorX, anchorY,
-                        getFabArcSide(sheetAnimation.getRevealXDirection()), FAB_ARC_DEGREES,
-                        -FAB_SCALE_FACTOR, FAB_ANIM_DURATION, endListener);
-            }
+            // Show FAB
+            fabAnimation.morphFromSheet(anchorX, anchorY,
+                    getFabArcSide(sheetAnimation.getRevealXDirection()), FAB_ARC_DEGREES,
+                    -FAB_SCALE_FACTOR, FAB_ANIM_DURATION, endListener);
         }, MOVE_FAB_ANIM_DELAY);
     }
 
@@ -303,9 +288,9 @@ public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
 
     protected void setFabAnchor(float translationX, float translationY) {
         anchorX = Math
-                .round(fab.getX() + (fab.getWidth() / 2) + (translationX - fab.getTranslationX()));
+                .round(fab.getX() + (fab.getWidth() / 2f) + (translationX - fab.getTranslationX()));
         anchorY = Math
-                .round(fab.getY() + (fab.getHeight() / 2) + (translationY - fab.getTranslationY()));
+                .round(fab.getY() + (fab.getHeight() / 2f) + (translationY - fab.getTranslationY()));
     }
 
     private Side getFabArcSide(RevealXDirection revealXDirection) {

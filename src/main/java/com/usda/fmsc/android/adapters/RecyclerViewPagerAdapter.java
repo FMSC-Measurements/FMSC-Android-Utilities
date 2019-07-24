@@ -13,7 +13,7 @@ import com.usda.fmsc.android.widget.RecyclerViewPager;
  */
 public class RecyclerViewPagerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private final RecyclerViewPager mViewPager;
-    RecyclerView.Adapter<VH> mAdapter;
+    private RecyclerView.Adapter<VH> mAdapter;
 
 
     public RecyclerViewPagerAdapter(RecyclerViewPager viewPager, RecyclerView.Adapter<VH> adapter) {

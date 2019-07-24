@@ -141,17 +141,15 @@ public class PopupMenuButton extends ImageButton implements View.OnClickListener
     }
 
     public MenuItem getMenuItem(@IdRes int res) {
-        if (popupMenu.getMenu() != null)
-            return popupMenu.getMenu().findItem(res);
+        popupMenu.getMenu();
+        return popupMenu.getMenu().findItem(res);
 
-        throw new RuntimeException("Menu not created");
     }
 
     @Override
     public void onClick(View v) {
-        if (popupMenu.getMenu() != null) {
-            popupMenu.show();
-        }
+        popupMenu.getMenu();
+        popupMenu.show();
     }
 
     @Override

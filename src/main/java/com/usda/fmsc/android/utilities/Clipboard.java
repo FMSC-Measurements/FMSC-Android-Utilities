@@ -85,7 +85,7 @@ public class Clipboard {
     public static CharSequence pasteText(String label) {
         if (clipboard != null && clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
             ClipData item = clipboard.getPrimaryClip();
-            if (label.equals(item.getDescription().getLabel())) {
+            if (label.contentEquals(item.getDescription().getLabel())) {
                 return item.getItemAt(0).getText();
             }
         }
@@ -103,7 +103,7 @@ public class Clipboard {
     public static Uri pasteUri(String label) {
         if (clipboard != null && clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) {
             ClipData item = clipboard.getPrimaryClip();
-            if (label.equals(item.getDescription().getLabel())) {
+            if (label.contentEquals(item.getDescription().getLabel())) {
                 return item.getItemAt(0).getUri();
             }
         }
@@ -121,7 +121,7 @@ public class Clipboard {
     public static String pasteHtml(String label) {
         if (clipboard != null && clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
             ClipData item = clipboard.getPrimaryClip();
-            if (label.equals(item.getDescription().getLabel())) {
+            if (label.contentEquals(item.getDescription().getLabel())) {
                 return item.getItemAt(0).getHtmlText();
             }
         }
@@ -139,7 +139,7 @@ public class Clipboard {
     public static CharSequence pasteHtmlText(String label) {
         if (clipboard != null && clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
             ClipData item = clipboard.getPrimaryClip();
-            if (label.equals(item.getDescription().getLabel())) {
+            if (label.contentEquals(item.getDescription().getLabel())) {
                 return item.getItemAt(0).getText();
             }
         }
@@ -157,7 +157,7 @@ public class Clipboard {
     public static Intent pasteIntent(String label) {
         if (clipboard != null && clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT)) {
             ClipData item = clipboard.getPrimaryClip();
-            if (label.equals(item.getDescription().getLabel())) {
+            if (label.contentEquals(item.getDescription().getLabel())) {
                 return item.getItemAt(0).getIntent();
             }
         }

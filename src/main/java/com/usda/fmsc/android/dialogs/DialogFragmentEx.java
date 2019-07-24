@@ -18,7 +18,7 @@ public class DialogFragmentEx extends DialogFragment {
     }
 
     @DialogStyle
-    private int style = -1;
+    private int style = DialogFragment.STYLE_NORMAL;
     private int theme = -1;
 
     private OnClickListener onNegativeClickListener;

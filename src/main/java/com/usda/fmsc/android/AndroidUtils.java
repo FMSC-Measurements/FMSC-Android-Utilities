@@ -9,7 +9,6 @@ import android.app.ActivityManager;
 import android.content.pm.PackageInfo;
 import androidx.fragment.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -44,7 +43,6 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -219,12 +217,7 @@ public class AndroidUtils {
                 if (explanation != null && ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[0])) {
                     new AlertDialog.Builder(activity)
                             .setMessage(explanation)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ActivityCompat.requestPermissions(activity, permissions, requestCode);
-                                }
-                            })
+                            .setPositiveButton("OK", (dialog, which) -> ActivityCompat.requestPermissions(activity, permissions, requestCode))
                             .show();
 
                 } else {
@@ -326,12 +319,9 @@ public class AndroidUtils {
         public static void playSound(Context context, int sound) {
             final MediaPlayer player = MediaPlayer.create(context, sound);
 
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    player.reset();
-                    player.release();
-                }
+            player.setOnCompletionListener(mediaPlayer -> {
+                player.reset();
+                player.release();
             });
 
             player.start();
@@ -340,12 +330,9 @@ public class AndroidUtils {
         public static void playSound(Context context, Uri sound) {
             final MediaPlayer player = MediaPlayer.create(context, sound);
 
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    player.reset();
-                    player.release();
-                }
+            player.setOnCompletionListener(mediaPlayer -> {
+                player.reset();
+                player.release();
             });
 
             player.start();
@@ -353,20 +340,17 @@ public class AndroidUtils {
 
 
         public static void isInternetAvailable(final InternetAvailableCallback callback) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    boolean available;
-                    try {
-                        HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
-                        available = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
-                    } catch (Exception e) {
-                        available = false;
-                    }
+            new Thread(() -> {
+                boolean available;
+                try {
+                    HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
+                    available = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
+                } catch (Exception e) {
+                    available = false;
+                }
 
-                    if (callback != null) {
-                        callback.onCheckInternet(available);
-                    }
+                if (callback != null) {
+                    callback.onCheckInternet(available);
                 }
             }).start();
         }
@@ -423,13 +407,10 @@ public class AndroidUtils {
         }
 
         public static void removeSelectionOnUnfocus(final EditText editText, final boolean setEndSelected) {
-            editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean hasFocus) {
-                    if (!hasFocus) {
-                        editText.setSelection(setEndSelected ? editText.getText().length() : 0);
-                        editText.clearFocus();
-                    }
+            editText.setOnFocusChangeListener((view, hasFocus) -> {
+                if (!hasFocus) {
+                    editText.setSelection(setEndSelected ? editText.getText().length() : 0);
+                    editText.clearFocus();
                 }
             });
         }
@@ -439,18 +420,15 @@ public class AndroidUtils {
         }
 
         public static void hideKeyboardOnSelect(final View view, final EditText editText, final boolean setEndSelected) {
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    InputMethodManager imm = (InputMethodManager) view.getContext()
-                            .getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    }
-
-                    editText.setSelection(setEndSelected ? editText.getText().length() : 0);
-                    editText.clearFocus();
+            view.setOnClickListener(view1 -> {
+                InputMethodManager imm = (InputMethodManager) view1.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view1.getWindowToken(), 0);
                 }
+
+                editText.setSelection(setEndSelected ? editText.getText().length() : 0);
+                editText.clearFocus();
             });
         }
 
@@ -461,21 +439,18 @@ public class AndroidUtils {
 
 
         public static void hideKeyboardOnTouch(final View view, final EditText editText, final boolean setEndSelected) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (editText.hasFocus()) {
-                        InputMethodManager imm = (InputMethodManager) view.getContext()
-                                .getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (imm != null) {
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
-
-                        editText.setSelection(setEndSelected ? editText.getText().length() : 0);
-                        editText.clearFocus();
+            view.setOnTouchListener((v, event) -> {
+                if (editText.hasFocus()) {
+                    InputMethodManager imm = (InputMethodManager) view.getContext()
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
-                    return false;
+
+                    editText.setSelection(setEndSelected ? editText.getText().length() : 0);
+                    editText.clearFocus();
                 }
+                return false;
             });
         }
 
@@ -484,19 +459,16 @@ public class AndroidUtils {
         }
 
         public static void hideKeyboardOnSelect(final View view, final EditText[] editTexts, final boolean setEndSelected) {
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    InputMethodManager imm = (InputMethodManager) view.getContext()
-                            .getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    }
+            view.setOnClickListener(view1 -> {
+                InputMethodManager imm = (InputMethodManager) view1.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view1.getWindowToken(), 0);
+                }
 
-                    for (final EditText editText : editTexts) {
-                        editText.setSelection(setEndSelected ? editText.getText().length() : 0);
-                        editText.clearFocus();
-                    }
+                for (final EditText editText : editTexts) {
+                    editText.setSelection(setEndSelected ? editText.getText().length() : 0);
+                    editText.clearFocus();
                 }
             });
         }
@@ -506,21 +478,18 @@ public class AndroidUtils {
         }
 
         public static void hideKeyboardOnTouch(final View view, final EditText[] editTexts, final boolean setEndSelected) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    InputMethodManager imm = (InputMethodManager) view.getContext()
-                            .getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    }
-
-                    for (final EditText editText : editTexts) {
-                        editText.setSelection(setEndSelected ? editText.getText().length() : 0);
-                        editText.clearFocus();
-                    }
-                    return false;
+            view.setOnTouchListener((v, event) -> {
+                InputMethodManager imm = (InputMethodManager) view.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
+
+                for (final EditText editText : editTexts) {
+                    editText.setSelection(setEndSelected ? editText.getText().length() : 0);
+                    editText.clearFocus();
+                }
+                return false;
             });
         }
 
@@ -565,15 +534,12 @@ public class AndroidUtils {
 
         public static void setContentDescToast(View view, final CharSequence desc, final boolean vibrate) {
             if (desc.length() > 0) {
-                view.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        Toast.makeText(view.getContext(), desc, Toast.LENGTH_SHORT).show();
-                        if (vibrate) {
-                            Device.vibrate(view.getContext(), 100);
-                        }
-                        return true;
+                view.setOnLongClickListener(view1 -> {
+                    Toast.makeText(view1.getContext(), desc, Toast.LENGTH_SHORT).show();
+                    if (vibrate) {
+                        Device.vibrate(view1.getContext(), 100);
                     }
+                    return true;
                 });
             }
         }
@@ -929,14 +895,9 @@ public class AndroidUtils {
 
                 final TextView titleView = (TextView) f.get(toolbar);
 
-                titleView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        CharSequence titleText = text == null ? titleView.getText() : text;
-
-                        Toast.makeText(activity, titleText, Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
+                titleView.setOnLongClickListener(v -> {
+                    Toast.makeText(activity, text == null ? titleView.getText() : text, Toast.LENGTH_SHORT).show();
+                    return false;
                 });
             } catch(Exception e){
                 e.printStackTrace();

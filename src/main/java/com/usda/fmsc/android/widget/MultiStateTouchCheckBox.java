@@ -129,53 +129,47 @@ public class MultiStateTouchCheckBox extends View {
         mCorrectPaint.setPathEffect(new android.graphics.CornerPathEffect(2));
         mCorrectPaint.setAntiAlias(true);
 
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isMultiState) {
-                    switch (checkedState) {
-                        case NotChecked:
-                            showPartial();
-                            break;
-                        case PartialChecked:
-                            leavePartial(CheckedState.Checked);
-                            break;
-                        case Checked:
-                            hideCheckMark(CheckedState.NotChecked);
-                            break;
+        setOnClickListener(v -> {
+            if (isMultiState) {
+                switch (checkedState) {
+                    case NotChecked:
+                        showPartial();
+                        break;
+                    case PartialChecked:
+                        leavePartial(CheckedState.Checked);
+                        break;
+                    case Checked:
+                        hideCheckMark(CheckedState.NotChecked);
+                        break;
+                }
+            } else {
+                if (isChecked) {
+                    if (checkedState == CheckedState.Checked) {
+                        hideCheckMark(CheckedState.NotChecked);
+                    } else {
+                        leavePartial(CheckedState.Checked);
                     }
                 } else {
-                    if (isChecked) {
-                        if (checkedState == CheckedState.Checked) {
-                            hideCheckMark(CheckedState.NotChecked);
-                        } else {
-                            leavePartial(CheckedState.Checked);
-                        }
+                    if (checkedState == CheckedState.PartialChecked) {
+                        leavePartial(checkedState);
                     } else {
-                        if (checkedState == CheckedState.PartialChecked) {
-                            leavePartial(checkedState);
-                        } else {
-                            showCircle();
-                        }
+                        showCircle();
                     }
                 }
+            }
 
-                if (onClickListener != null) {
-                    onClickListener.onClick(v);
-                }
+            if (onClickListener != null) {
+                onClickListener.onClick(v);
             }
         });
 
-        setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                CharSequence cs = getContentDescription();
+        setOnLongClickListener(v -> {
+            CharSequence cs = getContentDescription();
 
-                if (cs != null && cs.length() > 0) {
-                    Toast.makeText(getContext(), cs, Toast.LENGTH_SHORT).show();
-                }
-                return true;
+            if (cs != null && cs.length() > 0) {
+                Toast.makeText(getContext(), cs, Toast.LENGTH_SHORT).show();
             }
+            return true;
         });
     }
 
@@ -340,24 +334,21 @@ public class MultiStateTouchCheckBox extends View {
 
         ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
         va.setInterpolator(new LinearInterpolator());
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                radius = (int) ((1 - progressValue) * size * 0.375f + size * 0.125f);
-                if (progressValue >= 1) {
-                    isChecked = false;
+        va.addUpdateListener(animation -> {
+            progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
+            radius = (int) ((1 - progressValue) * size * 0.375f + size * 0.125f);
+            if (progressValue >= 1) {
+                isChecked = false;
 
-                    checkedState = CheckedState.NotChecked;
+                checkedState = CheckedState.NotChecked;
 
-                    if (!ignoreEvent && listener != null) {
-                        listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, false, checkedState);
-                    }
-
-                    ignoreEvent = false;
+                if (!ignoreEvent && listener != null) {
+                    listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, false, checkedState);
                 }
-                invalidate();
+
+                ignoreEvent = false;
             }
+            invalidate();
         });
         va.start();
     }
@@ -367,19 +358,16 @@ public class MultiStateTouchCheckBox extends View {
 
         ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
         va.setInterpolator(new LinearInterpolator());
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                radius = (int) (progressValue * size * 0.37f + size * 0.125f);
-                 if (progressValue >= 1) {
-                    isChecked = true;
+        va.addUpdateListener(animation -> {
+            progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
+            radius = (int) (progressValue * size * 0.37f + size * 0.125f);
+             if (progressValue >= 1) {
+                isChecked = true;
 
-                    showCheckMark();
-                }
-
-                invalidate();
+                showCheckMark();
             }
+
+            invalidate();
         });
         va.start();
     }
@@ -391,23 +379,20 @@ public class MultiStateTouchCheckBox extends View {
         } else {
             ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
             va.setInterpolator(new LinearInterpolator());
-            va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float value = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                    checkMarkProgress = value;
-                    invalidate();
-                    if (value >= 1) {
-                        isChecked = true;
+            va.addUpdateListener(animation -> {
+                float value = (float) animation.getAnimatedValue(); // 0f ~ 1f
+                checkMarkProgress = value;
+                invalidate();
+                if (value >= 1) {
+                    isChecked = true;
 
-                        checkedState = CheckedState.Checked;
+                    checkedState = CheckedState.Checked;
 
-                        if (!ignoreEvent && listener != null) {
-                            listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, true, checkedState);
-                        }
-
-                        ignoreEvent = false;
+                    if (!ignoreEvent && listener != null) {
+                        listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, true, checkedState);
                     }
+
+                    ignoreEvent = false;
                 }
             });
             va.start();
@@ -417,44 +402,38 @@ public class MultiStateTouchCheckBox extends View {
     private void hideCheckMark(final CheckedState targetState) {
         ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
         va.setInterpolator(new LinearInterpolator());
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float value = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                checkMarkProgress = 1 - value;
-                invalidate();
+        va.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue(); // 0f ~ 1f
+            checkMarkProgress = 1 - value;
+            invalidate();
 
-                if (value >= 1) {
-                    if (targetState == CheckedState.PartialChecked) {
-                        drawFromColor = drawToColor;
-                        drawToColor = partialColor;
+            if (value >= 1) {
+                if (targetState == CheckedState.PartialChecked) {
+                    drawFromColor = drawToColor;
+                    drawToColor = partialColor;
 
-                        final ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
-                        va.setInterpolator(new LinearInterpolator());
-                        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                                radius = (int) ((1 - (progressValue / 2)) * size * 0.375f + size * 0.125f);
-                                if (progressValue >= 1) {
-                                    isChecked = true;
+                    final ValueAnimator va1 = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
+                    va1.setInterpolator(new LinearInterpolator());
+                    va1.addUpdateListener(animation1 -> {
+                        progressValue = (float) animation1.getAnimatedValue(); // 0f ~ 1f
+                        radius = (int) ((1 - (progressValue / 2)) * size * 0.375f + size * 0.125f);
+                        if (progressValue >= 1) {
+                            isChecked = true;
 
-                                    checkedState = CheckedState.PartialChecked;
+                            checkedState = CheckedState.PartialChecked;
 
-                                    if (!ignoreEvent && listener != null) {
-                                        listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, true, checkedState);
-                                    }
-
-                                    ignoreEvent = false;
-                                }
-                                invalidate();
+                            if (!ignoreEvent && listener != null) {
+                                listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, true, checkedState);
                             }
-                        });
 
-                        va.start();
-                    } else {
-                        hideCircle();
-                    }
+                            ignoreEvent = false;
+                        }
+                        invalidate();
+                    });
+
+                    va1.start();
+                } else {
+                    hideCircle();
                 }
             }
         });
@@ -472,25 +451,22 @@ public class MultiStateTouchCheckBox extends View {
             ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
             va.setInterpolator(new LinearInterpolator());
             va.start();
-            va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                    radius = (int) (progressValue / 2 * size * 0.37f + size * 0.125f);
-                    if (progressValue >= 1) {
-                        isChecked = true;
+            va.addUpdateListener(animation -> {
+                progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
+                radius = (int) (progressValue / 2 * size * 0.37f + size * 0.125f);
+                if (progressValue >= 1) {
+                    isChecked = true;
 
-                        checkedState = CheckedState.PartialChecked;
+                    checkedState = CheckedState.PartialChecked;
 
-                        if (!ignoreEvent && listener != null) {
-                            listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, true, checkedState);
-                        }
-
-                        ignoreEvent = false;
+                    if (!ignoreEvent && listener != null) {
+                        listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, true, checkedState);
                     }
 
-                    invalidate();
+                    ignoreEvent = false;
                 }
+
+                invalidate();
             });
         }
     }
@@ -503,20 +479,17 @@ public class MultiStateTouchCheckBox extends View {
             ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
             va.setInterpolator(new LinearInterpolator());
             va.start();
-            va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                    radius = (int) ((0.5 + (progressValue / 2)) * size * 0.37f + size * 0.125f);
-                    if (progressValue >= 1) {
-                        isChecked = true;
+            va.addUpdateListener(animation -> {
+                progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
+                radius = (int) ((0.5 + (progressValue / 2)) * size * 0.37f + size * 0.125f);
+                if (progressValue >= 1) {
+                    isChecked = true;
 
-                        checkedState = CheckedState.NotChecked;
-                        showCheckMark();
-                    }
-
-                    invalidate();
+                    checkedState = CheckedState.NotChecked;
+                    showCheckMark();
                 }
+
+                invalidate();
             });
         } else {
             drawFromColor = partialColor;
@@ -524,24 +497,21 @@ public class MultiStateTouchCheckBox extends View {
 
             ValueAnimator va = ValueAnimator.ofFloat(0, 1).setDuration(animDurtion);
             va.setInterpolator(new LinearInterpolator());
-            va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
-                    radius = (int) ((0.5 - (progressValue / 2)) * size * 0.375f + size * 0.125f);
-                    if (progressValue >= 1) {
-                        isChecked = false;
+            va.addUpdateListener(animation -> {
+                progressValue = (float) animation.getAnimatedValue(); // 0f ~ 1f
+                radius = (int) ((0.5 - (progressValue / 2)) * size * 0.375f + size * 0.125f);
+                if (progressValue >= 1) {
+                    isChecked = false;
 
-                        checkedState = CheckedState.NotChecked;
+                    checkedState = CheckedState.NotChecked;
 
-                        if (!ignoreEvent && listener != null) {
-                            listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, false, checkedState);
-                        }
-
-                        ignoreEvent = false;
+                    if (!ignoreEvent && listener != null) {
+                        listener.onCheckedStateChanged(MultiStateTouchCheckBox.this, false, checkedState);
                     }
-                    invalidate();
+
+                    ignoreEvent = false;
                 }
+                invalidate();
             });
             va.start();
         }

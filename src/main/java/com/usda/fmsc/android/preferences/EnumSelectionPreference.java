@@ -36,14 +36,11 @@ public class EnumSelectionPreference extends ListCompatPreference {
                 itemNames[i] = items[i].toString();
             }
 
-            builder.setItems(itemNames, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    setValue(i);
+            builder.setItems(itemNames, (dialogInterface, i) -> {
+                setValue(i);
 
-                    if (listener != null) {
-                        listener.onClick(dialogInterface, i);
-                    }
+                if (listener != null) {
+                    listener.onClick(dialogInterface, i);
                 }
             });
         }

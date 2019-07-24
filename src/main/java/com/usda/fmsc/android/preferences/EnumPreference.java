@@ -54,17 +54,14 @@ public abstract class EnumPreference extends ListCompatPreference {
                 .setTitle(getDialogTitle())
                 .setIcon(getDialogIcon())
                 .setNegativeButton(getNegativeButtonText(), this)
-                .setSingleChoiceItems(itemNames, selected, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        setValue(itemValues[i]);
+                .setSingleChoiceItems(itemNames, selected, (dialogInterface, i) -> {
+                    setValue(itemValues[i]);
 
-                        if (listener != null) {
-                            listener.onClick(dialogInterface, i);
-                        }
-
-                        dialogInterface.dismiss();
+                    if (listener != null) {
+                        listener.onClick(dialogInterface, i);
                     }
+
+                    dialogInterface.dismiss();
                 });
 
         AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
@@ -90,11 +87,8 @@ public abstract class EnumPreference extends ListCompatPreference {
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        int value = 0;
-
         if (restorePersistedValue) {
-            value = defaultValue != null ? (int) defaultValue : getSharedPreferences().getInt(getKey(), 0);
-            setValue(value);
+            setValue(defaultValue != null ? (int) defaultValue : getSharedPreferences().getInt(getKey(), 0));
         }
     }
 

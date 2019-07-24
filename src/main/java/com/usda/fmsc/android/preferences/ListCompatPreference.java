@@ -35,16 +35,6 @@ public class ListCompatPreference extends ListPreference {
     }
 
     @Override
-    public CharSequence getSummary() {
-        final CharSequence summary = super.getSummary();
-        if (summary == null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            return summary;
-        }
-        CharSequence entry = getEntry();
-        return String.format(summary.toString(), entry == null ? "" : entry);
-    }
-
-    @Override
     protected void showDialog(Bundle state) {
         if (getEntries() == null || getEntryValues() == null) {
             throw new IllegalStateException(

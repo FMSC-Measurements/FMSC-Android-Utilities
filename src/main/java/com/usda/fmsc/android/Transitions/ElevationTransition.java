@@ -2,15 +2,12 @@ package com.usda.fmsc.android.Transitions;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.util.Pair;
-import androidx.appcompat.app.ActionBar;
 import android.transition.Transition;
 import android.transition.TransitionValues;
 import android.util.AttributeSet;
@@ -23,7 +20,6 @@ import com.usda.fmsc.android.R;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ElevationTransition extends Transition {
 
     private static final String PROPNAME_ELEVATION = "trans.elevation";
@@ -63,12 +59,7 @@ public class ElevationTransition extends Transition {
 
         final View view = endValues.view;
         ValueAnimator a = ValueAnimator.ofFloat(startVal, endVal);
-        a.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                view.setElevation((float) animation.getAnimatedValue());
-            }
-        });
+        a.addUpdateListener(animation -> view.setElevation((float) animation.getAnimatedValue()));
 
         return a;
     }
@@ -89,9 +80,8 @@ public class ElevationTransition extends Transition {
     @SafeVarargs
     @SuppressWarnings("unchecked")
     public static void startTransition(Activity activity, Intent intent, int requestCode, Pair<View, String>... pairs) {
-        ArrayList<Pair<View, String>> transitionPairs = new ArrayList<>();
 
-        transitionPairs.addAll(Arrays.asList(pairs));
+        ArrayList<Pair<View, String>> transitionPairs = new ArrayList<>(Arrays.asList(pairs));
 
         // We also want to transition the status and navigation bar barckground. Otherwise they will flicker
         transitionPairs.add(Pair.create(activity.findViewById(android.R.id.statusBarBackground), Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME));
@@ -102,7 +92,7 @@ public class ElevationTransition extends Transition {
         }
 
         Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                    transitionPairs.toArray(new Pair[transitionPairs.size()])).toBundle();
+                    transitionPairs.toArray(new Pair[0])).toBundle();
 
         if (requestCode == 0)
             activity.startActivity(intent, bundle);
