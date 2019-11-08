@@ -16,7 +16,7 @@ import com.usda.fmsc.android.widget.SheetFab.RevealYDirection;
 import java.lang.reflect.Method;
 
 public class MaterialSheetAnimation {
-    private static final String SUPPORT_CARDVIEW_CLASSNAME = "android.x.widget.CardView";
+    private static final String SUPPORT_CARDVIEW_CLASSNAME = "androidx.cardview.widget.CardView";
     private static final int SHEET_REVEAL_OFFSET_Y = 5;
 
     private View sheet;
