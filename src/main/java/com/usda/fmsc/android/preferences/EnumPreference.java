@@ -4,15 +4,16 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
-import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
+
 import android.util.AttributeSet;
 
-import com.usda.fmsc.android.AndroidUtils;
+import androidx.preference.ListPreference;
 
-public abstract class EnumPreference extends ListCompatPreference {
+public abstract class EnumPreference extends ListPreference {
     private int[] itemValues;
+    private String[] itemValuesStr;
     private CharSequence[] itemNames;
+    private int value;
 
     private DialogInterface.OnClickListener listener;
 
@@ -37,6 +38,14 @@ public abstract class EnumPreference extends ListCompatPreference {
         parseEnums();
         itemNames = getItemNames();
         itemValues = getItemValues();
+        setEntries(itemNames);
+
+        itemValuesStr = new String[itemValues.length];
+        for (int i = 0; i < itemValues.length; i++) {
+            itemValuesStr[i] = itemValues[i] + Integer.toHexString(i);
+        }
+
+        setEntryValues(itemValuesStr);
     }
 
     protected void parseEnums() { }
@@ -47,35 +56,43 @@ public abstract class EnumPreference extends ListCompatPreference {
     protected abstract int[] getItemValues();
 
 
+
+//    @Override
+//    protected void showDialog(Bundle state) {
+//        int selected = getSharedPreferences().getInt(getKey(), -1);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+//                .setTitle(getDialogTitle())
+//                .setIcon(getDialogIcon())
+//                .setNegativeButton(getNegativeButtonText(), this)
+//                .setSingleChoiceItems(itemNames, selected, (dialogInterface, i) -> {
+//                    setValue(itemValues[i]);
+//
+//                    if (listener != null) {
+//                        listener.onClick(dialogInterface, i);
+//                    }
+//
+//                    dialogInterface.dismiss();
+//                });
+//
+//        AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
+//
+//        mDialog = builder.create();
+//        if (state != null) {
+//            mDialog.onRestoreInstanceState(state);
+//        }
+//        mDialog.show();
+//    }
+
     @Override
-    protected void showDialog(Bundle state) {
-        int selected = getSharedPreferences().getInt(getKey(), -1);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                .setTitle(getDialogTitle())
-                .setIcon(getDialogIcon())
-                .setNegativeButton(getNegativeButtonText(), this)
-                .setSingleChoiceItems(itemNames, selected, (dialogInterface, i) -> {
-                    setValue(itemValues[i]);
-
-                    if (listener != null) {
-                        listener.onClick(dialogInterface, i);
-                    }
-
-                    dialogInterface.dismiss();
-                });
-
-        AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
-
-        mDialog = builder.create();
-        if (state != null) {
-            mDialog.onRestoreInstanceState(state);
-        }
-        mDialog.show();
+    public void setValue(String value) {
+        int index = findIndexOfValue(value);
+        setValue(itemValues[index], itemNames[index]);
+        super.setValue(value);
     }
 
-    public void setValue(int value) {
+    public void setValue(int value, CharSequence valueName) {
         getSharedPreferences().edit().putInt(getKey(), value).apply();
-        setSummary(itemNames[value]);
+        setSummary(valueName);
     }
 
     @Override
@@ -86,10 +103,17 @@ public abstract class EnumPreference extends ListCompatPreference {
     }
 
     @Override
-    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        if (restorePersistedValue) {
-            setValue(defaultValue != null ? (int) defaultValue : getSharedPreferences().getInt(getKey(), 0));
+    protected void onSetInitialValue(Object defaultValue) {
+        value = (defaultValue == null) ? getSharedPreferences().getInt(getKey(), 0) : 0;
+
+        for (int i = 0; i < itemValues.length; i++) {
+            if (itemValues[i] == value) {
+                setSummary(itemNames[i]);
+                setValueIndex(i);
+                return;
+            }
         }
+
     }
 
     public void setOnClickListener(DialogInterface.OnClickListener listener) {

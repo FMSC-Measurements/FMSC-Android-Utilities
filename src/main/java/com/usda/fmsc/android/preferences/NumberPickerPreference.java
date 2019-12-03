@@ -2,10 +2,13 @@ package com.usda.fmsc.android.preferences;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.preference.DialogPreference;
+import androidx.preference.DialogPreference;
 import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceViewHolder;
+
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -22,7 +25,7 @@ public class NumberPickerPreference extends DialogPreference {
 
     private NumberPicker picker;
     private int value, minValue = DEFAULT_MIN_VALUE, maxValue = DEFAULT_MAX_VALUE;
-    private boolean useValueInSummary = false;
+    private boolean useValueInSummary = false, dialogShown;
 
     public NumberPickerPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,25 +56,35 @@ public class NumberPickerPreference extends DialogPreference {
         a.recycle();
     }
 
+
     @Override
+    protected void onClick() {
+        if (dialogShown) {
+
+        } else {
+            showDialog(null);
+        }
+    }
+
+
     protected void showDialog(Bundle state) {
         Context context = getContext();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
                 .setTitle(getDialogTitle())
                 .setIcon(getDialogIcon())
-                .setPositiveButton(getPositiveButtonText(), this)
-                .setNegativeButton(getNegativeButtonText(), this);
+                .setPositiveButton(getPositiveButtonText(), onDialogClick)
+                .setNegativeButton(getNegativeButtonText(), onDialogClick);
 
         View contentView = onCreateDialogView();
         if (contentView != null) {
-            onBindDialogView(contentView);
+            //onBindDialogView(contentView);
             builder.setView(contentView);
         } else {
             builder.setMessage(getDialogMessage());
         }
 
-        AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
+        //AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
 
         // Create the dialog
         final Dialog dialog = builder.create();
@@ -79,21 +92,25 @@ public class NumberPickerPreference extends DialogPreference {
             dialog.onRestoreInstanceState(state);
         }
 
-        dialog.setOnDismissListener(this);
+        dialog.setOnDismissListener(onDialogDismissed);
         dialog.show();
+
+        dialogShown = true;
     }
 
-    @Override
+    //@Override
     protected View onCreateDialogView() {
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
-
-        picker = new NumberPicker(getContext());
+//
+//        picker = new NumberPicker(getContext());
         picker.setLayoutParams(layoutParams);
         picker.setBackgroundColor(AndroidUtils.UI.getColor(getContext(), android.R.color.transparent));
 
         AndroidUtils.UI.setNumberPickerColor(picker, R.color.accent);
+
+        picker.setValue(getValue());
 
         FrameLayout dialogView = new FrameLayout(getContext());
         dialogView.addView(picker);
@@ -102,22 +119,39 @@ public class NumberPickerPreference extends DialogPreference {
     }
 
     @Override
-    protected void onBindDialogView(View view) {
-        super.onBindDialogView(view);
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
+
+        picker = new NumberPicker(getContext());
         picker.setMinValue(minValue);
         picker.setMaxValue(maxValue);
         picker.setValue(getValue());
     }
 
-    @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        if (positiveResult) {
-            int newValue = picker.getValue();
-            if (callChangeListener(newValue)) {
-                setValue(newValue);
-            }
+//    @Override
+//    protected void onBindDialogView(View view) {
+//        super.onBindDialogView(view);
+//        picker.setMinValue(minValue);
+//        picker.setMaxValue(maxValue);
+//        picker.setValue(getValue());
+//    }
+
+    Dialog.OnDismissListener onDialogDismissed = new DialogInterface.OnDismissListener() {
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            dialogShown = false;
         }
-    }
+    };
+
+//    @Override
+//    protected void onDialogClosed(boolean positiveResult) {
+//        if (positiveResult) {
+//            int newValue = picker.getValue();
+//            if (callChangeListener(newValue)) {
+//                setValue(newValue);
+//            }
+//        }
+//    }
 
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
@@ -125,9 +159,8 @@ public class NumberPickerPreference extends DialogPreference {
     }
 
     @Override
-    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        int value;
-        if (restorePersistedValue) {
+    protected void onSetInitialValue(Object defaultValue) {
+        if (defaultValue == null) {
             try {
                 value = getPersistedInt(minValue);
             } catch (Exception e) {
@@ -145,8 +178,18 @@ public class NumberPickerPreference extends DialogPreference {
             }
         }
 
-        setValue(value);
+        setValueInSummary();
     }
+
+    private Dialog.OnClickListener onDialogClick = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if (which == Dialog.BUTTON_POSITIVE)  {
+                setValue(picker.getValue());
+            }
+        }
+    };
+
 
     public void setValue(int value) {
         this.value = value;
