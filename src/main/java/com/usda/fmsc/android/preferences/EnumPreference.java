@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import androidx.preference.ListPreference;
 
@@ -86,13 +88,10 @@ public abstract class EnumPreference extends ListPreference {
     @Override
     public void setValue(String value) {
         int index = findIndexOfValue(value);
-        setValue(itemValues[index], itemNames[index]);
-        super.setValue(value);
-    }
-
-    public void setValue(int value, CharSequence valueName) {
-        getSharedPreferences().edit().putInt(getKey(), value).apply();
-        setSummary(valueName);
+        getSharedPreferences().edit().putInt(getKey(), itemValues[index]).apply();
+        setSummary(itemNames[index]);
+        notifyChanged();
+        //super.setValue(value);
     }
 
     @Override
