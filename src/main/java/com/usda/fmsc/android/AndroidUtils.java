@@ -22,6 +22,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -338,26 +340,36 @@ public class AndroidUtils {
             player.start();
         }
 
-
-        public static void isInternetAvailable(final InternetAvailableCallback callback) {
-            new Thread(() -> {
-                boolean available;
-                try {
-                    HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
-                    available = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
-                } catch (Exception e) {
-                    available = false;
-                }
-
-                if (callback != null) {
-                    callback.onCheckInternet(available);
-                }
-            }).start();
+        public static boolean isInternetAvailable(final Context context) {
+            try {
+                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+            } catch (Exception e) {
+                return false;
+            }
         }
 
-        public interface InternetAvailableCallback {
-            void onCheckInternet(boolean internetAvailable);
-        }
+
+//        public static void isInternetAvailable(final InternetAvailableCallback callback) {
+//            new Thread(() -> {
+//                boolean available;
+//                try {
+//                    HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
+//                    available = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
+//                } catch (Exception e) {
+//                    available = false;
+//                }
+//
+//                if (callback != null) {
+//                    callback.onCheckInternet(available);
+//                }
+//            }).start();
+//        }
+//
+//        public interface InternetAvailableCallback {
+//            void onCheckInternet(boolean internetAvailable);
+//        }
 
 
         public static String getAndroidID(Context context) {
