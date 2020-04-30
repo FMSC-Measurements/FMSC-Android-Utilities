@@ -403,7 +403,7 @@ public class AndroidUtils {
         }
 
         public static boolean isCameraAvailable(Context context) {
-            return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+            return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
         }
     }
 
