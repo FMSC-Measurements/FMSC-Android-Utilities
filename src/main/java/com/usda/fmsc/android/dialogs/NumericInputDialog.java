@@ -24,12 +24,18 @@ public class NumericInputDialog extends InputDialog {
         return dialog;
     }
 
+    public String getValue() {
+        return input.getText().toString().trim();
+    }
+
     public Integer getInt() {
-        return Integer.parseInt(input.getText().toString());
+        String value = input.getText().toString().trim();
+        return value.length() > 0 ? Integer.parseInt(value) : 0;
     }
 
     public Double getDouble() {
-        return Double.parseDouble(input.getText().toString());
+        String value = input.getText().toString().trim();
+        return value.length() > 0 ? Double.parseDouble(value) : 0;
     }
 
 
