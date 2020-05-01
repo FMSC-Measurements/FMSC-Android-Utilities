@@ -998,6 +998,7 @@ public class CameraFragment extends Fragment {
 
             try {
                 if (!mFile.exists()) {
+                    new File (mFile.getParent()).mkdirs();
                     if (!mFile.createNewFile()) {
                         throw new IOException("File Not Created");
                     }
