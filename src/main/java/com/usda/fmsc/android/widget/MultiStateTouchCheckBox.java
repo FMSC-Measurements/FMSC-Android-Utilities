@@ -1,30 +1,28 @@
 package com.usda.fmsc.android.widget;
 
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.Toast;
 
+import com.usda.fmsc.android.AndroidUtils;
+import com.usda.fmsc.android.R;
+import com.usda.fmsc.android.listeners.DeclaredOnClickListener;
+import com.usda.fmsc.android.widget.drawables.CheckMarkProgressDrawable;
+import com.usda.fmsc.android.widget.drawables.IProgressDrawable;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.usda.fmsc.android.AndroidUtils;
-import com.usda.fmsc.android.listeners.DeclaredOnClickListener;
-import com.usda.fmsc.android.R;
-import com.usda.fmsc.android.widget.drawables.CheckMarkProgressDrawable;
-import com.usda.fmsc.android.widget.drawables.IProgressDrawable;
+import androidx.annotation.NonNull;
 
 public class MultiStateTouchCheckBox extends View {
     private static int DEFAULT_CHECKED_COLOR = Color.RED;
@@ -61,7 +59,6 @@ public class MultiStateTouchCheckBox extends View {
         init(context, attrs);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public MultiStateTouchCheckBox(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
@@ -537,6 +534,7 @@ public class MultiStateTouchCheckBox extends View {
         private final String mMethodName;
 
         private Method mMethod;
+        private Context mContext;
 
         public DeclaredOnCheckedStateChangeListener(@NonNull View hostView, @NonNull String methodName) {
             mHostView = hostView;
@@ -546,26 +544,25 @@ public class MultiStateTouchCheckBox extends View {
         @Override
         public void onCheckedStateChanged(View v, boolean isChecked, CheckedState state) {
             if (mMethod == null) {
-                mMethod = resolveMethod(mHostView.getContext(), mMethodName);
+                resolveMethod(mHostView.getContext());
             }
 
             try {
-                mMethod.invoke(mHostView.getContext(), v, isChecked, state);
+                mMethod.invoke(mContext, v, isChecked, state);
             } catch (IllegalAccessException e) {
-                throw new IllegalStateException(
-                        "Could not execute non-public method for onCheckedStateChanged", e);
+                throw new IllegalStateException("Could not execute non-public method for onCheckedStateChanged", e);
             } catch (InvocationTargetException e) {
-                throw new IllegalStateException(
-                        "Could not execute method for onCheckedStateChanged", e);
+                throw new IllegalStateException("Could not execute method for onCheckedStateChanged", e);
             }
         }
 
-        @NonNull
-        private Method resolveMethod(@Nullable Context context, @NonNull String name) {
+        private void resolveMethod(Context context) {
             while (context != null) {
                 try {
                     if (!context.isRestricted()) {
-                        return context.getClass().getMethod(mMethodName, View.class, boolean.class, MultiStateTouchCheckBox.CheckedState.class);
+                        mMethod = context.getClass().getMethod(mMethodName, View.class, boolean.class, CheckedState.class);
+                        mContext = context;
+                        return;
                     }
                 } catch (NoSuchMethodException e) {
                     // Failed to find method, keep searching up the hierarchy.
@@ -580,10 +577,10 @@ public class MultiStateTouchCheckBox extends View {
             }
 
             final int id = mHostView.getId();
-            final String idText = id == -1 ? "" : " with id '"
+            final String idText = id == NO_ID ? "" : " with id '"
                     + mHostView.getContext().getResources().getResourceEntryName(id) + "'";
             throw new IllegalStateException("Could not find method " + mMethodName
-                    + "(View) in a parent or ancestor Context for onCheckedStateChanged "
+                    + "(View) in a parent or ancestor Context for android:onClick "
                     + "attribute defined on view " + mHostView.getClass() + idText);
         }
     }
