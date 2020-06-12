@@ -580,7 +580,7 @@ public class MultiStateTouchCheckBox extends View {
             final String idText = id == NO_ID ? "" : " with id '"
                     + mHostView.getContext().getResources().getResourceEntryName(id) + "'";
             throw new IllegalStateException("Could not find method " + mMethodName
-                    + "(View) in a parent or ancestor Context for android:onClick "
+                    + "(View, boolean, CheckedState) in a parent or ancestor Context for app:onCheckStateChange "
                     + "attribute defined on view " + mHostView.getClass() + idText);
         }
     }
