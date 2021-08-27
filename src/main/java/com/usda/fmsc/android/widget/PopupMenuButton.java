@@ -1,6 +1,5 @@
 package com.usda.fmsc.android.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -11,12 +10,12 @@ import androidx.appcompat.widget.PopupMenu;
 import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
+import androidx.appcompat.widget.AppCompatImageButton;
 
 import com.usda.fmsc.android.AndroidUtils;
 import com.usda.fmsc.android.R;
 
-public class PopupMenuButton extends ImageButton implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+public class PopupMenuButton extends AppCompatImageButton implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     private PopupMenu.OnMenuItemClickListener listener;
     private PopupMenu popupMenu;
 
@@ -30,12 +29,6 @@ public class PopupMenuButton extends ImageButton implements View.OnClickListener
 
     public PopupMenuButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
-    }
-
-    @TargetApi(21)
-    public PopupMenuButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
     }
 
@@ -67,15 +60,13 @@ public class PopupMenuButton extends ImageButton implements View.OnClickListener
 
 
     public void showPopupMenu() {
-        if (popupMenu.getMenu() != null) {
-            popupMenu.show();
-        }
+        popupMenu.getMenu();
+        popupMenu.show();
     }
 
     public void dismissPopupMenu() {
-        if (popupMenu.getMenu() != null) {
-            popupMenu.dismiss();
-        }
+        popupMenu.getMenu();
+        popupMenu.dismiss();
     }
 
 

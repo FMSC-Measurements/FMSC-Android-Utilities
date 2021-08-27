@@ -9,8 +9,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class SelectableStringArrayAdapter extends SelectableArrayAdapter<String> {
-    private LayoutInflater mInflater;
-    private int viewResourceId;
+    private final LayoutInflater mInflater;
+    private final int viewResourceId;
 
     public SelectableStringArrayAdapter(Activity activity, int resourceId, ArrayList<String> list) {
         super(activity, resourceId, list);
@@ -24,7 +24,7 @@ public class SelectableStringArrayAdapter extends SelectableArrayAdapter<String>
         TextView tv = (TextView) convertView;
 
         if (tv == null) {
-            tv = (TextView) mInflater.inflate(viewResourceId, null);
+            tv = (TextView) mInflater.inflate(viewResourceId, parent, false);
         }
 
         tv.setText(getItem(position));

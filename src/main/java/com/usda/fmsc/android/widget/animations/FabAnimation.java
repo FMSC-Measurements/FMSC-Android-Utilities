@@ -1,13 +1,12 @@
 package com.usda.fmsc.android.widget.animations;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 import android.view.animation.Interpolator;
 
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
-
-import io.codetail.animation.arcanimator.ArcAnimator;
-import io.codetail.animation.arcanimator.Side;
+import com.usda.fmsc.android.widget.animations.arcanimator.ArcAnimator;
+import com.usda.fmsc.android.widget.animations.arcanimator.Side;
 
 public class FabAnimation {
     protected View fab;

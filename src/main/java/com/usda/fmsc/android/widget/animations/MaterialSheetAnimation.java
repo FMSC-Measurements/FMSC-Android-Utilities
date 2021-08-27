@@ -19,14 +19,14 @@ public class MaterialSheetAnimation {
     private static final String SUPPORT_CARDVIEW_CLASSNAME = "androidx.cardview.widget.CardView";
     private static final int SHEET_REVEAL_OFFSET_Y = 5;
 
-    private View sheet;
-    private int sheetColor;
-    private int fabColor;
-    private Interpolator interpolator;
+    private final View sheet;
+    private final int sheetColor;
+    private final int fabColor;
+    private final Interpolator interpolator;
     private RevealXDirection revealXDirection;
     private RevealYDirection revealYDirection;
     private Method setCardBackgroundColor;
-    private boolean isSupportCardView;
+    private final boolean isSupportCardView;
 
     public MaterialSheetAnimation(View sheet, int sheetColor, int fabColor, Interpolator interpolator) {
         this.sheet = sheet;
@@ -170,70 +170,32 @@ public class MaterialSheetAnimation {
     protected void startCircularRevealAnim(View view, int centerX, int centerY, float startRadius,
                                            float endRadius, long duration, Interpolator interpolator,
                                            final AnimationListener listener) {
-        // Use native circular reveal on Android 5.0+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Native circular reveal uses coordinates relative to the view
-            int relativeCenterX = (int) (centerX - view.getX());
-            int relativeCenterY = (int) (centerY - view.getY());
-            // Setup animation
-            Animator anim = ViewAnimationUtils.createCircularReveal(view, relativeCenterX,
-                    relativeCenterY, startRadius, endRadius);
-            anim.setDuration(duration);
-            anim.setInterpolator(interpolator);
-            // Add listener
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    if (listener != null) {
-                        listener.onStart();
-                    }
+        // Native circular reveal uses coordinates relative to the view
+        int relativeCenterX = (int) (centerX - view.getX());
+        int relativeCenterY = (int) (centerY - view.getY());
+        // Setup animation
+        Animator anim = ViewAnimationUtils.createCircularReveal(view, relativeCenterX,
+                relativeCenterY, startRadius, endRadius);
+        anim.setDuration(duration);
+        anim.setInterpolator(interpolator);
+        // Add listener
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if (listener != null) {
+                    listener.onStart();
                 }
+            }
 
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (listener != null) {
-                        listener.onEnd();
-                    }
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (listener != null) {
+                    listener.onEnd();
                 }
-            });
-            // Start animation
-            anim.start();
-        } else {
-            // Circular reveal library uses absolute coordinates
-            // Setup animation
-            Animator anim = io.codetail.animation.ViewAnimationUtils
-                    .createCircularReveal(view, centerX, centerY, startRadius, endRadius);
-            anim.setDuration((int) duration);
-            anim.setInterpolator(interpolator);
-            // Add listener
-            anim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    if (listener != null) {
-                        listener.onStart();
-                    }
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (listener != null) {
-                        listener.onEnd();
-                    }
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-            // Start animation
-            anim.start();
-        }
+            }
+        });
+        // Start animation
+        anim.start();
     }
 
     protected void startColorAnim(final View view, final int startColor, final int endColor,
@@ -258,29 +220,26 @@ public class MaterialSheetAnimation {
                 }
             }
         });
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                // Update background color
-                Integer color = (Integer) animator.getAnimatedValue();
+        anim.addUpdateListener(animator -> {
+            // Update background color
+            Integer color = (Integer) animator.getAnimatedValue();
 
-                // Use CardView.setCardBackgroundColor() to avoid crashes on Android < 5.0 and to
-                // properly set the card's background color without removing the card's other styles
-                if (isSupportCardView) {
-                    // Use setCardBackground() method if it is available
-                    if (setCardBackgroundColor != null) {
-                        try {
-                            setCardBackgroundColor.invoke(sheet, color);
-                        } catch (Exception e) {
-                            // Ignore exceptions since there's no other way set a support CardView's
-                            // background color
-                        }
+            // Use CardView.setCardBackgroundColor() to avoid crashes on Android < 5.0 and to
+            // properly set the card's background color without removing the card's other styles
+            if (isSupportCardView) {
+                // Use setCardBackground() method if it is available
+                if (setCardBackgroundColor != null) {
+                    try {
+                        setCardBackgroundColor.invoke(sheet, color);
+                    } catch (Exception e) {
+                        // Ignore exceptions since there's no other way set a support CardView's
+                        // background color
                     }
                 }
-                // Set background color for all other views
-                else {
-                    view.setBackgroundColor(color);
-                }
+            }
+            // Set background color for all other views
+            else {
+                view.setBackgroundColor(color);
             }
         });
         // Start animation
@@ -319,7 +278,7 @@ public class MaterialSheetAnimation {
     }
 
     protected float getFabRevealRadius(View fab) {
-        return Math.max(fab.getWidth(), fab.getHeight()) / 2;
+        return (float) Math.max(fab.getWidth(), fab.getHeight()) / 2;
     }
 
     public RevealXDirection getRevealXDirection() {

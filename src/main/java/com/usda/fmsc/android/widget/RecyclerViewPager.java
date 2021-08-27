@@ -21,10 +21,10 @@ import java.util.List;
 /**
  * RecyclerViewPager
  */
-public class RecyclerViewPager extends RecyclerView {
+public class RecyclerViewPager<VH extends RecyclerView.ViewHolder> extends RecyclerView {
     public static final boolean DEBUG = BuildConfig.DEBUG;
 
-    private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
+    private RecyclerViewPagerAdapter<VH> mViewPagerAdapter;
     private float mTriggerOffset = 0.25f;
     private float mFlingFactor = 0.15f;
     private float mTouchSpan;
@@ -103,19 +103,19 @@ public class RecyclerViewPager extends RecyclerView {
     @SuppressWarnings("unchecked")
     @Override
     public void setAdapter(Adapter adapter) {
-        mViewPagerAdapter = new RecyclerViewPagerAdapter(this, adapter);
+        mViewPagerAdapter = new RecyclerViewPagerAdapter<VH>(this, adapter);
         super.setAdapter(mViewPagerAdapter);
     }
 
     @Override
-    public Adapter getAdapter() {
+    public Adapter<VH> getAdapter() {
         if (mViewPagerAdapter != null) {
             return mViewPagerAdapter.getAdapter();
         }
         return null;
     }
 
-    public RecyclerViewPagerAdapter getWrapperAdapter() {
+    public RecyclerViewPagerAdapter<VH> getWrapperAdapter() {
         return mViewPagerAdapter;
     }
 

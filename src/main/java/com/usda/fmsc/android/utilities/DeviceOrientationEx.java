@@ -4,10 +4,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.renderscript.Float2;
 
 /**
  * Based on DeviceOrientation by abdelhady (9/23/14).
@@ -98,10 +97,10 @@ public class DeviceOrientationEx implements SensorEventListener {
     private float[] azimuthes;
     private float[] rolls;
 
-    private SensorManager mSensorManager;
-    private Sensor accelerometer, magnetometer;
+    private final SensorManager mSensorManager;
+    private final Sensor accelerometer, magnetometer;
 
-    private PostDelayHandler postDelayHandler = new PostDelayHandler(250);
+    private final PostDelayHandler postDelayHandler = new PostDelayHandler(250);
 
     private ScreenOrientationChangeListener listener;
 
@@ -223,7 +222,7 @@ public class DeviceOrientationEx implements SensorEventListener {
     }
 
 
-    private Runnable orientationChanged = new Runnable() {
+    private final Runnable orientationChanged = new Runnable() {
         @Override
         public void run() {
             if (screen_orientation != old_screen_orientation) {

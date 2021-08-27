@@ -6,10 +6,9 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.pm.PackageInfo;
-import androidx.fragment.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -25,26 +24,14 @@ import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
-import android.provider.Settings;
-import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import android.telephony.TelephonyManager;
+import android.os.storage.StorageManager;
+import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -57,18 +44,33 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.ComponentActivity;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.UUID;
 
 @SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
-@SuppressLint("HardwareIds")
 public class AndroidUtils {
     public static class App {
         private static boolean playServicesAvailable;
@@ -95,21 +97,27 @@ public class AndroidUtils {
             return false;
         }
 
-        private static Intent getOpenFileIntent(Context context, String mimeType, String[] extraMimes) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);// Intent.ACTION_GET_CONTENT);
-            intent.setType(mimeType);
+
+        private static Intent getOpenFileIntent(Context context, String mimeType, String[] extraMimes, String initialUri) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+            intent.setType(mimeType != null ? mimeType : "*/*");
+
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+            if (initialUri != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialUri);
+                }
+            }
 
             if (extraMimes != null && extraMimes.length > 0) {
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimes);
             }
 
-            //intent.addCategory(Intent.CATEGORY_OPENABLE);
-
             // special intent for Samsung file manager
             Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
-            // if you want any file type, you can skip next line
-            //sIntent.putExtra("CONTENT_TYPE", minmeType);
-            sIntent.putExtra("CONTENT_TYPE", "*/*");
+            sIntent.putExtra("CONTENT_TYPE", mimeType != null ? mimeType : "*/*");
             sIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
             Intent chooserIntent;
@@ -124,29 +132,47 @@ public class AndroidUtils {
             return chooserIntent;
         }
 
-        public static void openFileIntent(Activity activity, String minmeType, int resultCode) {
-            openFileIntent(activity, minmeType, null, resultCode);
+
+        public static void openFileIntent(Activity activity, int resultCode) {
+            openFileIntent(activity, null, null, null, resultCode);
         }
 
-        public static void openFileIntent(Activity activity, String mimeType, String[] extraMimes, int resultCode) {
+        public static void openFileIntent(Activity activity, String mimeType, int resultCode) {
+            openFileIntent(activity, mimeType, null, null, resultCode);
+        }
+
+        public static void openFileIntent(Activity activity, String mimeType, String initialUri, int resultCode) {
+            openFileIntent(activity, mimeType, null, initialUri, resultCode);
+        }
+
+        public static void openFileIntent(Activity activity, String mimeType, String[] extraMimes, String initialUri, int resultCode) {
             try {
-                activity.startActivityForResult(getOpenFileIntent(activity, mimeType, extraMimes), resultCode);
+                activity.startActivityForResult(getOpenFileIntent(activity, mimeType, extraMimes, initialUri), resultCode);
             } catch (android.content.ActivityNotFoundException ex) {
                 Toast.makeText(activity.getApplicationContext(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
             }
         }
 
-        public static void openFileIntentFromFragment(Fragment fragment, String minmeType, int resultCode) {
-            openFileIntentFromFragment(fragment, minmeType, null, resultCode);
-        }
 
-        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, String[] extraMimes, int resultCode) {
-            try {
-                fragment.startActivityForResult(getOpenFileIntent(fragment.getActivity(), mimeType, extraMimes), resultCode);
-            } catch (android.content.ActivityNotFoundException ex) {
-                Toast.makeText(fragment.getActivity(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
-            }
-        }
+//        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, String initialUri, int resultCode) {
+//            openFileIntentFromFragment(fragment, mimeType, null, initialUri, resultCode);
+//        }
+//
+//        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, int resultCode) {
+//            openFileIntentFromFragment(fragment, mimeType, null, null, resultCode);
+//        }
+//
+//        public static void openFileIntentFromFragment(Fragment fragment, int resultCode) {
+//            openFileIntentFromFragment(fragment, null, null, null, resultCode);
+//        }
+//
+//        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, String[] extraMimes, String initialUri, int resultCode) {
+//            try {
+//                fragment.startActivityForResult(getOpenFileIntent(fragment.getActivity(), mimeType, extraMimes, initialUri), resultCode);
+//            } catch (android.content.ActivityNotFoundException ex) {
+//                Toast.makeText(fragment.getActivity(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
+//            }
+//        }
 
 
         public static int checkPlayServices(Activity activity, int resultCode) {
@@ -165,7 +191,6 @@ public class AndroidUtils {
         }
 
 
-
         public static boolean checkPermission(Context context, String permission) {
             return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
         }
@@ -182,7 +207,14 @@ public class AndroidUtils {
 
         public static boolean checkLocationPermission(Context context) {
             return checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
-                    checkPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+                    checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        @RequiresApi(29)
+        public static boolean checkBackgroundLocationPermission(Context context) {
+            return checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                    checkPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
         }
 
         public static boolean checkNetworkPermission(Context context) {
@@ -210,11 +242,11 @@ public class AndroidUtils {
 
 
 
-        public static boolean requestPermission(final Activity activity, final String permission, final int requestCode, String explanation) {
-            return requestPermission(activity, new String[] { permission }, requestCode, explanation);
+        public static boolean requestPermissionOld(final Activity activity, final String permission, final int requestCode, String explanation) {
+            return requestPermissionOld(activity, new String[] { permission }, requestCode, explanation);
         }
 
-        public static boolean requestPermission(final Activity activity, final String[] permissions, final int requestCode, String explanation) {
+        public static boolean requestPermissionOld(final Activity activity, final String[] permissions, final int requestCode, String explanation) {
             if (!checkPermissions(activity, permissions)) {
                 if (explanation != null && ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[0])) {
                     new AlertDialog.Builder(activity)
@@ -232,48 +264,91 @@ public class AndroidUtils {
             return false;
         }
 
+        public static boolean requestPermission(final ComponentActivity activity, final String permission, String explanation, ActivityResultCallback<Boolean> callback) {
+            if (!checkPermission(activity, permission)) {
+                ActivityResultLauncher<String> requestPermission = activity.registerForActivityResult(new ActivityResultContracts.RequestPermission(), callback);
 
-        public static boolean requestLocationPermission(final Activity activity, final int requestCode) {
-            return requestPermission(activity,
-                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    requestCode, null);
+            if (explanation != null) {
+                new AlertDialog.Builder(activity)
+                        .setMessage(explanation)
+                        .setPositiveButton("Allow", (dialog1, which) -> requestPermission.launch(permission))
+                        .setNeutralButton("Cancel", null);
+            } else {
+                requestPermission.launch(permission);
+            }
+
+            return false;
         }
 
-        public static boolean requestNetworkPermission(final Activity activity, final int requestCode) {
-            return requestPermission(activity,
-                    new String[] { Manifest.permission.ACCESS_NETWORK_STATE, android.Manifest.permission.INTERNET},
-                    requestCode, null);
+            return true;
         }
 
-        public static boolean requestStoragePermission(final Activity activity, final int requestCode) {
-            return requestPermission(activity,
-                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                    requestCode, null);
+        public static boolean requestPermissions(final ComponentActivity activity, final String[] permissions, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
+            if (!checkPermissions(activity, permissions)) {
+
+                if (explanation != null) {
+                    new AlertDialog.Builder(activity)
+                            .setMessage(explanation)
+                            .setPositiveButton("Allow", (dialog1, which) -> requestPermissions.launch(permissions))
+                            .setNeutralButton("Cancel", null);
+                } else {
+                    requestPermissions.launch(permissions);
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
-        public static boolean requestBluetoothPermission(final Activity activity, final int requestCode) {
-            return requestPermission(activity,
-                    new String[] { Manifest.permission.BLUETOOTH , android.Manifest.permission.BLUETOOTH_ADMIN},
-                    requestCode, null);
+//        public static boolean requestLocationPermission(final Activity activity, final int requestCode) {
+//            return requestPermissionOld(activity,
+//                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
+//                    requestCode, null);
+//        }
+
+        @RequiresApi(29)
+        public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
+            requestPermissions(activity,
+                    new String[] { Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION }, requestPermissions, explanation);
+            return false;
         }
 
-        public static boolean requestPhonePermission(final Activity activity, final int requestCode) {
-            return requestPermission(activity,
-                    new String[] { Manifest.permission.READ_PHONE_STATE },
-                    requestCode, null);
-        }
-
-        public static boolean requestPhonePermission(final Activity activity, final int requestCode, String explanation) {
-            return requestPermission(activity,
-                    new String[] { Manifest.permission.READ_PHONE_STATE },
-                    requestCode, explanation);
-        }
-
-        public static boolean requestCameraPermission(final Activity activity, final int requestCode) {
-            return requestPermission(activity,
-                    new String[] { Manifest.permission.CAMERA },
-                    requestCode, null);
-        }
+//        public static boolean requestNetworkPermission(final Activity activity, final int requestCode) {
+//            return requestPermissionOld(activity,
+//                    new String[] { Manifest.permission.ACCESS_NETWORK_STATE, android.Manifest.permission.INTERNET},
+//                    requestCode, null);
+//        }
+//
+//        public static boolean requestStoragePermission(final Activity activity, final int requestCode) {
+//            return requestPermissionOld(activity,
+//                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE},
+//                    requestCode, null);
+//        }
+//
+//        public static boolean requestBluetoothPermission(final Activity activity, final int requestCode) {
+//            return requestPermissionOld(activity,
+//                    new String[] { Manifest.permission.BLUETOOTH , android.Manifest.permission.BLUETOOTH_ADMIN},
+//                    requestCode, null);
+//        }
+//
+//        public static boolean requestPhonePermission(final Activity activity, final int requestCode) {
+//            return requestPermissionOld(activity,
+//                    new String[] { Manifest.permission.READ_PHONE_STATE },
+//                    requestCode, null);
+//        }
+//
+//        public static boolean requestPhonePermission(final Activity activity, final int requestCode, String explanation) {
+//            return requestPermissionOld(activity,
+//                    new String[] { Manifest.permission.READ_PHONE_STATE },
+//                    requestCode, explanation);
+//        }
+//
+//        public static boolean requestCameraPermission(final Activity activity, final int requestCode) {
+//            return requestPermissionOld(activity,
+//                    new String[] { Manifest.permission.CAMERA },
+//                    requestCode, null);
+//        }
 
 
 
@@ -296,6 +371,10 @@ public class AndroidUtils {
 
             return null;
         }
+
+
+
+
     }
 
     public static class Device {
@@ -351,50 +430,29 @@ public class AndroidUtils {
         }
 
 
-//        public static void isInternetAvailable(final InternetAvailableCallback callback) {
-//            new Thread(() -> {
-//                boolean available;
-//                try {
-//                    HttpURLConnection urlc = (HttpURLConnection)(new URL("http://clients3.google.com/generate_204").openConnection());
-//                    available = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
-//                } catch (Exception e) {
-//                    available = false;
-//                }
-//
-//                if (callback != null) {
-//                    callback.onCheckInternet(available);
-//                }
-//            }).start();
-//        }
-//
-//        public interface InternetAvailableCallback {
-//            void onCheckInternet(boolean internetAvailable);
+//        public static String getAndroidID(Context context) {
+//            return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 //        }
 
-
-        public static String getAndroidID(Context context) {
-            return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        }
-
-        public static String getDeviceID(Context context) {
-            if (App.checkPhonePermission(context)) {
-                final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-
-                final String tmDevice, tmSerial, androidId;
-
-                if (tm != null) {
-                    tmDevice = tm.getDeviceId();
-                    tmSerial = tm.getSimSerialNumber();
-                    androidId = getAndroidID(context);
-
-                    return new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode()).toString();
-                }
-
-                throw new RuntimeException("Unable to get TELEPHONY_SERVICE");
-            } else {
-                throw new RuntimeException("No Phone Permission");
-            }
-        }
+//        public static String getDeviceID(Context context) {
+//            if (App.checkPhonePermission(context)) {
+//                final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+//
+//                final String tmDevice, tmSerial, androidId;
+//
+//                if (tm != null) {
+//                    tmDevice = tm.getDeviceId();
+//                    tmSerial = tm.getSimSerialNumber();
+//                    androidId = getAndroidID(context);
+//
+//                    return new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode()).toString();
+//                }
+//
+//                throw new RuntimeException("Unable to get TELEPHONY_SERVICE");
+//            } else {
+//                throw new RuntimeException("No Phone Permission");
+//            }
+//        }
 
 
         public static boolean isFullOrientationAvailable(Context context) {
@@ -450,6 +508,7 @@ public class AndroidUtils {
         }
 
 
+        @SuppressLint("ClickableViewAccessibility")
         public static void hideKeyboardOnTouch(final View view, final EditText editText, final boolean setEndSelected) {
             view.setOnTouchListener((v, event) -> {
                 if (editText.hasFocus()) {
@@ -489,8 +548,9 @@ public class AndroidUtils {
             hideKeyboardOnTouch(view, editTexts, false);
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         public static void hideKeyboardOnTouch(final View view, final EditText[] editTexts, final boolean setEndSelected) {
-            view.setOnTouchListener((v, event) -> {
+            view.setOnTouchListener(( View v, MotionEvent event) -> {
                 InputMethodManager imm = (InputMethodManager) view.getContext()
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
@@ -917,7 +977,7 @@ public class AndroidUtils {
         }
     }
 
-    public static class Internal {
+/*    public static class Internal {
         @SuppressWarnings("JavaReflectionInvocation")
         public static void registerOnActivityDestroyListener(Object obj, PreferenceManager preferenceManager) {
             try {
@@ -930,7 +990,7 @@ public class AndroidUtils {
                 //
             }
         }
-    }
+    }*/
 
     public static class Animation {
         public static float getAnimatedFraction(ValueAnimator animator) {
@@ -994,6 +1054,38 @@ public class AndroidUtils {
             return FileProvider.getUriForFile(activity,
                     appId + ".provider",
                     file);
+        }
+
+        public static Uri getDocumentsUri(Context context) {
+            return getDocumentsUri(context, null);
+        }
+
+        public static Uri getDocumentsUri(Context context, String subDir) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q)
+            {
+                StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+
+                Intent intent = sm.getPrimaryStorageVolume().createOpenDocumentTreeIntent();
+                String startDir = "Documents";
+
+                Uri uri = intent.getParcelableExtra("android.provider.extra.INITIAL_URI");
+
+                String scheme = uri.toString();
+
+                scheme = scheme.replace("/root/", "/document/");
+
+                //scheme += "%3A" + startDir;
+                scheme += "/" + startDir;
+
+                if (subDir != null) {
+                    scheme += "%3A" + subDir.replace("/" ,"%3A");
+                    scheme += "/" + subDir;
+                }
+
+                return Uri.parse(scheme);
+            }
+
+            return null;
         }
     }
 

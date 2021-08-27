@@ -6,7 +6,7 @@ import android.view.animation.LinearInterpolator;
 import com.usda.fmsc.android.widget.drawables.FABProgressArcDrawable;
 
 final class RotateArcAnimation implements FABProgressArcDrawable.ArcAnimation {
-    private ValueAnimator rotateAnim;
+    private final ValueAnimator rotateAnim;
 
     RotateArcAnimation(ValueAnimator.AnimatorUpdateListener updateListener) {
         rotateAnim = ValueAnimator.ofFloat(0f, 360f);

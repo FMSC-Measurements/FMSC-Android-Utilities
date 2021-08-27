@@ -1,10 +1,8 @@
 package com.usda.fmsc.android.fragments;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -22,6 +20,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -53,6 +52,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -63,7 +63,6 @@ public class CameraFragment extends Fragment {
      * Conversion from screen rotation to JPEG orientation.
      */
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    private static final int REQUEST_CAMERA_PERMISSION = 1;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -120,22 +119,22 @@ public class CameraFragment extends Fragment {
             = new TextureView.SurfaceTextureListener() {
 
         @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+        public void onSurfaceTextureAvailable(@NonNull SurfaceTexture texture, int width, int height) {
             openCamera(width, height);
         }
 
         @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+        public void onSurfaceTextureSizeChanged(@NonNull SurfaceTexture texture, int width, int height) {
             configureTransform(width, height);
         }
 
         @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+        public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture texture) {
             return true;
         }
 
         @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+        public void onSurfaceTextureUpdated(@NonNull SurfaceTexture texture) {
         }
 
     };
@@ -239,7 +238,7 @@ public class CameraFragment extends Fragment {
 
             onImageReady(image);
 
-            mBackgroundHandler.post(new ImageSaver(image, createImageFile()));
+            mBackgroundHandler.post(new ImageSaver(image, getCreateImageFile()));
         }
 
     };
@@ -264,7 +263,7 @@ public class CameraFragment extends Fragment {
     /**
      * A {@link Semaphore} to prevent the app from exiting before closing the camera.
      */
-    private Semaphore mCameraOpenCloseLock = new Semaphore(1);
+    private final Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
     /**
      * Whether the current camera device supports Flash or not.
@@ -279,8 +278,7 @@ public class CameraFragment extends Fragment {
     /**
      * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
      */
-    private CameraCaptureSession.CaptureCallback mCaptureCallback
-            = new CameraCaptureSession.CaptureCallback() {
+    private final CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
 
         private void process(CaptureResult result) {
             switch (mState) {
@@ -466,18 +464,6 @@ public class CameraFragment extends Fragment {
         listener = null;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                onError("Requires camera permission.");
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
     /**
      * Sets up member variables related to camera.
      *
@@ -486,109 +472,115 @@ public class CameraFragment extends Fragment {
      */
     private void setUpCameraOutputs(int width, int height) {
         Activity activity = getActivity();
-        CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
-        try {
-            for (String cameraId : manager.getCameraIdList()) {
-                CameraCharacteristics characteristics
-                        = manager.getCameraCharacteristics(cameraId);
 
-                // We don't use a front facing camera in this sample.
-                Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
-                    continue;
+        if (activity != null) {
+            CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+
+            try {
+                for (String cameraId : manager.getCameraIdList()) {
+                    CameraCharacteristics characteristics
+                            = manager.getCameraCharacteristics(cameraId);
+
+                    // We don't use a front facing camera in this sample.
+                    Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                    if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                        continue;
+                    }
+
+                    StreamConfigurationMap map = characteristics.get(
+                            CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                    if (map == null) {
+                        continue;
+                    }
+
+                    // For still image captures, we use the largest available size.
+                    Size largest = Collections.max(
+                            Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
+                            new CompareSizesByArea());
+                    mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
+                            ImageFormat.JPEG, /*maxImages*/2);
+                    mImageReader.setOnImageAvailableListener(
+                            mOnImageAvailableListener, mBackgroundHandler);
+
+                    // Find out if we need to swap dimension to get the preview size relative to sensor
+                    // coordinate.
+                    int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+                    //noinspection ConstantConditions
+                    mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                    boolean swappedDimensions = false;
+                    switch (displayRotation) {
+                        case Surface.ROTATION_0:
+                        case Surface.ROTATION_180:
+                            if (mSensorOrientation == 90 || mSensorOrientation == 270) {
+                                swappedDimensions = true;
+                            }
+                            break;
+                        case Surface.ROTATION_90:
+                        case Surface.ROTATION_270:
+                            if (mSensorOrientation == 0 || mSensorOrientation == 180) {
+                                swappedDimensions = true;
+                            }
+                            break;
+                        default:
+                            Log.e(TAG, "Display rotation is invalid: " + displayRotation);
+                    }
+
+                    Point displaySize = new Point();
+                    activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
+                    int rotatedPreviewWidth = width;
+                    int rotatedPreviewHeight = height;
+                    int maxPreviewWidth = displaySize.x;
+                    int maxPreviewHeight = displaySize.y;
+
+                    if (swappedDimensions) {
+                        rotatedPreviewWidth = height;
+                        rotatedPreviewHeight = width;
+                        maxPreviewWidth = displaySize.y;
+                        maxPreviewHeight = displaySize.x;
+                    }
+
+                    if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
+                        maxPreviewWidth = MAX_PREVIEW_WIDTH;
+                    }
+
+                    if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
+                        maxPreviewHeight = MAX_PREVIEW_HEIGHT;
+                    }
+
+                    // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
+                    // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
+                    // garbage capture data.
+                    mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
+                            rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
+                            maxPreviewHeight, largest);
+
+                    // We fit the aspect ratio of TextureView to the size of preview we picked.
+    //                int orientation = getResources().getConfiguration().orientation;
+    //                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    //                    mTextureView.setAspectRatio(
+    //                            mPreviewSize.getWidth(), mPreviewSize.getHeight());
+    //                } else {
+    //                    mTextureView.setAspectRatio(
+    //                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
+    //                }
+
+                    // Check if the flash is supported.
+                    Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+                    mFlashSupported = available != null && available;
+
+                    mCameraId = cameraId;
+                    return;
                 }
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                // Currently an NPE is thrown when the Camera2API is used but not supported on the
+                // device this code runs.
 
-                StreamConfigurationMap map = characteristics.get(
-                        CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                if (map == null) {
-                    continue;
-                }
-
-                // For still image captures, we use the largest available size.
-                Size largest = Collections.max(
-                        Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
-                        new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
-                        ImageFormat.JPEG, /*maxImages*/2);
-                mImageReader.setOnImageAvailableListener(
-                        mOnImageAvailableListener, mBackgroundHandler);
-
-                // Find out if we need to swap dimension to get the preview size relative to sensor
-                // coordinate.
-                int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-                //noinspection ConstantConditions
-                mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-                boolean swappedDimensions = false;
-                switch (displayRotation) {
-                    case Surface.ROTATION_0:
-                    case Surface.ROTATION_180:
-                        if (mSensorOrientation == 90 || mSensorOrientation == 270) {
-                            swappedDimensions = true;
-                        }
-                        break;
-                    case Surface.ROTATION_90:
-                    case Surface.ROTATION_270:
-                        if (mSensorOrientation == 0 || mSensorOrientation == 180) {
-                            swappedDimensions = true;
-                        }
-                        break;
-                    default:
-                        Log.e(TAG, "Display rotation is invalid: " + displayRotation);
-                }
-
-                Point displaySize = new Point();
-                activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
-                int rotatedPreviewWidth = width;
-                int rotatedPreviewHeight = height;
-                int maxPreviewWidth = displaySize.x;
-                int maxPreviewHeight = displaySize.y;
-
-                if (swappedDimensions) {
-                    rotatedPreviewWidth = height;
-                    rotatedPreviewHeight = width;
-                    maxPreviewWidth = displaySize.y;
-                    maxPreviewHeight = displaySize.x;
-                }
-
-                if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
-                    maxPreviewWidth = MAX_PREVIEW_WIDTH;
-                }
-
-                if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
-                    maxPreviewHeight = MAX_PREVIEW_HEIGHT;
-                }
-
-                // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
-                // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
-                // garbage capture data.
-                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
-                        rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
-                        maxPreviewHeight, largest);
-
-                // We fit the aspect ratio of TextureView to the size of preview we picked.
-//                int orientation = getResources().getConfiguration().orientation;
-//                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//                    mTextureView.setAspectRatio(
-//                            mPreviewSize.getWidth(), mPreviewSize.getHeight());
-//                } else {
-//                    mTextureView.setAspectRatio(
-//                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
-//                }
-
-                // Check if the flash is supported.
-                Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-                mFlashSupported = available == null ? false : available;
-
-                mCameraId = cameraId;
-                return;
+                onError("This device doesn't support Camera2 API");
             }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            // Currently an NPE is thrown when the Camera2API is used but not supported on the
-            // device this code runs.
-
-            onError("This device doesn\'t support Camera2 API");
+        } else {
+            throw new RuntimeException("Unable to get Camera Service");
         }
     }
 
@@ -597,21 +589,28 @@ public class CameraFragment extends Fragment {
      */
     @SuppressWarnings("MissingPermission")
     private void openCamera(int width, int height) {
-        if (AndroidUtils.App.requestPermission(getActivity(), Manifest.permission.CAMERA, REQUEST_CAMERA_PERMISSION, null)) {
+        if (AndroidUtils.App.checkCameraPermission(getActivity())) {
             setUpCameraOutputs(width, height);
             configureTransform(width, height);
             Activity activity = getActivity();
-            CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
-            try {
-                if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-                    throw new RuntimeException("Time out waiting to lock camera opening.");
+
+            if (activity != null) {
+                CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+                try {
+                    if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+                        throw new RuntimeException("Time out waiting to lock camera opening.");
+                    }
+                    manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
                 }
-                manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
+            } else {
+                throw new RuntimeException("Unable to get Camera Service");
             }
+        } else {
+            throw new RuntimeException("No Camera Permission");
         }
     }
 
@@ -882,13 +881,11 @@ public class CameraFragment extends Fragment {
                 mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
                         mBackgroundHandler);
             } else {
-                getActivity().runOnUiThread(() -> {
-                    closeCamera();
-                    openCamera(mTextureView.getWidth(), mTextureView.getHeight());
-                    imagesCaptured = 0;
+                closeCamera();
+                openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+                imagesCaptured = 0;
 
-                    onError("Refreshed Camera");
-                });
+                onError("Refreshed Camera");
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -930,10 +927,11 @@ public class CameraFragment extends Fragment {
 
     protected String generateFileName() {
         DateTime dateTime = DateTime.now();
-        return String.format("IMG_%d%d%d_%d", dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), dateTime.getMillisOfDay());
+        return String.format(Locale.getDefault(), "IMG_%d%d%d_%d", dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), dateTime.getMillisOfDay());
     }
 
-    private File createImageFile() {
+
+    protected File getCreateImageFile() {
         return new File(getImageSaveDir(), generateFileName() + ".jpg");
     }
 
@@ -956,7 +954,7 @@ public class CameraFragment extends Fragment {
         }
     }
 
-    protected void onImageSaved(String filePath) {
+    protected void onImageSaved(Uri filePath) {
         if (listener != null) {
             listener.onImageSaved(filePath);
         }
@@ -1026,7 +1024,7 @@ public class CameraFragment extends Fragment {
             }
 
             if (!error) {
-                onImageSaved(mFile.getAbsolutePath());
+                onImageSaved(Uri.fromFile(mFile));
             }
         }
     }
@@ -1051,7 +1049,7 @@ public class CameraFragment extends Fragment {
         void onCaptured();
         void onCapturePressed();
         void onImageReady(Image image);
-        void onImageSaved(String filePath);
+        void onImageSaved(Uri filePath);
         void onError(String message);
     }
 }

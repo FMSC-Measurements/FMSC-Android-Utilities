@@ -1,14 +1,9 @@
 package com.usda.fmsc.android.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -18,9 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Scroller;
 
-import com.usda.fmsc.android.adapters.TableAdapter;
 import com.usda.fmsc.android.R;
+import com.usda.fmsc.android.adapters.TableAdapter;
 import com.usda.fmsc.android.widget.views.Recycler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpreadsheetView extends ViewGroup {
     private int currentX;
@@ -36,9 +34,9 @@ public class SpreadsheetView extends ViewGroup {
 
     @SuppressWarnings("unused")
     private View headView;
-    private List<View> rowViewList;
-    private List<View> columnViewList;
-    private List<List<View>> bodyViewTable;
+    private final List<View> rowViewList;
+    private final List<View> columnViewList;
+    private final List<List<View>> bodyViewTable;
 
     private int rowCount;
     private int columnCount;
@@ -63,7 +61,7 @@ public class SpreadsheetView extends ViewGroup {
 
     private VelocityTracker velocityTracker;
 
-    private int touchSlop;
+    private final int touchSlop;
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -526,11 +524,11 @@ public class SpreadsheetView extends ViewGroup {
         setMeasuredDimension(w, h);
     }
 
-    private int sumArray(int array[]) {
+    private int sumArray(int[] array) {
         return sumArray(array, 0, array.length);
     }
 
-    private int sumArray(int array[], int firstIndex, int count) {
+    private int sumArray(int[] array, int firstIndex, int count) {
         int sum = 0;
         count += firstIndex;
         for (int i = firstIndex; i < count; i++) {
@@ -605,7 +603,7 @@ public class SpreadsheetView extends ViewGroup {
         scrollY = scrollBounds(scrollY, firstRow, heights, height);
     }
 
-    private int scrollBounds(int desiredScroll, int firstCell, int sizes[], int viewSize) {
+    private int scrollBounds(int desiredScroll, int firstCell, int[] sizes, int viewSize) {
         if (desiredScroll < 0) {
             desiredScroll = Math.max(desiredScroll, -sumArray(sizes, 1, firstCell));
         } else if (desiredScroll > 0) {
@@ -615,7 +613,7 @@ public class SpreadsheetView extends ViewGroup {
     }
 
     private void adjustFirstCellsAndScroll() {
-        int values[];
+        int[] values;
 
         values = adjustFirstCellsAndScroll(scrollX, firstColumn, widths);
         scrollX = values[0];
@@ -626,7 +624,7 @@ public class SpreadsheetView extends ViewGroup {
         firstRow = values[1];
     }
 
-    private int[] adjustFirstCellsAndScroll(int scroll, int firstCell, int sizes[]) {
+    private int[] adjustFirstCellsAndScroll(int scroll, int firstCell, int[] sizes) {
         if (scroll > 0) {
             while (sizes[firstCell + 1] < scroll) {
                 firstCell++;

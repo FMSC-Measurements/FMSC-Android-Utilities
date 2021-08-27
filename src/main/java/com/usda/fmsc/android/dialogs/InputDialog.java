@@ -9,7 +9,7 @@ import android.widget.EditText;
 public class InputDialog extends AlertDialog.Builder {
     protected EditText input;
     private String inputText;
-    private Context context;
+    private final Context context;
 
     public InputDialog(Context context) {
         super(context);

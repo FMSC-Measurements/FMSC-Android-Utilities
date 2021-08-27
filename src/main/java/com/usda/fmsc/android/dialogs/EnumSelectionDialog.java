@@ -5,23 +5,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 
 public class EnumSelectionDialog<T extends Enum<T>> extends AlertDialog.Builder {
-    private Enum[] items;
-    private String[] itemNames;
-    private Enum selectedItem;
+    private final Enum<T>[] items;
+    private Enum<T> selectedItem;
     private DialogInterface.OnClickListener listener;
 
-    public EnumSelectionDialog(Context context, Class<? extends Enum> enumType) {
+    public EnumSelectionDialog(Context context, Class<? extends Enum<T>> enumType) {
         this(context, enumType.getEnumConstants());
     }
 
-    public EnumSelectionDialog(Context context, Enum[] enums) {
+    public EnumSelectionDialog(Context context, Enum<T>[] enums) {
         super(context);
 
         this.items = enums;
 
         if (items.length > 0) {
 
-            itemNames = new String[items.length];
+            String[] itemNames = new String[items.length];
             for (int i = 0; i < items.length; i++) {
                 itemNames[i] = items[i].toString();
             }

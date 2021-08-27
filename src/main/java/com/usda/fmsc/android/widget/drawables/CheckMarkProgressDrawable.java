@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public class CheckMarkProgressDrawable implements IProgressDrawable {
-    private float[] points = new float[6];
+    private final float[] points = new float[6];
 
     public CheckMarkProgressDrawable() { }
 

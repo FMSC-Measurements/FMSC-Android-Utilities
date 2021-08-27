@@ -2,7 +2,8 @@ package com.usda.fmsc.android.widget.layoutmanagers;
 
 import android.content.Context;
 import android.graphics.Rect;
-import androidx.core.view.ViewCompat;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
@@ -37,7 +38,7 @@ public class LinearLayoutManagerEx extends LinearLayoutManager {
 
     private int childSize = DEFAULT_CHILD_SIZE;
     private boolean hasChildSize, scrollingEnabled = true;
-    private int overScrollMode = ViewCompat.OVER_SCROLL_ALWAYS;
+    private int overScrollMode = View.OVER_SCROLL_ALWAYS;
     private final Rect tmpRect = new Rect();
 
     public LinearLayoutManagerEx(Context context) {
@@ -53,21 +54,21 @@ public class LinearLayoutManagerEx extends LinearLayoutManager {
     public LinearLayoutManagerEx(RecyclerView view) {
         super(view.getContext());
         this.view = view;
-        this.overScrollMode = ViewCompat.getOverScrollMode(view);
+        this.overScrollMode = view.getOverScrollMode();
     }
 
     public LinearLayoutManagerEx(RecyclerView view, int orientation, boolean reverseLayout) {
         super(view.getContext(), orientation, reverseLayout);
         this.view = view;
-        this.overScrollMode = ViewCompat.getOverScrollMode(view);
+        this.overScrollMode = view.getOverScrollMode();
     }
 
     public void setOverScrollMode(int overScrollMode) {
-        if (overScrollMode < ViewCompat.OVER_SCROLL_ALWAYS || overScrollMode > ViewCompat.OVER_SCROLL_NEVER)
+        if (overScrollMode < View.OVER_SCROLL_ALWAYS || overScrollMode > View.OVER_SCROLL_NEVER)
             throw new IllegalArgumentException("Unknown overscroll mode: " + overScrollMode);
         if (this.view == null) throw new IllegalStateException("view == null");
         this.overScrollMode = overScrollMode;
-        ViewCompat.setOverScrollMode(view, overScrollMode);
+        view.setOverScrollMode(overScrollMode);
     }
 
     public static int makeUnspecifiedSpec() {
@@ -75,7 +76,7 @@ public class LinearLayoutManagerEx extends LinearLayoutManager {
     }
 
     @Override
-    public void onMeasure(RecyclerView.Recycler recycler, RecyclerView.State state, int widthSpec, int heightSpec) {
+    public void onMeasure(@NonNull RecyclerView.Recycler recycler, @NonNull RecyclerView.State state, int widthSpec, int heightSpec) {
         final int widthMode = View.MeasureSpec.getMode(widthSpec);
         final int heightMode = View.MeasureSpec.getMode(heightSpec);
 
@@ -172,11 +173,11 @@ public class LinearLayoutManagerEx extends LinearLayoutManager {
 
         setMeasuredDimension(width, height);
 
-        if (view != null && overScrollMode == ViewCompat.OVER_SCROLL_IF_CONTENT_SCROLLS) {
+        if (view != null && overScrollMode == View.OVER_SCROLL_IF_CONTENT_SCROLLS) {
             final boolean fit = (vertical && (!hasHeightSize || height < heightSize))
                     || (!vertical && (!hasWidthSize || width < widthSize));
 
-            ViewCompat.setOverScrollMode(view, fit ? ViewCompat.OVER_SCROLL_NEVER : ViewCompat.OVER_SCROLL_ALWAYS);
+            view.setOverScrollMode(fit ? View.OVER_SCROLL_NEVER : View.OVER_SCROLL_ALWAYS);
         }
     }
 
@@ -254,8 +255,8 @@ public class LinearLayoutManagerEx extends LinearLayoutManager {
         final int hDecoration = getRightDecorationWidth(child) + getLeftDecorationWidth(child);
         final int vDecoration = getTopDecorationHeight(child) + getBottomDecorationHeight(child);
 
-        final int childWidthSpec = getChildMeasureSpec(widthSize, hPadding + hMargin + hDecoration, p.width, canScrollHorizontally());
-        final int childHeightSpec = getChildMeasureSpec(heightSize, vPadding + vMargin + vDecoration, p.height, canScrollVertically());
+        final int childWidthSpec = getChildMeasureSpec(widthSize, View.MeasureSpec.EXACTLY, hPadding + hMargin + hDecoration, p.width, canScrollHorizontally());
+        final int childHeightSpec = getChildMeasureSpec(heightSize, View.MeasureSpec.EXACTLY, vPadding + vMargin + vDecoration, p.height, canScrollVertically());
 
         child.measure(childWidthSpec, childHeightSpec);
 
@@ -291,9 +292,7 @@ public class LinearLayoutManagerEx extends LinearLayoutManager {
                 insetsDirtyField.setAccessible(true);
             }
             insetsDirtyField.set(p, true);
-        } catch (NoSuchFieldException e) {
-            onMakeInsertDirtyFailed();
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             onMakeInsertDirtyFailed();
         }
     }

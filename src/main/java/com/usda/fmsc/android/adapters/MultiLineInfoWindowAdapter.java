@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
 public class MultiLineInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-    private Context context;
+    private final Context context;
 
     public MultiLineInfoWindowAdapter(Context context) {
         this.context = context;
@@ -39,7 +41,7 @@ public class MultiLineInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     @Override
-    public View getInfoWindow(Marker marker) {
+    public View getInfoWindow(@NonNull Marker marker) {
         return null;
     }
 }

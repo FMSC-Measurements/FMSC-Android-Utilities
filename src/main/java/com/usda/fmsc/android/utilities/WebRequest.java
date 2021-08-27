@@ -11,7 +11,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 public class WebRequest {
-    private RequestQueue mRequestQueue;
+    private final RequestQueue mRequestQueue;
 
     public WebRequest(Context context) {
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
@@ -25,7 +25,7 @@ public class WebRequest {
         getRequestQueue().add(req);
     }
 
-    public void addRequest(Request request) {
+    public <T> void addRequest(Request<T> request) {
         addToRequestQueue(request);
     }
 

@@ -14,14 +14,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import androidx.annotation.NonNull;
+
 import com.usda.fmsc.android.R;
 
 public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener, View.OnLongClickListener {
     /** Dummy listener to prevent NPE's. */
-    private static final OnFlipCheckedChangeListener DUMMY_LISTENER = new OnFlipCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(FlipCheckBoxEx flipCardView, boolean isChecked) {
-        }
+    private static final OnFlipCheckedChangeListener DUMMY_LISTENER = (flipCardView, isChecked) -> {
     };
 
     /** Child index to access the <i>front</i> view. */
@@ -37,7 +36,7 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
     public static final int DEFAULT_RESOURCE = 0;
 
     /** Accept Animation. */
-    private Animation acceptAnimation = AnimationUtils.loadAnimation(
+    private final Animation acceptAnimation = AnimationUtils.loadAnimation(
             getContext(), R.anim.scale);
     /** View listener. */
     private OnFlipCheckedChangeListener mOnCheckedChangeListener = DUMMY_LISTENER;
@@ -686,6 +685,7 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "CompoundButton.SavedState{"
                     + Integer.toHexString(System.identityHashCode(this))

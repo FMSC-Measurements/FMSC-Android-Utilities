@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -19,8 +20,7 @@ import com.usda.fmsc.android.widget.drawables.FABProgressArcDrawable;
 import com.usda.fmsc.android.widget.drawables.FABProgressArcView;
 
 
-@CoordinatorLayout.DefaultBehavior(FABProgressCircleEx.Behavior.class)
-public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDrawable.ArcListener {
+public class FABProgressCircleEx extends FrameLayout implements CoordinatorLayout.AttachedBehavior, FABProgressArcDrawable.ArcListener {
     private final int SIZE_NORMAL = 1;
     private final int SIZE_MINI = 2;
 
@@ -153,6 +153,13 @@ public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDr
         }
     }
 
+    @NonNull
+    @Override
+    public FABProgressCircleEx.Behavior getBehavior() {
+        return new FABProgressCircleEx.Behavior();
+    }
+
+
     public interface FABProgressListener {
         void onFABProgressAnimationEnd();
     }
@@ -170,15 +177,16 @@ public class FABProgressCircleEx extends FrameLayout implements FABProgressArcDr
 
 
     public static class Behavior extends CoordinatorLayout.Behavior<FABProgressCircleEx> {
-        private final boolean SNACKBAR_BEHAVIOR_ENABLED = Build.VERSION.SDK_INT >= 11;
+//        private final boolean SNACKBAR_BEHAVIOR_ENABLED = Build.VERSION.SDK_INT >= 11;
 
         @Override
-        public boolean layoutDependsOn(CoordinatorLayout parent, FABProgressCircleEx child, View dependency) {
-            return SNACKBAR_BEHAVIOR_ENABLED && dependency instanceof Snackbar.SnackbarLayout;
+        public boolean layoutDependsOn(@NonNull CoordinatorLayout parent,@NonNull  FABProgressCircleEx child,@NonNull  View dependency) {
+            return dependency instanceof Snackbar.SnackbarLayout;
+//            return SNACKBAR_BEHAVIOR_ENABLED && dependency instanceof Snackbar.SnackbarLayout;
         }
 
         @Override
-        public boolean onDependentViewChanged(CoordinatorLayout parent, FABProgressCircleEx child, View dependency) {
+        public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, FABProgressCircleEx child, View dependency) {
             float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
             child.setTranslationY(translationY);
             return true;

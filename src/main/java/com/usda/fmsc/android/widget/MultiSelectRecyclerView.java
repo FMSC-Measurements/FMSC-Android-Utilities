@@ -25,7 +25,7 @@ public class MultiSelectRecyclerView extends RecyclerViewEx {
 
 
     public static abstract class MSAdapter<VH extends MSViewHolder> extends RecyclerViewEx.AdapterEx<VH> {
-        private MultiSelector multiSelector;
+        private final MultiSelector multiSelector;
 
         public MSAdapter(Context context, MultiSelector multiSelector) {
             super(context);
@@ -85,7 +85,7 @@ public class MultiSelectRecyclerView extends RecyclerViewEx {
         }
 
         public void bind() {
-            multiSelector.bindHolder(this, getAdapterPosition(), getItemId());
+            multiSelector.bindHolder(this, getBindingAdapterPosition(), getItemId());
         }
 
         public boolean isSelected() {

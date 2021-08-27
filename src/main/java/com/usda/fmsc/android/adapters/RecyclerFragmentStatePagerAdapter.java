@@ -51,10 +51,10 @@ public abstract class RecyclerFragmentStatePagerAdapter extends RecyclerView.Ada
 
     private final FragmentManager mFragmentManager;
     private FragmentTransaction mCurTransaction = null;
-    private SparseArray<Fragment.SavedState> mStates = new SparseArray<>();
-    private Set<Integer> mIds = new HashSet<>();
+    private final SparseArray<Fragment.SavedState> mStates = new SparseArray<>();
+    private final Set<Integer> mIds = new HashSet<>();
     private IContainerIdGenerator mContainerIdGenerator = new IContainerIdGenerator() {
-        private Random mRandom = new Random();
+        private final Random mRandom = new Random();
 
         @Override
         public int genId(Set<Integer> idContainer) {
@@ -74,7 +74,7 @@ public abstract class RecyclerFragmentStatePagerAdapter extends RecyclerView.Ada
     }
 
     @Override
-    public void onViewRecycled(FragmentViewHolder holder) {
+    public void onViewRecycled(@NonNull FragmentViewHolder holder) {
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
@@ -110,7 +110,7 @@ public abstract class RecyclerFragmentStatePagerAdapter extends RecyclerView.Ada
     }
 
     @Override
-    public final void onBindViewHolder(final FragmentViewHolder holder, int position) {
+    public final void onBindViewHolder(@NonNull final FragmentViewHolder holder, int position) {
         // do nothing
     }
 

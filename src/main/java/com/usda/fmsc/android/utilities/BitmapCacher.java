@@ -1,6 +1,8 @@
 package com.usda.fmsc.android.utilities;
 
 import android.graphics.Bitmap;
+
+import androidx.annotation.NonNull;
 import androidx.collection.LruCache;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class BitmapCacher {
 
             mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
                 @Override
-                protected int sizeOf(String key, Bitmap bitmap) {
+                protected int sizeOf(@NonNull String key, @NonNull Bitmap bitmap) {
                     // The cache size will be measured in kilobytes rather than
                     // number of items.
                     return bitmap.getByteCount() / 1024;

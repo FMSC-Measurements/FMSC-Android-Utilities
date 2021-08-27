@@ -5,7 +5,7 @@ import android.os.Handler;
 public class PostDelayHandler {
     private Runnable runnable;
     private int delay;
-    private Handler handler;
+    private final Handler handler;
 
 
     public PostDelayHandler(int delayMilliseconds) {
@@ -25,9 +25,8 @@ public class PostDelayHandler {
     public void post() {
         if (this.runnable != null) {
             handler.removeCallbacksAndMessages(null);
+            handler.postDelayed(this.runnable, delay);
         }
-
-        handler.postDelayed(this.runnable, delay);
     }
 
 

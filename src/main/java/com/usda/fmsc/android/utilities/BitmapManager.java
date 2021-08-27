@@ -1,51 +1,103 @@
 package com.usda.fmsc.android.utilities;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import com.usda.fmsc.android.AndroidUtils;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class BitmapManager {
-    private BitmapCacher cacher;
+    private final BitmapCacher cacher;
+    private final HashMap<String, IBitmapProvider> bitmapProviders;
+    private final HashMap<String, ScaleOptions> scaleOptions;
+
     private int imageLimitSize;
 
-    private HashMap<String, String> keyToUri;
-    private HashMap<String, ScaleOptions> scaleOptions;
-    private HashMap<String, Boolean> isResources;
 
-    private Resources resources;
-
-    public BitmapManager(Resources resources) {
-        this(resources, 1000);
+    public BitmapManager(IBitmapProvider... providers) {
+        this(providers, 1000);
     }
 
-    public BitmapManager(Resources resources, int maxImageSize) {
-        this.resources = resources;
+    public BitmapManager(IBitmapProvider[] providers, int maxImageSize) {
         this.imageLimitSize = maxImageSize;
 
         cacher = new BitmapCacher();
-        keyToUri = new HashMap<>();
         scaleOptions = new HashMap<>();
-        isResources = new HashMap<>();
+        bitmapProviders = new HashMap<>();
+
+        for (IBitmapProvider provider : providers) {
+            bitmapProviders.put(provider.getProviderId(), provider);
+        }
     }
 
 
     public Bitmap get(String key) {
-        if (keyToUri.containsKey(key)) {
+        return get(null, key, null);
+    }
+
+    public Bitmap get(String providerId, String key) {
+        return get(providerId, key, null);
+    }
+
+    public Bitmap get(String key, ScaleOptions options) {
+        return get(null, key, null);
+    }
+
+    public Bitmap get(String providerId, String key, ScaleOptions options) {
+        for (Map.Entry<String, IBitmapProvider> kvp: bitmapProviders.entrySet()) {
+            if (kvp.getValue().hasBitmap(key)) {
+                providerId = kvp.getKey();
+                break;
+            }
+        }
+
+        if (providerId == null) {
+            throw new RuntimeException("Invalid Provider ID");
+        }
+
+        String cKey = providerId + key;
+        IBitmapProvider brp = bitmapProviders.get(providerId);
+
+        if (options != null) {
+            if (scaleOptions.containsKey(cKey) && !options.equals(scaleOptions.get(cKey))) {
+                cacher.remove(cKey);
+            } else {
+                options = new ScaleOptions();
+            }
+        }
+
+        if (cacher.containKey(cKey)) {
             Bitmap bmp = cacher.get(key);
 
             if (bmp == null || bmp.isRecycled()) {
-                if (isResources.get(key)) {
-                    bmp = BitmapFactory.decodeResource(resources, Integer.parseInt(keyToUri.get(key)));
-                } else {
-                    bmp = BitmapFactory.decodeFile(keyToUri.get(key));
+                bmp = getBitmapFromResource(brp, key, options);
+            }
+
+            return bmp;
+        } else {
+            return getBitmapFromResource(brp, key, options);
+        }
+    }
+
+    private Bitmap getBitmapFromResource(IBitmapProvider brp, String key, ScaleOptions options) {
+        if (brp != null) {
+            String cKey = brp.getProviderId() + key;
+            Bitmap bmp;
+
+            bmp = brp.getBitmap(key);
+
+            if (bmp != null) {
+                if (options == null) {
+                    if (scaleOptions.containsKey(cKey)) {
+                        options = scaleOptions.get(cKey);
+                    } else {
+                        options = new ScaleOptions();
+                    }
                 }
 
-                ScaleOptions options = scaleOptions.get(key);
-                int size = options.getSize() == 0 ? imageLimitSize : options.getSize();
+                int size = options.getSize() == 0 || options.getSize() > imageLimitSize ? imageLimitSize : options.getSize();
 
                 if (bmp.getHeight() > size || bmp.getWidth() > size || options.isUpScale()) {
                     if (options.getScaleMode() == ScaleMode.Max) {
@@ -56,13 +108,16 @@ public class BitmapManager {
                 }
 
                 cacher.put(key, bmp);
+            } else {
+                throw new RuntimeException("Invalid Bitmap Resource");
             }
 
             return bmp;
         } else {
-            throw new RuntimeException("Key Not Found");
+            throw new RuntimeException("Bitmap Provider not found");
         }
     }
+
 
     @Override
     protected void finalize() throws Throwable {
@@ -71,24 +126,33 @@ public class BitmapManager {
         recycle();
     }
 
-    public void put(String key, String uri, Bitmap bitmap) {
-        put(key, uri, bitmap, new ScaleOptions(), false);
+
+
+
+    public void setScaleOptionsForResource(String providerId, String key, ScaleOptions options) {
+        String cKey = providerId + key;
+        IBitmapProvider brp = bitmapProviders.get(providerId);
+
+        if (brp != null) {
+            scaleOptions.put(cKey, options);
+        }  else {
+            throw new RuntimeException("Bitmap Provider not found");
+        }
     }
 
-    public void put(String key, String uri, Bitmap bitmap, ScaleOptions options) {
-        put(key, uri, bitmap, options, false);
-    }
 
-    public void put(String key, String uri, Bitmap bitmap, ScaleOptions options, boolean isResource) {
-        cacher.put(key, bitmap);
-        keyToUri.put(key, uri);
+    public boolean containResource(String key) {
+        if (cacher.containKey(key)) {
+            return true;
+        } else {
+            for (Map.Entry<String, IBitmapProvider> kvp: bitmapProviders.entrySet()) {
+                if (kvp.getValue().hasBitmap(key)) {
+                    return true;
+                }
+            }
+        }
 
-        scaleOptions.put(key, options);
-    }
-
-
-    public boolean containKey(String key) {
-        return keyToUri.containsKey(key);
+        return false;
     }
 
 
@@ -103,7 +167,6 @@ public class BitmapManager {
 
     public void recycle() {
         cacher.recycle();
-        keyToUri.clear();
         scaleOptions.clear();
     }
 
@@ -150,7 +213,29 @@ public class BitmapManager {
         public void setUpScale(boolean upScale) {
             this.upScale = upScale;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ScaleOptions that = (ScaleOptions) o;
+            return size == that.size &&
+                    upScale == that.upScale &&
+                    scaleMode == that.scaleMode;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(size, scaleMode, upScale);
+        }
     }
 
     public enum ScaleMode { Min, Max }
+
+
+    public interface IBitmapProvider {
+        String getProviderId();
+        Bitmap getBitmap(String key);
+        boolean hasBitmap(String key);
+    }
 }

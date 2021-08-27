@@ -16,6 +16,8 @@ import com.usda.fmsc.android.widget.animations.ArcAnimationFactory;
 
 import static com.usda.fmsc.android.AndroidUtils.Animation.getAnimatedFraction;
 
+import androidx.annotation.NonNull;
+
 /**
  * This view is used to draw the progress circle animated arc
  * Canvas and angles will be our best friends here.
@@ -40,8 +42,8 @@ public final class FABProgressArcDrawable extends Drawable implements Animatable
 
     private Paint paint;
 
-    private float strokeWidth;
-    private int arcColor;
+    private final float strokeWidth;
+    private final int arcColor;
     private int minSweepAngle;
     private int maxSweepAngle;
 
@@ -206,7 +208,7 @@ public final class FABProgressArcDrawable extends Drawable implements Animatable
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         float startAngle = currentRotationAngle - currentRotationAngleOffset;
         float sweepAngle = currentSweepAngle;
         if (!growing) {
@@ -311,7 +313,8 @@ public final class FABProgressArcDrawable extends Drawable implements Animatable
 
     @Override
     public int getOpacity() {
-        return PixelFormat.RGB_565;
+        return PixelFormat.OPAQUE;
+//        return PixelFormat.RGB_565;
     }
 
 

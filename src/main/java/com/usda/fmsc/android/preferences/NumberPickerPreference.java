@@ -59,9 +59,7 @@ public class NumberPickerPreference extends DialogPreference {
 
     @Override
     protected void onClick() {
-        if (dialogShown) {
-
-        } else {
+        if (!dialogShown) {
             showDialog(null);
         }
     }
@@ -181,7 +179,7 @@ public class NumberPickerPreference extends DialogPreference {
         setValueInSummary();
     }
 
-    private Dialog.OnClickListener onDialogClick = new DialogInterface.OnClickListener() {
+    private final Dialog.OnClickListener onDialogClick = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if (which == Dialog.BUTTON_POSITIVE)  {

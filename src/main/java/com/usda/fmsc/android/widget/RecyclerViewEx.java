@@ -1,6 +1,8 @@
 package com.usda.fmsc.android.widget;
 
 import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -9,9 +11,9 @@ import android.view.ViewGroup;
 
 import com.usda.fmsc.android.R;
 
-public class RecyclerViewEx extends RecyclerView {
+public class RecyclerViewEx<VH extends RecyclerView.ViewHolder> extends RecyclerView {
     private boolean hasHeader, hasFooter;
-    private AdapterEx adapter;
+    private AdapterEx<VH> adapter;
 
 
     public RecyclerViewEx(Context context) {
@@ -60,7 +62,7 @@ public class RecyclerViewEx extends RecyclerView {
         super.smoothScrollToPosition(hasHeader ? ++position : position);
     }
 
-    public void setAdapter(AdapterEx adapter) {
+    public void setAdapter(AdapterEx<VH> adapter) {
         super.setAdapter(adapter);
 
         this.adapter = adapter;
@@ -100,8 +102,9 @@ public class RecyclerViewEx extends RecyclerView {
         public abstract int getItemViewTypeEx(int position);
 
 
+        @NonNull
         @Override
-        public final VH onCreateViewHolder(ViewGroup parent, int viewType) {
+        public final VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             switch (viewType) {
                 case HEADER: return onCreateHeaderViewHolder(parent);
                 case FOOTER: return onCreateFooterViewHolder(parent);
@@ -117,7 +120,7 @@ public class RecyclerViewEx extends RecyclerView {
 
 
         @Override
-        public final void onBindViewHolder(VH holder, int position) {
+        public final void onBindViewHolder(@NonNull VH holder, int position) {
             if (hasHeader && position == 0) {
                 onBindHeaderViewHolder(holder);
             } else if (hasFooter && position == getItemCount() - 1) {

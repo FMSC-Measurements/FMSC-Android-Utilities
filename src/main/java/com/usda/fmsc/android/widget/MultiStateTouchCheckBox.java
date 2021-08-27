@@ -25,10 +25,10 @@ import java.lang.reflect.Method;
 import androidx.annotation.NonNull;
 
 public class MultiStateTouchCheckBox extends View {
-    private static int DEFAULT_CHECKED_COLOR = Color.RED;
-    private static int DEFAULT_UNCHECKED_COLOR = Color.GRAY;
-    private static int DEFAULT_PARTIAL_CHECKED_COLOR = Color.BLUE;
-    private static int DEFAULT_CHECKMARK_COLOR = Color.WHITE;
+    private static final int DEFAULT_CHECKED_COLOR = Color.RED;
+    private static final int DEFAULT_UNCHECKED_COLOR = Color.GRAY;
+    private static final int DEFAULT_PARTIAL_CHECKED_COLOR = Color.BLUE;
+    private static final int DEFAULT_CHECKMARK_COLOR = Color.WHITE;
 
 
     private Paint mCirclePaint, mCorrectPaint;

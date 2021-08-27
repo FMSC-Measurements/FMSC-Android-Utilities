@@ -177,7 +177,7 @@ public class SheetLayoutEx extends FrameLayout {
         int y = (int) (centerY(mFab));
 
         // Start and end radius of the sheet expand animation.
-        float startRadius = getFabSizePx() / 2;
+        float startRadius = (float) getFabSizePx() / 2;
         float endRadius = calculateStartRadius(x, y);
 
         mFabExpandLayout.setAlpha(0f);
@@ -188,11 +188,7 @@ public class SheetLayoutEx extends FrameLayout {
         mFab.setTranslationY(0f);
 
         mFab.setAlpha(1f);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            expandPreLollipop(x, y, startRadius, endRadius);
-        } else {
-            expandLollipop(x, y, startRadius, endRadius);
-        }
+        expandLollipop(x, y, startRadius, endRadius);
     }
 
     public void contractFab() {
@@ -211,14 +207,10 @@ public class SheetLayoutEx extends FrameLayout {
         int y = (int) (centerY(mFab));
 
         // Start and end radius of the toolbar contract animation.
-        float endRadius = getFabSizePx() / 2;
+        float endRadius = (float) getFabSizePx() / 2;
         float startRadius = calculateStartRadius(x, y);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            contractPreLollipop(x, y, startRadius, endRadius);
-        } else {
-            contractLollipop(x, y, startRadius, endRadius);
-        }
+        contractLollipop(x, y, startRadius, endRadius);
     }
 
     public boolean isFabExpanded() {
@@ -357,11 +349,11 @@ public class SheetLayoutEx extends FrameLayout {
     }
 
     private float centerX(View view) {
-        return ViewCompat.getX(view) + view.getWidth() / 2f;
+        return view.getX() + view.getWidth() / 2f;
     }
 
     private float centerY(View view) {
-        return ViewCompat.getY(view) + view.getHeight() / 2f;
+        return view.getY() + view.getHeight() / 2f;
     }
 
     public interface OnFabAnimationEndListener {

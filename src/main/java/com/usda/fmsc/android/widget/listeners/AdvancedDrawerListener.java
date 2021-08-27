@@ -1,11 +1,12 @@
 package com.usda.fmsc.android.widget.listeners;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.View;
 
 public abstract class AdvancedDrawerListener implements DrawerLayout.DrawerListener {
-    private DrawerLayout drawerLayout;
+    private final DrawerLayout drawerLayout;
     boolean leftDrawerOpened, rightDrawerOpened;
 
     public AdvancedDrawerListener(DrawerLayout layout) {
@@ -19,12 +20,12 @@ public abstract class AdvancedDrawerListener implements DrawerLayout.DrawerListe
     }
 
     @Override
-    public void onDrawerSlide(View drawerView, float slideOffset) {
+    public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
 
     }
 
     @Override
-    public void onDrawerOpened(View drawerView) {
+    public void onDrawerOpened(@NonNull View drawerView) {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             leftDrawerOpened = true;
             onLeftDrawerOpened(drawerView);
@@ -43,7 +44,7 @@ public abstract class AdvancedDrawerListener implements DrawerLayout.DrawerListe
     }
 
     @Override
-    public void onDrawerClosed(View drawerView) {
+    public void onDrawerClosed(@NonNull View drawerView) {
         if (!drawerLayout.isDrawerOpen(GravityCompat.START) && leftDrawerOpened) {
             leftDrawerOpened = false;
             onLeftDrawerClosed(drawerView);

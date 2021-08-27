@@ -6,16 +6,31 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
 
 public final class FABProgressArcView extends ProgressBar {
+    public static final String NAME_SPACE = "ns";
+    public static final String ARC_COLOR = "arcColor";
+    public static final String ARC_WIDTH = "arcWidth";
+    public static final String ROUNDED_STROKE = "roundedStroke";
+
     public static final int SHOW_SCALE_ANIM_DELAY = 150;
 
     private FABProgressArcDrawable.ArcListener internalListener;
-    private int arcColor;
-    private int arcWidth;
-    private boolean roundedStroke;
+    private final int arcColor;
+    private final int arcWidth;
+    private final boolean roundedStroke;
+
+
+    public FABProgressArcView(Context context, AttributeSet attributeSet) {
+        super(context);
+        this.arcColor = attributeSet.getAttributeIntValue(NAME_SPACE, ARC_COLOR, 2);
+        this.arcWidth = attributeSet.getAttributeIntValue(NAME_SPACE, ARC_WIDTH, 1);
+        this.roundedStroke = attributeSet.getAttributeBooleanValue(NAME_SPACE, ROUNDED_STROKE, false);
+        init(arcColor, arcWidth, roundedStroke);
+    }
 
     public FABProgressArcView(Context context, int arcColor, int arcWidth, boolean roundedStroke) {
         super(context);
@@ -40,12 +55,9 @@ public final class FABProgressArcView extends ProgressBar {
     }
 
     public void show() {
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setAlpha(1);
-                getDrawable().reset();
-            }
+        postDelayed(() -> {
+            setAlpha(1);
+            getDrawable().reset();
         }, SHOW_SCALE_ANIM_DELAY);
     }
 
@@ -53,8 +65,7 @@ public final class FABProgressArcView extends ProgressBar {
         getDrawable().stop();
 
         //not smooth, fix
-        ValueAnimator fadeOutAnim = ObjectAnimator.ofFloat(this, "alpha", 1, 0);
-        fadeOutAnim.setDuration(100).start();
+        ObjectAnimator.ofFloat(this, "alpha", 1, 0).setDuration(100).start();
     }
 
     public void reset() {
@@ -70,12 +81,7 @@ public final class FABProgressArcView extends ProgressBar {
     }
 
     public void requestCompleteAnimation() {
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getDrawable().requestCompleteAnimation(internalListener);
-            }
-        }, SHOW_SCALE_ANIM_DELAY);
+        postDelayed(() -> getDrawable().requestCompleteAnimation(internalListener), SHOW_SCALE_ANIM_DELAY);
     }
 
     private FABProgressArcDrawable getDrawable() {

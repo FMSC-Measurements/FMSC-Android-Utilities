@@ -1,11 +1,11 @@
 package com.usda.fmsc.android.adapters;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,7 @@ public abstract class SelectableArrayAdapter<T> extends ArrayAdapter<T> {
     }
 
     @Override
-    public final View getView(int position, View convertView, ViewGroup parent) {
+    public final View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view = getViewEx(position, convertView, parent);
 
         // Change the background color

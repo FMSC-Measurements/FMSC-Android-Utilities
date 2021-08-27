@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiSelector {
-    private List<Listener> _Listeners;
+    private final List<Listener> _Listeners;
 
-    private SparseBooleanArray mSelections = new SparseBooleanArray();
-    private WeakHolderTracker mTracker = new WeakHolderTracker();
+    private final SparseBooleanArray mSelections = new SparseBooleanArray();
+    private final WeakHolderTracker mTracker = new WeakHolderTracker();
 
     private boolean mIsSelectable;
 
@@ -129,9 +129,9 @@ public class MultiSelector {
     }
 
 
-    private void onItemSelectionChange(SelectableHolder holder, boolean isSelcted) {
+    private void onItemSelectionChange(SelectableHolder holder, boolean isSelected) {
         for (Listener listener : _Listeners) {
-            listener.onItemSelectionChange(holder, isSelcted);
+            listener.onItemSelectionChange(holder, isSelected);
         }
     }
 

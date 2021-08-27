@@ -7,7 +7,7 @@ import android.view.animation.DecelerateInterpolator;
 import com.usda.fmsc.android.widget.drawables.FABProgressArcDrawable;
 
 public class CompleteArcAnimation implements FABProgressArcDrawable.ArcAnimation {
-    private ValueAnimator completeAnim;
+    private final ValueAnimator completeAnim;
 
     CompleteArcAnimation(ValueAnimator.AnimatorUpdateListener updateListener, Animator.AnimatorListener listener) {
         completeAnim = ValueAnimator.ofFloat(ArcAnimationFactory.MAXIMUM_SWEEP_ANGLE, ArcAnimationFactory.MINIMUM_SWEEP_ANGLE);

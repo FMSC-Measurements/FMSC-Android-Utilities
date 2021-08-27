@@ -7,7 +7,7 @@ import android.graphics.PointF;
 public class PolygonProgressDrawable implements IProgressDrawable {
     protected PointF[] points;
     protected int sides, startingAngle;
-    protected boolean clockwise = true;
+    protected boolean clockwise;
 
 
     public PolygonProgressDrawable() {

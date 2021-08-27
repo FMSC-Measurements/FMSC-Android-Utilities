@@ -1,5 +1,6 @@
 package com.usda.fmsc.android.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 
@@ -8,17 +9,18 @@ import com.usda.fmsc.android.widget.RecyclerViewEx;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressLint("NotifyDataSetChanged")
 public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.SelectableViewHolderEx> extends RecyclerViewEx.AdapterEx<VH> {
     public enum SelectionMode {
         Single,
         Multi
     }
 
-    private List<T> items;
-    private SelectionMode mode;
+    private final List<T> items;
+    private final SelectionMode mode;
     private int selectedIndex;
-    private ArrayList<Integer> selectedIndicies;
-    private Listener listener;
+    private final ArrayList<Integer> selectedIndicies;
+    private Listener<T> listener;
 
 
     public SelectableAdapterEx(Context context, List<T> items) {
@@ -141,7 +143,6 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
     }
 
 
-    @SuppressWarnings("unchecked")
     private void onItemSelected(SelectableViewHolderEx holder, boolean selected) {
         if (selected) {
             if (mode == SelectionMode.Single) {
@@ -164,8 +165,8 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
             if (mode == SelectionMode.Single) {
                 selectedIndex = -1;
             } else {
-                Integer index = holder.getAdapterPosition();
-                if (index > -1 && selectedIndicies.contains(index)) {
+                Integer index = holder.getBindingAdapterPosition();
+                if (index > -1) {
                     selectedIndicies.remove(index);
                 }
             }
@@ -226,7 +227,7 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
     }
 
 
-    public void setListener(Listener listener) {
+    public void setListener(Listener<T> listener) {
         this.listener = listener;
     }
 

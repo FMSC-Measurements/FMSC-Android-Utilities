@@ -1,6 +1,5 @@
 package com.usda.fmsc.android.widget;
 
-import android.os.Build;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,8 +12,7 @@ import com.usda.fmsc.android.widget.animations.AnimationListener;
 import com.usda.fmsc.android.widget.animations.FabAnimation;
 import com.usda.fmsc.android.widget.animations.MaterialSheetAnimation;
 import com.usda.fmsc.android.widget.animations.OverlayAnimation;
-
-import io.codetail.animation.arcanimator.Side;
+import com.usda.fmsc.android.widget.animations.arcanimator.Side;
 
 public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
     private static final int ANIMATION_SPEED = 1;
@@ -87,15 +85,12 @@ public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
         overlay.setVisibility(View.GONE);
 
         // Set listener to hide the sheet when touching the overlay
-        overlay.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                // Only hide if the sheet is visible and if this is the first touch event
-                if (isSheetVisible() && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    hideSheet();
-                }
-                return true;
+        overlay.setOnTouchListener((view, motionEvent) -> {
+            // Only hide if the sheet is visible and if this is the first touch event
+            if (isSheetVisible() && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                hideSheet();
             }
+            return true;
         });
 
         fab.setOnLongClickListener(v -> {

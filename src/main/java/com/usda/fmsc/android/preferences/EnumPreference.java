@@ -2,22 +2,16 @@ package com.usda.fmsc.android.preferences;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.TypedArray;
-
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import androidx.preference.ListPreference;
 
 public abstract class EnumPreference extends ListPreference {
     private int[] itemValues;
-    private String[] itemValuesStr;
     private CharSequence[] itemNames;
-    private int value;
 
-    private DialogInterface.OnClickListener listener;
+    //private DialogInterface.OnClickListener listener;
 
     public EnumPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -42,7 +36,7 @@ public abstract class EnumPreference extends ListPreference {
         itemValues = getItemValues();
         setEntries(itemNames);
 
-        itemValuesStr = new String[itemValues.length];
+        String[] itemValuesStr = new String[itemValues.length];
         for (int i = 0; i < itemValues.length; i++) {
             itemValuesStr[i] = itemValues[i] + Integer.toHexString(i);
         }
@@ -103,7 +97,7 @@ public abstract class EnumPreference extends ListPreference {
 
     @Override
     protected void onSetInitialValue(Object defaultValue) {
-        value = (defaultValue == null) ? getSharedPreferences().getInt(getKey(), 0) : 0;
+        int value = (defaultValue == null) ? getSharedPreferences().getInt(getKey(), 0) : 0;
 
         for (int i = 0; i < itemValues.length; i++) {
             if (itemValues[i] == value) {
@@ -115,7 +109,7 @@ public abstract class EnumPreference extends ListPreference {
 
     }
 
-    public void setOnClickListener(DialogInterface.OnClickListener listener) {
-        this.listener = listener;
-    }
+//    public void setOnClickListener(DialogInterface.OnClickListener listener) {
+//        this.listener = listener;
+//    }
 }

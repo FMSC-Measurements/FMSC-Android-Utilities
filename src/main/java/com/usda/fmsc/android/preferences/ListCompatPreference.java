@@ -4,14 +4,12 @@ package com.usda.fmsc.android.preferences;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialog;
 import android.util.AttributeSet;
 
-import com.usda.fmsc.android.AndroidUtils;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialog;
 
 public class ListCompatPreference extends ListPreference {
     protected AppCompatDialog mDialog;
@@ -49,7 +47,7 @@ public class ListCompatPreference extends ListPreference {
                 .setPositiveButton(getPositiveButtonText(), this)
                 .setSingleChoiceItems(getEntries(), selected, this);
 
-        AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
+        //AndroidUtils.Internal.registerOnActivityDestroyListener(this, getPreferenceManager());
 
         mDialog = builder.create();
         if (state != null) {
