@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -60,6 +61,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -67,6 +69,9 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -264,15 +269,16 @@ public class AndroidUtils {
             return false;
         }
 
-        public static boolean requestPermission(final ComponentActivity activity, final String permission, String explanation, ActivityResultCallback<Boolean> callback) {
+        public static boolean requestPermissionOld2(final ComponentActivity activity, final String permission, String explanation, ActivityResultCallback<Boolean> callback) {
             if (!checkPermission(activity, permission)) {
                 ActivityResultLauncher<String> requestPermission = activity.registerForActivityResult(new ActivityResultContracts.RequestPermission(), callback);
 
             if (explanation != null) {
                 new AlertDialog.Builder(activity)
                         .setMessage(explanation)
-                        .setPositiveButton("Allow", (dialog1, which) -> requestPermission.launch(permission))
-                        .setNeutralButton("Cancel", null);
+                        .setPositiveButton(R.string.str_ok, (dialog1, which) -> requestPermission.launch(permission))
+                        .setNeutralButton(R.string.str_cancel, null)
+                        .show();
             } else {
                 requestPermission.launch(permission);
             }
@@ -283,14 +289,35 @@ public class AndroidUtils {
             return true;
         }
 
+
+        public static boolean requestPermission(final ComponentActivity activity, final String permission, ActivityResultLauncher<String> requestPermission, String explanation) {
+            if (!checkPermission(activity, permission)) {
+
+                if (explanation != null) {
+                    new AlertDialog.Builder(activity)
+                            .setMessage(explanation)
+                            .setPositiveButton(R.string.str_ok, (dialog1, which) -> requestPermission.launch(permission))
+                            .setNeutralButton(R.string.str_cancel, null)
+                            .show();
+                } else {
+                    requestPermission.launch(permission);
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
         public static boolean requestPermissions(final ComponentActivity activity, final String[] permissions, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
             if (!checkPermissions(activity, permissions)) {
 
                 if (explanation != null) {
                     new AlertDialog.Builder(activity)
                             .setMessage(explanation)
-                            .setPositiveButton("Allow", (dialog1, which) -> requestPermissions.launch(permissions))
-                            .setNeutralButton("Cancel", null);
+                            .setPositiveButton(R.string.str_ok, (dialog1, which) -> requestPermissions.launch(permissions))
+                            .setNeutralButton(R.string.str_cancel, null)
+                            .show();
                 } else {
                     requestPermissions.launch(permissions);
                 }
@@ -301,17 +328,24 @@ public class AndroidUtils {
             return true;
         }
 
-//        public static boolean requestLocationPermission(final Activity activity, final int requestCode) {
-//            return requestPermissionOld(activity,
-//                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
-//                    requestCode, null);
+
+        @RequiresApi(29)
+        public static boolean requestLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
+            return requestPermissions(activity,
+                    new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION }, requestPermissions, explanation);
+        }
+
+//
+//        @RequiresApi(29)
+//        public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
+//            requestPermissions(activity,
+//                    new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION }, requestPermissions, explanation);
+//            return false;
 //        }
 
         @RequiresApi(29)
-        public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
-            requestPermissions(activity,
-                    new String[] { Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION }, requestPermissions, explanation);
-            return false;
+        public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String> requestPermission, String explanation) {
+            return requestPermission(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION, requestPermission, explanation);
         }
 
 //        public static boolean requestNetworkPermission(final Activity activity, final int requestCode) {
@@ -1046,6 +1080,8 @@ public class AndroidUtils {
     }
 
     public static class Files {
+        private static final int BUFFER = 1024;
+
         public static Uri getUri(Activity activity, String appId, String filePath) {
             return getUri(activity, appId, new File(filePath));
         }
@@ -1055,6 +1091,7 @@ public class AndroidUtils {
                     appId + ".provider",
                     file);
         }
+
 
         public static Uri getDocumentsUri(Context context) {
             return getDocumentsUri(context, null);
@@ -1086,6 +1123,63 @@ public class AndroidUtils {
             }
 
             return null;
+        }
+
+
+        public static boolean fileOrFolderExistsInTree(Context context, Uri tree, String path) {
+            DocumentFile childDoc = getDocumentFromTree(context, tree, path);
+
+            return childDoc != null && childDoc.exists();
+        }
+
+        public static DocumentFile getDocumentFromTree(Context context, Uri tree, String path) {
+            String id = DocumentsContract.getTreeDocumentId(tree);
+
+            if (!path.startsWith("/"))
+                id = id + "/" + path;
+            else
+                id = id + path;
+
+            Uri childUri = DocumentsContract.buildDocumentUriUsingTree(tree, id);
+            return DocumentFile.fromSingleUri(context, childUri);
+        }
+
+
+        public static void copyFile(Context context, Uri source, Uri dest) throws IOException {
+            ContentResolver resolver = context.getContentResolver();
+
+            InputStream input = resolver.openInputStream(source);
+            OutputStream output = resolver.openOutputStream(dest);
+
+            byte[] buffer = new byte[1024];
+            while (input.read(buffer, 0, buffer.length) >= 0){
+                output.write(buffer, 0, buffer.length);
+            }
+        }
+
+
+        public static boolean fileExists(Context context, Uri filePath) {
+            if (filePath == null)
+                return false;
+
+            try {
+                context.getContentResolver().openInputStream(filePath).available();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        public static boolean fileExists(Context context, String filePath) {
+            if (filePath == null) throw new NullPointerException("filePath");
+            File file = new File(filePath);
+            return file.exists() && file.isFile();
+        }
+
+
+        public static boolean folderExists(Context context, Uri uri) {
+            return DocumentFile.fromTreeUri(context, uri).exists();
         }
     }
 

@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.animation.Interpolator;
 
 public class OverlayAnimation {
-    protected View overlay;
-    protected Interpolator interpolator;
+    protected final View overlay;
+    protected final Interpolator interpolator;
 
     public OverlayAnimation(View overlay, Interpolator interpolator) {
         this.overlay = overlay;

@@ -10,7 +10,7 @@ import com.usda.fmsc.android.widget.listeners.SyncedScrollListener;
 import java.util.ArrayList;
 
 public class SyncedScrollView extends ScrollView implements SyncedScrollListener {
-    ArrayList<SyncedScrollListener> listeners;
+    private final ArrayList<SyncedScrollListener> listeners;
 
     public SyncedScrollView(Context context) {
         this(context, null, 0);

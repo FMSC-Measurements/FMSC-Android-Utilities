@@ -30,10 +30,10 @@ public class ArcAnimator extends Animator {
         return new ArcAnimator(arcMetric, clipView);
     }
 
-    ArcMetric mArcMetric;
-    WeakReference<View> mTarget;
-    WeakReference<ValueAnimator> mAnimator;
-    float mValue;
+    protected ArcMetric mArcMetric;
+    protected WeakReference<View> mTarget;
+    protected WeakReference<ValueAnimator> mAnimator;
+    protected float mValue;
 
 
     private ArcAnimator(ArcMetric arcmetric, View target) {

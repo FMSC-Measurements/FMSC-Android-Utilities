@@ -9,8 +9,8 @@ import com.usda.fmsc.android.widget.animations.arcanimator.ArcAnimator;
 import com.usda.fmsc.android.widget.animations.arcanimator.Side;
 
 public class FabAnimation {
-    protected View fab;
-    protected Interpolator interpolator;
+    protected final View fab;
+    protected final Interpolator interpolator;
 
     public FabAnimation(View fab, Interpolator interpolator) {
         this.fab = fab;

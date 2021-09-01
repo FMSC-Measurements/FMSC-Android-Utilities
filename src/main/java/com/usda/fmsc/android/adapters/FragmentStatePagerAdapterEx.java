@@ -2,19 +2,15 @@ package com.usda.fmsc.android.adapters;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.fragment.app.FragmentTransitionImpl;
-import androidx.lifecycle.Lifecycle;
-import androidx.transition.FragmentTransitionSupport;
 import androidx.viewpager.widget.PagerAdapter;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
@@ -25,8 +21,8 @@ public abstract class FragmentStatePagerAdapterEx extends PagerAdapter {
     private final FragmentManager mFragmentManager;
     private FragmentTransaction mCurTransaction = null;
 
-    private final ArrayList<Fragment.SavedState> mSavedState = new ArrayList<Fragment.SavedState>();
-    private final ArrayList<Fragment> mFragments = new ArrayList<Fragment>();
+    private final ArrayList<Fragment.SavedState> mSavedState = new ArrayList<>();
+    private final ArrayList<Fragment> mFragments = new ArrayList<>();
     private Fragment mCurrentPrimaryItem = null;
 
     private boolean saveStates = true;
@@ -76,7 +72,9 @@ public abstract class FragmentStatePagerAdapterEx extends PagerAdapter {
         fragment.setMenuVisibility(false);
 
 //        fragment.setUserVisibleHint(false);
-        mCurTransaction.setMaxLifecycle(fragment, Lifecycle.State.STARTED);
+//        if (!fragment.isDetached()) {
+//            mCurTransaction.setMaxLifecycle(fragment, Lifecycle.State.STARTED);
+//        }
 
         mFragments.set(position, fragment);
         mCurTransaction.add(container.getId(), fragment);
@@ -113,14 +111,14 @@ public abstract class FragmentStatePagerAdapterEx extends PagerAdapter {
     public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         Fragment fragment = (Fragment) object;
         if (fragment != mCurrentPrimaryItem) {
-            if (mCurrentPrimaryItem != null) {
-                mCurrentPrimaryItem.setMenuVisibility(false);
-//                mCurrentPrimaryItem.setUserVisibleHint(false);
-                mCurTransaction.setMaxLifecycle(fragment, Lifecycle.State.STARTED);
-            } else {
-                mCurTransaction.setMaxLifecycle(fragment, Lifecycle.State.RESUMED);
-//                fragment.setUserVisibleHint(true);
-            }
+//            if (mCurrentPrimaryItem != null) {
+//                mCurrentPrimaryItem.setMenuVisibility(false);
+////                mCurrentPrimaryItem.setUserVisibleHint(false);
+//                mCurTransaction.setMaxLifecycle(fragment, Lifecycle.State.STARTED);
+//            } else {
+//                mCurTransaction.setMaxLifecycle(fragment, Lifecycle.State.RESUMED);
+////                fragment.setUserVisibleHint(true);
+//            }
             fragment.setMenuVisibility(true);
             mCurrentPrimaryItem = fragment;
         }

@@ -8,7 +8,8 @@ import com.usda.fmsc.android.AndroidUtils;
 
 public abstract class BitmapProgressDrawable implements IProgressDrawable {
     private Bitmap bitmap;
-    protected float padding = .15f, bitmapScale = .5f;
+    protected float padding = .15f;
+    protected final float bitmapScale = .5f;
 
     public BitmapProgressDrawable(Bitmap bitmap) {
         this.bitmap = bitmap;

@@ -11,37 +11,37 @@ import java.util.Arrays;
 
 class ArcMetric {
 
-    PointF mStartPoint = new PointF();
+    protected final PointF mStartPoint = new PointF();
 
-    PointF mEndPoint = new PointF();
+    protected final PointF mEndPoint = new PointF();
 
-    PointF mMidPoint = new PointF();
+    protected final PointF mMidPoint = new PointF();
 
-    PointF mAxisPoint[] = new PointF[2];
+    protected final PointF[] mAxisPoint = new PointF[2];
 
-    PointF mZeroPoint = new PointF();
+    protected final PointF mZeroPoint = new PointF();
 
     //SEGMENTS. This Segments create virtual triangle except mZeroStartSegment
 
-    float mStartEndSegment;
+    private float mStartEndSegment;
 
-    float mRadius;
+    protected float mRadius;
 
-    float mMidAxisSegment;
+    protected float mMidAxisSegment;
 
-    float mZeroStartSegment;
+    protected float mZeroStartSegment;
 
     //DEGREES.
 
-    float mAnimationDegree;
+    protected float mAnimationDegree;
 
-    float mSideDegree;
+    protected float mSideDegree;
 
-    float mZeroStartDegree;
+    protected float mZeroStartDegree;
 
-    float mStartDegree;
+    protected float mStartDegree;
 
-    float mEndDegree;
+    protected float mEndDegree;
 
     //Side of animation
     Side mSide;

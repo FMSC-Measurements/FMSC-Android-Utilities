@@ -5,8 +5,8 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 
 public class ArrowProgressDrawable implements IProgressDrawable {
-    protected PointF[] points;
-    protected double rotate;
+    final protected PointF[] points;
+    final protected double rotate;
 
     public ArrowProgressDrawable() {
         this(0);

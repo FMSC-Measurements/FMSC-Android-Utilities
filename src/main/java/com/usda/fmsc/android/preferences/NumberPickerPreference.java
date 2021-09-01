@@ -134,7 +134,7 @@ public class NumberPickerPreference extends DialogPreference {
 //        picker.setValue(getValue());
 //    }
 
-    Dialog.OnDismissListener onDialogDismissed = new DialogInterface.OnDismissListener() {
+    private final Dialog.OnDismissListener onDialogDismissed = new DialogInterface.OnDismissListener() {
         @Override
         public void onDismiss(DialogInterface dialog) {
             dialogShown = false;

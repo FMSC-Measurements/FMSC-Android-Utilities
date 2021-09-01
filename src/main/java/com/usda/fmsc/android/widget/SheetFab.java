@@ -35,12 +35,12 @@ public class SheetFab<FAB extends View & SheetFab.AnimatedFab> {
     private static final int FAB_ARC_DEGREES = 0;
 
     // Views
-    protected FAB fab;
+    protected final FAB fab;
 
     // Animations
-    protected FabAnimation fabAnimation;
-    protected MaterialSheetAnimation sheetAnimation;
-    protected OverlayAnimation overlayAnimation;
+    protected final FabAnimation fabAnimation;
+    protected final MaterialSheetAnimation sheetAnimation;
+    protected final OverlayAnimation overlayAnimation;
 
     // State
     protected int anchorX;

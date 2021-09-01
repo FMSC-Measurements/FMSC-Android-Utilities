@@ -79,7 +79,7 @@ public class RecyclerViewEx<VH extends RecyclerView.ViewHolder> extends Recycler
 
         private boolean hasHeader, hasFooter;
 
-        protected LayoutInflater inflater;
+        protected final LayoutInflater inflater;
 
 
         public AdapterEx(Context context) {
