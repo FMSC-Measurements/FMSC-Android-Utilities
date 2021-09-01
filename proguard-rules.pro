@@ -66,7 +66,7 @@
 
 -dontwarn android.support.**
 -dontwarn jcifs.http**
--dontwarn org.w3c.dom.bootstrap.**;
+-dontwarn org.w3c.dom.bootstrap.**
 -dontwarn org.apache.http.**
 -dontwarn android.net.http.AndroidHttpClient
 -dontwarn com.google.android.gms.**
