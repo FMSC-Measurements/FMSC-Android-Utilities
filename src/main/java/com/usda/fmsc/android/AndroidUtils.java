@@ -211,14 +211,14 @@ public class AndroidUtils {
 
 
         public static boolean checkLocationPermission(Context context) {
-            return checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
-                    checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION);
+            return checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
         @RequiresApi(29)
         public static boolean checkBackgroundLocationPermission(Context context) {
-            return checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
-                    checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+            return checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                    checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
                     checkPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
         }
 

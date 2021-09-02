@@ -243,7 +243,9 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
 
         mIVAccept = mAcceptView.findViewById(R.id.iv__card__accept);
 
-        mViewFlipper.removeViewAt(ACCEPT_VIEW_CHILD_INDEX);
+        if (mViewFlipper.getChildAt(ACCEPT_VIEW_CHILD_INDEX) != null) {
+            mViewFlipper.removeViewAt(ACCEPT_VIEW_CHILD_INDEX);
+        }
         mViewFlipper.addView(view, ACCEPT_VIEW_CHILD_INDEX);
     }
 
@@ -278,7 +280,11 @@ public class FlipCheckBoxEx extends ViewFlipper implements View.OnClickListener,
 
         mIVDecline = mDeclineView.findViewById(R.id.iv__card__decline);
 
-        mViewFlipper.removeViewAt(DECLINE_VIEW_CHILD_INDEX);
+
+        if (mViewFlipper.getChildAt(DECLINE_VIEW_CHILD_INDEX) != null) {
+            mViewFlipper.removeViewAt(DECLINE_VIEW_CHILD_INDEX);
+        }
+
         mViewFlipper.addView(view, DECLINE_VIEW_CHILD_INDEX);
     }
 
