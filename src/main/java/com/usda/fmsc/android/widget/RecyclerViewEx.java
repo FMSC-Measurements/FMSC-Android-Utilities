@@ -62,6 +62,19 @@ public class RecyclerViewEx<VH extends RecyclerView.ViewHolder> extends Recycler
         super.smoothScrollToPosition(hasHeader ? ++position : position);
     }
 
+    @Override
+    public void setAdapter(Adapter adapter) {
+        if (adapter instanceof AdapterEx) {
+            try {
+                setAdapter((AdapterEx<VH>) adapter);
+            } catch (ClassCastException e) {
+                throw new RuntimeException("Invalid Adapter type: " + adapter.getClass().getName());
+            }
+        } else {
+            super.setAdapter(adapter);
+        }
+    }
+
     public void setAdapter(AdapterEx<VH> adapter) {
         super.setAdapter(adapter);
 
