@@ -75,7 +75,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
+@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue", "rawtypes", "BooleanMethodIsAlwaysInverted"})
 public class AndroidUtils {
     public static class App {
         private static boolean playServicesAvailable;
@@ -157,28 +157,6 @@ public class AndroidUtils {
                 Toast.makeText(activity.getApplicationContext(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
             }
         }
-
-
-//        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, String initialUri, int resultCode) {
-//            openFileIntentFromFragment(fragment, mimeType, null, initialUri, resultCode);
-//        }
-//
-//        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, int resultCode) {
-//            openFileIntentFromFragment(fragment, mimeType, null, null, resultCode);
-//        }
-//
-//        public static void openFileIntentFromFragment(Fragment fragment, int resultCode) {
-//            openFileIntentFromFragment(fragment, null, null, null, resultCode);
-//        }
-//
-//        public static void openFileIntentFromFragment(Fragment fragment, String mimeType, String[] extraMimes, String initialUri, int resultCode) {
-//            try {
-//                fragment.startActivityForResult(getOpenFileIntent(fragment.getActivity(), mimeType, extraMimes, initialUri), resultCode);
-//            } catch (android.content.ActivityNotFoundException ex) {
-//                Toast.makeText(fragment.getActivity(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-
 
         public static int checkPlayServices(Activity activity, int resultCode) {
             int result = 0;
@@ -348,44 +326,6 @@ public class AndroidUtils {
             return requestPermission(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION, requestPermission, explanation);
         }
 
-//        public static boolean requestNetworkPermission(final Activity activity, final int requestCode) {
-//            return requestPermissionOld(activity,
-//                    new String[] { Manifest.permission.ACCESS_NETWORK_STATE, android.Manifest.permission.INTERNET},
-//                    requestCode, null);
-//        }
-//
-//        public static boolean requestStoragePermission(final Activity activity, final int requestCode) {
-//            return requestPermissionOld(activity,
-//                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE},
-//                    requestCode, null);
-//        }
-//
-//        public static boolean requestBluetoothPermission(final Activity activity, final int requestCode) {
-//            return requestPermissionOld(activity,
-//                    new String[] { Manifest.permission.BLUETOOTH , android.Manifest.permission.BLUETOOTH_ADMIN},
-//                    requestCode, null);
-//        }
-//
-//        public static boolean requestPhonePermission(final Activity activity, final int requestCode) {
-//            return requestPermissionOld(activity,
-//                    new String[] { Manifest.permission.READ_PHONE_STATE },
-//                    requestCode, null);
-//        }
-//
-//        public static boolean requestPhonePermission(final Activity activity, final int requestCode, String explanation) {
-//            return requestPermissionOld(activity,
-//                    new String[] { Manifest.permission.READ_PHONE_STATE },
-//                    requestCode, explanation);
-//        }
-//
-//        public static boolean requestCameraPermission(final Activity activity, final int requestCode) {
-//            return requestPermissionOld(activity,
-//                    new String[] { Manifest.permission.CAMERA },
-//                    requestCode, null);
-//        }
-
-
-
         public static void navigateAppStore(Context context, String packageName) {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
@@ -405,10 +345,6 @@ public class AndroidUtils {
 
             return null;
         }
-
-
-
-
     }
 
     public static class Device {
