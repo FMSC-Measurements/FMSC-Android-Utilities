@@ -26,6 +26,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.FileUtils;
 import android.os.Vibrator;
 import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
@@ -1087,10 +1088,13 @@ public class AndroidUtils {
             InputStream input = resolver.openInputStream(source);
             OutputStream output = resolver.openOutputStream(dest);
 
-            byte[] buffer = new byte[1024];
-            while (input.read(buffer, 0, buffer.length) >= 0){
-                output.write(buffer, 0, buffer.length);
-            }
+
+            FileUtils.copy(input, output);
+
+//            byte[] buffer = new byte[1024];
+//            while (input.read(buffer, 0, buffer.length) >= 0){
+//                output.write(buffer, 0, buffer.length);
+//            }
         }
 
 
