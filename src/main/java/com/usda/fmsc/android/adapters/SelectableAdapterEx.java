@@ -146,12 +146,12 @@ public abstract class SelectableAdapterEx<T, VH extends SelectableAdapterEx.Sele
     private void onItemSelected(SelectableViewHolderEx holder, boolean selected) {
         if (selected) {
             if (mode == SelectionMode.Single) {
-                selectedIndex = holder.getAdapterPosition();
+                selectedIndex = holder.getBindingAdapterPosition();
 
                 if (listener != null)
                     listener.onItemSelected(holder.getItem(), selectedIndex, holder.getLayoutPosition());
             } else {
-                Integer index = holder.getAdapterPosition();
+                Integer index = holder.getBindingAdapterPosition();
                 if (index > -1 && !selectedIndicies.contains(index)) {
                     selectedIndicies.add(index);
 

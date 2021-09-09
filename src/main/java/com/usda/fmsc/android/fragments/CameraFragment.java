@@ -905,11 +905,11 @@ public class CameraFragment extends Fragment {
 
     protected String getImageSaveDir() {
         if (saveDir == null) {
-            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+            File dir = getContext().getExternalFilesDir(Environment.DIRECTORY_DCIM);
             if (dir != null) {
                 saveDir = dir.getAbsolutePath();
             } else {
-                dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                dir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 if (dir != null) {
                     saveDir = dir.getAbsolutePath();
                 } else {

@@ -27,6 +27,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.FileUtils;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
@@ -339,7 +340,7 @@ public class AndroidUtils {
         public static String getAppVersion(Context context) {
             try {
                 PackageInfo pi =  context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-                return String.format("%s-%s", pi.versionName.substring(0, pi.versionName.indexOf('-')), pi.versionCode);
+                return String.format("%s-%s", pi.versionName.substring(0, pi.versionName.indexOf('-')), pi.getLongVersionCode());
             } catch (PackageManager.NameNotFoundException e) {
                 //
             }
@@ -352,7 +353,7 @@ public class AndroidUtils {
         public static void vibrate(Context context, long millisecond) {
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             if (v != null) {
-                v.vibrate(millisecond);
+                v.vibrate(VibrationEffect.createOneShot(millisecond, VibrationEffect.DEFAULT_AMPLITUDE));
             }
         }
 
@@ -363,7 +364,7 @@ public class AndroidUtils {
         public static void vibrate(Context context, long[] pattern, int repeat) {
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             if (v != null) {
-                v.vibrate(pattern, repeat);
+                v.vibrate(VibrationEffect.createWaveform(pattern, repeat));
             }
         }
 
