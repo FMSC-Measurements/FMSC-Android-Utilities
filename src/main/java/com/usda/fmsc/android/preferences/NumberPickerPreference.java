@@ -101,8 +101,7 @@ public class NumberPickerPreference extends DialogPreference {
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
-//
-//        picker = new NumberPicker(getContext());
+
         picker.setLayoutParams(layoutParams);
         picker.setBackgroundColor(AndroidUtils.UI.getColor(getContext(), android.R.color.transparent));
 
@@ -126,31 +125,12 @@ public class NumberPickerPreference extends DialogPreference {
         picker.setValue(getValue());
     }
 
-//    @Override
-//    protected void onBindDialogView(View view) {
-//        super.onBindDialogView(view);
-//        picker.setMinValue(minValue);
-//        picker.setMaxValue(maxValue);
-//        picker.setValue(getValue());
-//    }
-
     private final Dialog.OnDismissListener onDialogDismissed = new DialogInterface.OnDismissListener() {
         @Override
         public void onDismiss(DialogInterface dialog) {
             dialogShown = false;
         }
     };
-
-//    @Override
-//    protected void onDialogClosed(boolean positiveResult) {
-//        if (positiveResult) {
-//            int newValue = picker.getValue();
-//            if (callChangeListener(newValue)) {
-//                setValue(newValue);
-//            }
-//        }
-//    }
-
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
         return a.getInt(index, minValue);

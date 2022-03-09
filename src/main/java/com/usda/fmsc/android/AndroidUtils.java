@@ -315,14 +315,6 @@ public class AndroidUtils {
                     new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION }, requestPermissions, explanation);
         }
 
-//
-//        @RequiresApi(29)
-//        public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
-//            requestPermissions(activity,
-//                    new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION }, requestPermissions, explanation);
-//            return false;
-//        }
-
         @RequiresApi(29)
         public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String> requestPermission, String explanation) {
             return requestPermission(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION, requestPermission, explanation);
@@ -400,32 +392,6 @@ public class AndroidUtils {
                 return false;
             }
         }
-
-
-//        public static String getAndroidID(Context context) {
-//            return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-//        }
-
-//        public static String getDeviceID(Context context) {
-//            if (App.checkPhonePermission(context)) {
-//                final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-//
-//                final String tmDevice, tmSerial, androidId;
-//
-//                if (tm != null) {
-//                    tmDevice = tm.getDeviceId();
-//                    tmSerial = tm.getSimSerialNumber();
-//                    androidId = getAndroidID(context);
-//
-//                    return new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode()).toString();
-//                }
-//
-//                throw new RuntimeException("Unable to get TELEPHONY_SERVICE");
-//            } else {
-//                throw new RuntimeException("No Phone Permission");
-//            }
-//        }
-
 
         public static boolean isFullOrientationAvailable(Context context) {
             PackageManager pm = context.getPackageManager();
@@ -773,10 +739,12 @@ public class AndroidUtils {
             return ContextCompat.getColor(context, id);
         }
 
+        @Deprecated
         public static void setOverscrollColor(Resources resources, Context context, @ColorRes  int resColorId) {
             int color = getColor(context, resColorId);
 
             int glowDrawableId = resources.getIdentifier("overscroll_glow", "drawable", "android");
+
             getDrawable(context, glowDrawableId).setColorFilter(color, PorterDuff.Mode.MULTIPLY);
 
             final int edgeDrawableId = resources.getIdentifier("overscroll_edge", "drawable", "android");
@@ -939,30 +907,17 @@ public class AndroidUtils {
 
                 final TextView titleView = (TextView) f.get(toolbar);
 
-                titleView.setOnLongClickListener(v -> {
-                    Toast.makeText(activity, text == null ? titleView.getText() : text, Toast.LENGTH_SHORT).show();
-                    return false;
-                });
+                if (titleView != null) {
+                    titleView.setOnLongClickListener(v -> {
+                        Toast.makeText(activity, text == null ? titleView.getText() : text, Toast.LENGTH_SHORT).show();
+                        return false;
+                    });
+                }
             } catch(Exception e){
                 e.printStackTrace();
             }
         }
     }
-
-/*    public static class Internal {
-        @SuppressWarnings("JavaReflectionInvocation")
-        public static void registerOnActivityDestroyListener(Object obj, PreferenceManager preferenceManager) {
-            try {
-                @SuppressLint("PrivateApi") Method method = preferenceManager.getClass().getDeclaredMethod(
-                        "registerOnActivityDestroyListener",
-                        PreferenceManager.OnActivityDestroyListener.class);
-                method.setAccessible(true);
-                method.invoke(preferenceManager, obj);
-            } catch (Exception e) {
-                //
-            }
-        }
-    }*/
 
     public static class Animation {
         public static float getAnimatedFraction(ValueAnimator animator) {
@@ -973,7 +928,6 @@ public class AndroidUtils {
         }
 
         public static void collapseTextView(TextView tv, int maxCollapsedLines) {
-            //animateTextLines(tv, maxCollapsedLines);
             final int height = tv.getMeasuredHeight();
             tv.setHeight(0);
             tv.setMaxLines(maxCollapsedLines); //expand fully
@@ -986,7 +940,6 @@ public class AndroidUtils {
         }
 
         public static void expandTextView(TextView tv) {
-            //animateTextLines(tv, Integer.MAX_VALUE);
             final int height = tv.getMeasuredHeight();
             tv.setHeight(height);
             tv.setMaxLines(Integer.MAX_VALUE); //expand fully
@@ -1036,31 +989,26 @@ public class AndroidUtils {
         }
 
         public static Uri getDocumentsUri(Context context, String subDir) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q)
-            {
-                StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+            StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
 
-                Intent intent = sm.getPrimaryStorageVolume().createOpenDocumentTreeIntent();
-                String startDir = "Documents";
+            Intent intent = sm.getPrimaryStorageVolume().createOpenDocumentTreeIntent();
+            String startDir = "Documents";
 
-                Uri uri = intent.getParcelableExtra("android.provider.extra.INITIAL_URI");
+            Uri uri = intent.getParcelableExtra("android.provider.extra.INITIAL_URI");
 
-                String scheme = uri.toString();
+            String scheme = uri.toString();
 
-                scheme = scheme.replace("/root/", "/document/");
+            scheme = scheme.replace("/root/", "/document/");
 
-                //scheme += "%3A" + startDir;
-                scheme += "/" + startDir;
+            //scheme += "%3A" + startDir;
+            scheme += "/" + startDir;
 
-                if (subDir != null) {
-                    scheme += "%3A" + subDir.replace("/" ,"%3A");
-                    scheme += "/" + subDir;
-                }
-
-                return Uri.parse(scheme);
+            if (subDir != null) {
+                scheme += "%3A" + subDir.replace("/" ,"%3A");
+                scheme += "/" + subDir;
             }
 
-            return null;
+            return Uri.parse(scheme);
         }
 
 
@@ -1089,13 +1037,7 @@ public class AndroidUtils {
             InputStream input = resolver.openInputStream(source);
             OutputStream output = resolver.openOutputStream(dest);
 
-
             FileUtils.copy(input, output);
-
-//            byte[] buffer = new byte[1024];
-//            while (input.read(buffer, 0, buffer.length) >= 0){
-//                output.write(buffer, 0, buffer.length);
-//            }
         }
 
 
@@ -1123,34 +1065,4 @@ public class AndroidUtils {
             return DocumentFile.fromTreeUri(context, uri).exists();
         }
     }
-
-//    public static class Media {
-//        public static Bitmap rotateImage(Bitmap bitmap) {
-//            ExifInterface ei = new ExifInterface(bitmap);
-//            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-//                    ExifInterface.ORIENTATION_UNDEFINED);
-//
-//            Bitmap rotatedBitmap = null;
-//            switch(orientation) {
-//
-//                case ExifInterface.ORIENTATION_ROTATE_90:
-//                    rotatedBitmap = rotateImage(bitmap, 90);
-//                    break;
-//
-//                case ExifInterface.ORIENTATION_ROTATE_180:
-//                    rotatedBitmap = rotateImage(bitmap, 180);
-//                    break;
-//
-//                case ExifInterface.ORIENTATION_ROTATE_270:
-//                    rotatedBitmap = rotateImage(bitmap, 270);
-//                    break;
-//
-//                case ExifInterface.ORIENTATION_NORMAL:
-//                default:
-//                    rotatedBitmap = bitmap;
-//            }
-//
-//            return bitmap;
-//        }
-//    }
 }

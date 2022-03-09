@@ -311,11 +311,11 @@
 
     <!--Black-->
     <color name="black_500">#80000000</color>
-    <color name="black_1000">#000000</color>
+    <color name="black_1000">#FF000000</color>
 
     <!--White-->
     <color name="white_500">#80FFFFFF</color>
-    <color name="white_1000">#FFFFFF</color>
+    <color name="white_1000">#FFFFFFFF</color>
 
     <!--blue grey-->
     <color name="blue_grey_50">#ECEFF1</color>

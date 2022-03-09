@@ -1,11 +1,13 @@
 package com.usda.fmsc.android.preferences;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+
+import androidx.appcompat.app.AlertDialog;
 
 public class EnumSelectionPreference extends ListCompatPreference {
     private String[] itemNames;
@@ -47,16 +49,14 @@ public class EnumSelectionPreference extends ListCompatPreference {
     }
 
     @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        if (positiveResult) {
-            int newValue = 0;
-            String value = getValue();
+    protected void onDialogDismissed(DialogInterface dialog) {
+        int newValue = 0;
+        String value = getValue();
 
-            for (int i = 0; i < itemNames.length; i++) {
-                if (itemNames[i].equals(value)) {
-                    if (callChangeListener(newValue)) {
-                        setValue(i);
-                    }
+        for (int i = 0; i < itemNames.length; i++) {
+            if (itemNames[i].equals(value)) {
+                if (callChangeListener(newValue)) {
+                    setValue(i);
                 }
             }
         }
@@ -82,15 +82,12 @@ public class EnumSelectionPreference extends ListCompatPreference {
     }
 
     @Override
-    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        setValue(restorePersistedValue ? getPersistedInt(0) : (Integer) defaultValue);
+    protected void onSetInitialValue(Object defaultValue) {
+        setValue((Integer) defaultValue);
     }
 
     public void setEnumType(Class<? extends Enum> enumType) {
         this.enumType = enumType;
     }
 
-    public void setOnClickListener(DialogInterface.OnClickListener listener) {
-        this.listener = listener;
-    }
 }
