@@ -1,6 +1,5 @@
 package com.usda.fmsc.android.fragments;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -56,7 +55,6 @@ import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-@TargetApi(21)
 public class CameraFragment extends Fragment {
 
     /**
@@ -221,7 +219,7 @@ public class CameraFragment extends Fragment {
 
     private int imagesCaptured = 0;
 
-    private String saveDir = null;
+    private File saveDir = null;
 
 
     /**
@@ -238,7 +236,7 @@ public class CameraFragment extends Fragment {
 
             onImageReady(image);
 
-            mBackgroundHandler.post(new ImageSaver(image, getCreateImageFile()));
+            mBackgroundHandler.post(new ImageSaver(image, createImageFile()));
         }
 
     };
@@ -899,27 +897,33 @@ public class CameraFragment extends Fragment {
         }
     }
 
-    protected void setImageSaveDir(String imagePath) {
+    protected void setImageSaveDir(File imagePath) {
         saveDir = imagePath;
     }
 
-    protected String getImageSaveDir() {
-        if (saveDir == null) {
-            File dir = getContext().getExternalFilesDir(Environment.DIRECTORY_DCIM);
-            if (dir != null) {
-                saveDir = dir.getAbsolutePath();
-            } else {
-                dir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    protected File getImageSaveDir() {
+        Context context = getContext();
+
+        if (context != null) {
+            if (saveDir == null) {
+                File dir = context.getExternalFilesDir(Environment.DIRECTORY_DCIM);
                 if (dir != null) {
-                    saveDir = dir.getAbsolutePath();
+                    saveDir = dir;
                 } else {
-                    throw new RuntimeException("Cannot get Directory");
+                    dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    if (dir != null) {
+                        saveDir = dir;
+                    } else {
+                        throw new RuntimeException("Cannot get Directory");
+                    }
+                }
+
+                if (!dir.mkdirs()) {
+                    Log.d("", "Directory not created");
                 }
             }
-
-            if (!dir.mkdirs()) {
-                Log.d("", "Directory not created");
-            }
+        }  else {
+            throw new RuntimeException("Invalid context");
         }
 
         return saveDir;
@@ -931,7 +935,7 @@ public class CameraFragment extends Fragment {
     }
 
 
-    protected File getCreateImageFile() {
+    protected File createImageFile() {
         return new File(getImageSaveDir(), generateFileName() + ".jpg");
     }
 

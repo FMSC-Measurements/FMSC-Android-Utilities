@@ -3,11 +3,7 @@ package com.usda.fmsc.android.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.NumberPicker;
 
 import androidx.annotation.ColorInt;
@@ -18,12 +14,12 @@ import androidx.fragment.app.DialogFragment;
 import com.usda.fmsc.android.R;
 
 public class NumberPickerDialog extends DialogFragment {
-    private static final String DEFAULT_COLOR = "default_color";
+    private static final String DEFAULT_NUMBER = "default_number";
     private Listener _Listener;
     private NumberPicker _NumberPicker;
-    private @ColorInt int _Color = -1;
+    private int _Number = 0;
 
-    public static NumberPickerDialog newInstance(@ColorInt int defaultColor) {
+    public static NumberPickerDialog newInstance(int defaultNumber) {
 
         Bundle args = new Bundle();
 
@@ -38,8 +34,8 @@ public class NumberPickerDialog extends DialogFragment {
 
         Bundle args = getArguments();
 
-        if (args != null && args.containsKey(DEFAULT_COLOR)) {
-            _Color = args.getInt(DEFAULT_COLOR);
+        if (args != null && args.containsKey(DEFAULT_NUMBER)) {
+            _Number = args.getInt(DEFAULT_NUMBER);
         }
 
         _NumberPicker = new NumberPicker(getActivity());
@@ -53,13 +49,11 @@ public class NumberPickerDialog extends DialogFragment {
         db.setView(_NumberPicker);
         db.setPositiveButton(R.string.str_ok, (dialog, which) -> {
             if (_Listener != null) {
-                _Listener.onColorSelected(_NumberPicker.getValue());
+                _Listener.onNumberSelected(_NumberPicker.getValue());
             }
         }).setNeutralButton(R.string.str_cancel, null);
 
-        if (_Color != -1) {
-            _NumberPicker.setValue(_Color);
-        }
+        _NumberPicker.setValue(_Number);
 
         return db.create();
     }
@@ -70,6 +64,6 @@ public class NumberPickerDialog extends DialogFragment {
     }
 
     public interface Listener {
-        void onColorSelected(@ColorInt int color);
+        void onNumberSelected(int number);
     }
 }

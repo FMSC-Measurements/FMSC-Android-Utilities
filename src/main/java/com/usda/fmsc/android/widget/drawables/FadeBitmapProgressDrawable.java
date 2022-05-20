@@ -20,7 +20,15 @@ public class FadeBitmapProgressDrawable extends BitmapProgressDrawable {
         paint.setAlpha((int) (255 * progress));
         paint.setAntiAlias(true);
 
-        canvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, (int)(bitmap.getWidth() * progress), (int)(bitmap.getHeight() * progress), false), 0, 0, paint);
+        if (progress > 0) {
+            int height = (int)(bitmap.getHeight() * progress);
+            int width = (int)(bitmap.getWidth() * progress);
+
+            if (height > 0 && width > 0) {
+                canvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, width, height, false), 0, 0, paint);
+            }
+        }
+
 
         return bitmap;
     }

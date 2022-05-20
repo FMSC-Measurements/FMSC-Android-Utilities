@@ -315,6 +315,7 @@
 
     <!--White-->
     <color name="white_500">#80FFFFFF</color>
+    <color name="white_700">#B2FFFFFF</color>
     <color name="white_1000">#FFFFFFFF</color>
 
     <!--blue grey-->

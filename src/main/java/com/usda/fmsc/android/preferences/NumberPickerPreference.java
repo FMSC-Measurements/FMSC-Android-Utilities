@@ -102,11 +102,14 @@ public class NumberPickerPreference extends DialogPreference {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
 
+        picker = new NumberPicker(getContext());
         picker.setLayoutParams(layoutParams);
         picker.setBackgroundColor(AndroidUtils.UI.getColor(getContext(), android.R.color.transparent));
 
         AndroidUtils.UI.setNumberPickerColor(picker, R.color.accent);
 
+        picker.setMinValue(minValue);
+        picker.setMaxValue(maxValue);
         picker.setValue(getValue());
 
         FrameLayout dialogView = new FrameLayout(getContext());
@@ -115,15 +118,16 @@ public class NumberPickerPreference extends DialogPreference {
         return dialogView;
     }
 
-    @Override
-    public void onBindViewHolder(PreferenceViewHolder holder) {
-        super.onBindViewHolder(holder);
-
-        picker = new NumberPicker(getContext());
-        picker.setMinValue(minValue);
-        picker.setMaxValue(maxValue);
-        picker.setValue(getValue());
-    }
+//    @Override
+//    public void onBindViewHolder(PreferenceViewHolder holder) {
+//        super.onBindViewHolder(holder);
+//
+//        if (picker != null) {
+//            picker.setMinValue(minValue);
+//            picker.setMaxValue(maxValue);
+//            picker.setValue(getValue());
+//        }
+//    }
 
     private final Dialog.OnDismissListener onDialogDismissed = new DialogInterface.OnDismissListener() {
         @Override

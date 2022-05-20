@@ -195,7 +195,6 @@ public class AndroidUtils {
                 checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
-        @RequiresApi(29)
         public static boolean checkBackgroundLocationPermission(Context context) {
             return checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
                     checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
@@ -216,6 +215,18 @@ public class AndroidUtils {
             return checkPermission(context, Manifest.permission.BLUETOOTH) &&
                     checkPermission(context, Manifest.permission.BLUETOOTH_ADMIN);
         }
+
+        public static boolean checkBluetoothScanAndConnectPermission(Context context) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+                return checkPermission(context, Manifest.permission.BLUETOOTH) &&
+                        checkPermission(context, Manifest.permission.BLUETOOTH_ADMIN) &&
+                        checkPermission(context, Manifest.permission.BLUETOOTH_SCAN) &&
+                        checkPermission(context, Manifest.permission.BLUETOOTH_CONNECT);
+            } else {
+                return checkBluetoothPermission(context);
+            }
+        }
+
 
         public static boolean checkPhonePermission(Context context) {
             return checkPermission(context, Manifest.permission.READ_PHONE_STATE);

@@ -6,11 +6,27 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import android.text.InputType;
 
+import java.text.DecimalFormat;
+
 public class NumericInputDialog extends InputDialog {
     protected int flags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED;
+    private Double _DefaultValue = null;
+    private DecimalFormat dfe = new DecimalFormat("#.##########");
 
     public NumericInputDialog(Context context) {
         super(context);
+    }
+
+    public NumericInputDialog(Context context, Double defaultValue) {
+        super(context);
+        _DefaultValue = defaultValue;
+        dfe.setMaximumFractionDigits(2);
+    }
+
+    public NumericInputDialog(Context context, Double defaultValue, int maxDigits) {
+        super(context);
+        _DefaultValue = defaultValue;
+        dfe.setMaximumFractionDigits(maxDigits);
     }
 
 
@@ -20,6 +36,10 @@ public class NumericInputDialog extends InputDialog {
         AlertDialog dialog = super.create();
 
         input.setInputType(flags);
+
+        if (_DefaultValue != null) {
+            input.setText(dfe.format(_DefaultValue));
+        }
 
         return dialog;
     }
