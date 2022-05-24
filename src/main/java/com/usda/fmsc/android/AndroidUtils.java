@@ -217,7 +217,7 @@ public class AndroidUtils {
         }
 
         public static boolean checkBluetoothScanAndConnectPermission(Context context) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 return checkPermission(context, Manifest.permission.BLUETOOTH) &&
                         checkPermission(context, Manifest.permission.BLUETOOTH_ADMIN) &&
                         checkPermission(context, Manifest.permission.BLUETOOTH_SCAN) &&
@@ -234,50 +234,6 @@ public class AndroidUtils {
 
         public static boolean checkCameraPermission(Context context) {
             return checkPermission(context, Manifest.permission.CAMERA);
-        }
-
-
-
-        public static boolean requestPermissionOld(final Activity activity, final String permission, final int requestCode, String explanation) {
-            return requestPermissionOld(activity, new String[] { permission }, requestCode, explanation);
-        }
-
-        public static boolean requestPermissionOld(final Activity activity, final String[] permissions, final int requestCode, String explanation) {
-            if (!checkPermissions(activity, permissions)) {
-                if (explanation != null && ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[0])) {
-                    new AlertDialog.Builder(activity)
-                            .setMessage(explanation)
-                            .setPositiveButton("OK", (dialog, which) -> ActivityCompat.requestPermissions(activity, permissions, requestCode))
-                            .show();
-
-                } else {
-                    ActivityCompat.requestPermissions(activity, permissions, requestCode);
-                }
-            } else {
-                return true;
-            }
-
-            return false;
-        }
-
-        public static boolean requestPermissionOld2(final ComponentActivity activity, final String permission, String explanation, ActivityResultCallback<Boolean> callback) {
-            if (!checkPermission(activity, permission)) {
-                ActivityResultLauncher<String> requestPermission = activity.registerForActivityResult(new ActivityResultContracts.RequestPermission(), callback);
-
-            if (explanation != null) {
-                new AlertDialog.Builder(activity)
-                        .setMessage(explanation)
-                        .setPositiveButton(R.string.str_ok, (dialog1, which) -> requestPermission.launch(permission))
-                        .setNeutralButton(R.string.str_cancel, null)
-                        .show();
-            } else {
-                requestPermission.launch(permission);
-            }
-
-            return false;
-        }
-
-            return true;
         }
 
 
@@ -320,15 +276,24 @@ public class AndroidUtils {
         }
 
 
-        @RequiresApi(29)
-        public static boolean requestLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> requestPermissions, String explanation) {
+        public static boolean requestLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> actResLauncher, String explanation) {
             return requestPermissions(activity,
-                    new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION }, requestPermissions, explanation);
+                    new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION }, actResLauncher, explanation);
         }
 
-        @RequiresApi(29)
-        public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String> requestPermission, String explanation) {
-            return requestPermission(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION, requestPermission, explanation);
+        public static boolean requestBackgroundLocationPermission(final ComponentActivity activity, ActivityResultLauncher<String> actResLauncher, String explanation) {
+            return requestPermission(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION, actResLauncher, explanation);
+        }
+
+        public static boolean requestBluetoothPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> actResLauncher, String explanation) {
+            return requestPermissions(activity,
+                    new String[] { Manifest.permission.BLUETOOTH }, actResLauncher, explanation);
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.S)
+        public static boolean requestBluetoothScanPermission(final ComponentActivity activity, ActivityResultLauncher<String[]> actResLauncher, String explanation) {
+            return requestPermissions(activity,
+                    new String[] { Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN }, actResLauncher, explanation);
         }
 
         public static void navigateAppStore(Context context, String packageName) {
