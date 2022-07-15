@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -26,11 +27,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.FileUtils;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -64,13 +67,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1010,10 +1018,26 @@ public class AndroidUtils {
         public static void copyFile(Context context, Uri source, Uri dest) throws IOException {
             ContentResolver resolver = context.getContentResolver();
 
-            InputStream input = resolver.openInputStream(source);
-            OutputStream output = resolver.openOutputStream(dest);
 
-            FileUtils.copy(input, output);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                BufferedInputStream bis = null;
+                BufferedOutputStream bos = null;
+
+                try {
+                    bis = new BufferedInputStream(resolver.openInputStream(source));
+                    bos = new BufferedOutputStream(new FileOutputStream(dest.getPath(), false));
+                    byte[] buf = new byte[1024];
+                    bis.read(buf);
+                    do {
+                        bos.write(buf);
+                    } while(bis.read(buf) != -1);
+                } finally {
+                    if (bis != null) bis.close();
+                    if (bos != null) bos.close();
+                }
+            } else {
+                FileUtils.copy(resolver.openInputStream(source), resolver.openOutputStream(dest));
+            }
         }
 
 
