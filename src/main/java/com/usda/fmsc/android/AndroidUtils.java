@@ -1025,7 +1025,7 @@ public class AndroidUtils {
 
                 try {
                     bis = new BufferedInputStream(resolver.openInputStream(source));
-                    bos = new BufferedOutputStream(new FileOutputStream(dest.getPath(), false));
+                    bos = new BufferedOutputStream(resolver.openOutputStream(dest));
                     byte[] buf = new byte[1024];
                     bis.read(buf);
                     do {
