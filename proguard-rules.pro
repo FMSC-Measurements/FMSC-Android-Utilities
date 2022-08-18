@@ -9,6 +9,8 @@
 -allowaccessmodification
 
 -keep public class * extends android.app.Activity
+-keep public class * extends androidx.activity.ComponentActivity
+-keep public class * extends androidx.fragment.app.FragmentActivity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.ContentProvider
@@ -64,6 +66,9 @@
 -keep class org.joda.time.** { *; }
 -keep interface org.joda.time.** { *; }
 
+-keep class com.esri.arcgisruntime.** { *; }
+-keep interface com.esri.arcgisruntime.** { *; }
+
 -dontwarn android.support.**
 -dontwarn jcifs.http**
 -dontwarn org.w3c.dom.bootstrap.**
@@ -71,5 +76,7 @@
 -dontwarn android.net.http.AndroidHttpClient
 -dontwarn com.google.android.gms.**
 -dontwarn com.android.volley.toolbox.**
-
 -dontwarn org.joda.time.**
+-dontwarn com.esri.arcgisruntime.**
+
+-keepattributes Exceptions, Signature, InnerClasses
