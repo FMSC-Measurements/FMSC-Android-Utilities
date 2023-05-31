@@ -217,7 +217,6 @@ public class SheetLayoutEx extends FrameLayout {
         return mFabType == FAB_EXPAND;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void expandLollipop(int x, int y, float startRadius, float endRadius) {
 
         Animator toolbarExpandAnim = ViewAnimationUtils.createCircularReveal(
