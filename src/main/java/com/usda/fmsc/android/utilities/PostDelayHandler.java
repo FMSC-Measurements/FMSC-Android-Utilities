@@ -13,9 +13,13 @@ public class PostDelayHandler {
     }
 
     public PostDelayHandler(int delayMilliseconds, Runnable runnable) {
+        this(delayMilliseconds, new Handler(), runnable);
+    }
+
+    public PostDelayHandler(int delayMilliseconds, Handler handler, Runnable runnable) {
         this.delay = delayMilliseconds;
 
-        handler = new Handler();
+        this.handler = handler;
 
         if (runnable != null) {
             post(runnable);
@@ -41,5 +45,9 @@ public class PostDelayHandler {
 
     public void setDelay(int delayMilliseconds) {
         this.delay = delayMilliseconds;
+    }
+
+    public void cancel() {
+        handler.removeCallbacksAndMessages(null);
     }
 }
